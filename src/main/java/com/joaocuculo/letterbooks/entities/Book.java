@@ -40,7 +40,7 @@ public class Book implements Serializable {
     private MaturityRating maturityRating;
 
     @CreationTimestamp
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     public Book() {
