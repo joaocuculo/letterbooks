@@ -2,11 +2,12 @@ package com.joaocuculo.letterbooks.entities;
 
 import jakarta.persistence.*;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
-@Table(name = "category")
-public class Category {
+@Table(name = "categories")
+public class Category implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

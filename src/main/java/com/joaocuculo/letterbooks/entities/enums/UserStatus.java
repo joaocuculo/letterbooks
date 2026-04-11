@@ -2,8 +2,8 @@ package com.joaocuculo.letterbooks.entities.enums;
 
 public enum UserStatus {
 
-    ACTIVE("Ativo"),
-    INACTIVE("Inativo");
+    ACTIVE("active"),
+    INACTIVE("inactive");
 
     private String status;
 
