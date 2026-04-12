@@ -2,16 +2,7 @@ package com.joaocuculo.letterbooks.entities.enums;
 
 public enum MaturityRating {
 
-    NOT_MATURE("not_mature"),
-    MATURE("mature");
+    NOT_MATURE,
+    MATURE;
 
-    private String maturityRating;
-
-    MaturityRating(String maturityRating) {
-        this.maturityRating = maturityRating;
-    }
-
-    public String getMaturityRating() {
-        return maturityRating;
-    }
 }
