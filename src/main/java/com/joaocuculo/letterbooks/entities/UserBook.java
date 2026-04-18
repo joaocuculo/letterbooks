@@ -1,5 +1,6 @@
 package com.joaocuculo.letterbooks.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.joaocuculo.letterbooks.entities.enums.UserBookStatus;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -10,7 +11,12 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
-@Table(name = "users_book")
+@Table(
+        name = "user_book",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"user_id", "book_id"})
+        }
+)
 public class UserBook implements Serializable {
 
     @Id
@@ -21,8 +27,7 @@ public class UserBook implements Serializable {
     @Column(nullable = false)
     private UserBookStatus status;
 
-    @Column(nullable = false)
-    private Boolean isFavorite;
+    private boolean isFavorite;
 
     private Integer currentPage;
     private LocalDateTime startedAt;
@@ -36,15 +41,27 @@ public class UserBook implements Serializable {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "book_id", nullable = false)
+    private Book book;
+
     public UserBook() {
     }
 
-    public UserBook(UserBookStatus status, Boolean isFavorite, Integer currentPage, LocalDateTime startedAt, LocalDateTime finishedAt) {
+    public UserBook(UserBookStatus status, boolean isFavorite, Integer currentPage, LocalDateTime startedAt, LocalDateTime finishedAt, User user, Book book) {
         this.status = status;
         this.isFavorite = isFavorite;
         this.currentPage = currentPage;
         this.startedAt = startedAt;
         this.finishedAt = finishedAt;
+        this.user = user;
+        this.book = book;
     }
 
     public Long getId() {
@@ -59,11 +76,11 @@ public class UserBook implements Serializable {
         this.status = status;
     }
 
-    public Boolean isFavorite() {
+    public boolean isFavorite() {
         return isFavorite;
     }
 
-    public void setFavorite(Boolean favorite) {
+    public void setFavorite(boolean favorite) {
         isFavorite = favorite;
     }
 
@@ -97,6 +114,14 @@ public class UserBook implements Serializable {
 
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public Book getBook() {
+        return book;
     }
 
     @Override

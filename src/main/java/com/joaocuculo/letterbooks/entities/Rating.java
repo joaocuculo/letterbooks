@@ -1,30 +1,36 @@
 package com.joaocuculo.letterbooks.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
-@Table(name = "ratings")
+@Table(
+        name = "ratings",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"user_id", "book_id"})
+        }
+)
 public class Rating implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Min(1)
+    @Max(5)
     @Column(nullable = false)
     private Integer score;
 
     @Column(columnDefinition = "TEXT")
     private String comment;
-
-    private LocalDate startedAt;
-    private LocalDate finishedAt;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
@@ -34,14 +40,24 @@ public class Rating implements Serializable {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "book_id", nullable = false)
+    private Book book;
+
     public Rating() {
     }
 
-    public Rating(Integer score, String comment, LocalDate startedAt, LocalDate finishedAt) {
+    public Rating(Integer score, String comment, User user, Book book) {
         this.score = score;
         this.comment = comment;
-        this.startedAt = startedAt;
-        this.finishedAt = finishedAt;
+        this.user = user;
+        this.book = book;
     }
 
     public Long getId() {
@@ -64,28 +80,20 @@ public class Rating implements Serializable {
         this.comment = comment;
     }
 
-    public LocalDate getStartedAt() {
-        return startedAt;
-    }
-
-    public void setStartedAt(LocalDate startedAt) {
-        this.startedAt = startedAt;
-    }
-
-    public LocalDate getFinishedAt() {
-        return finishedAt;
-    }
-
-    public void setFinishedAt(LocalDate finishedAt) {
-        this.finishedAt = finishedAt;
-    }
-
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public Book getBook() {
+        return book;
     }
 
     @Override

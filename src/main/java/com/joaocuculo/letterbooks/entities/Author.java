@@ -1,9 +1,12 @@
 package com.joaocuculo.letterbooks.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "authors")
@@ -16,6 +19,10 @@ public class Author implements Serializable {
     @Column(nullable = false)
     private String name;
 
+    @JsonIgnore
+    @ManyToMany(mappedBy = "authors")
+    private Set<Book> books = new HashSet<>();
+
     public Author() {
     }
 
@@ -27,16 +34,16 @@ public class Author implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Set<Book> getBooks() {
+        return books;
     }
 
     @Override

@@ -1,12 +1,15 @@
 package com.joaocuculo.letterbooks.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.joaocuculo.letterbooks.entities.enums.MaturityRating;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "books")
@@ -42,6 +45,34 @@ public class Book implements Serializable {
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @ManyToMany
+    @JoinTable(
+            name = "book_category",
+            joinColumns = @JoinColumn(name = "book_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
+    private Set<Category> categories = new HashSet<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "book_author",
+            joinColumns = @JoinColumn(name = "book_id"),
+            inverseJoinColumns = @JoinColumn(name = "author_id")
+    )
+    private Set<Author> authors = new HashSet<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "book")
+    private Set<Rating> ratings = new HashSet<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "book")
+    private Set<UserBook> userBooks = new HashSet<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "id.book")
+    private Set<BookshelfItem> items = new HashSet<>();
 
     public Book() {
     }
@@ -172,6 +203,26 @@ public class Book implements Serializable {
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
+    }
+
+    public Set<Category> getCategories() {
+        return categories;
+    }
+
+    public Set<Author> getAuthors() {
+        return authors;
+    }
+
+    public Set<Rating> getRatings() {
+        return ratings;
+    }
+
+    public Set<UserBook> getUserBooks() {
+        return userBooks;
+    }
+
+    public Set<BookshelfItem> getItems() {
+        return items;
     }
 
     @Override

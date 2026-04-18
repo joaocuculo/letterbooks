@@ -1,5 +1,6 @@
 package com.joaocuculo.letterbooks.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.joaocuculo.letterbooks.entities.enums.UserRole;
 import com.joaocuculo.letterbooks.entities.enums.UserStatus;
 import jakarta.persistence.*;
@@ -8,7 +9,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Objects;
+import java.util.*;
 
 @Entity
 @Table(name = "users")
@@ -42,6 +43,19 @@ public class User implements Serializable {
     @UpdateTimestamp
     @Column(nullable = false)
     private LocalDateTime updatedAt;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user")
+    @OrderBy("createdAt ASC")
+    private List<Bookshelf> bookshelves = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user")
+    private Set<Rating> ratings = new HashSet<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user")
+    private Set<UserBook> userBooks = new HashSet<>();
 
     public User() {
     }
@@ -104,6 +118,18 @@ public class User implements Serializable {
 
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
+    }
+
+    public List<Bookshelf> getBookshelves() {
+        return bookshelves;
+    }
+
+    public Set<Rating> getRatings() {
+        return ratings;
+    }
+
+    public Set<UserBook> getUserBooks() {
+        return userBooks;
     }
 
     @Override
