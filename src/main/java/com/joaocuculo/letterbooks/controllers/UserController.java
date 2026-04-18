@@ -2,6 +2,7 @@ package com.joaocuculo.letterbooks.controllers;
 
 import com.joaocuculo.letterbooks.dto.UserRequestDTO;
 import com.joaocuculo.letterbooks.dto.UserResponseDTO;
+import com.joaocuculo.letterbooks.dto.UserStatusUpdateDTO;
 import com.joaocuculo.letterbooks.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -38,6 +39,12 @@ public class UserController {
     @PutMapping("/{id}")
     public ResponseEntity<UserResponseDTO> update(@PathVariable Long id, @RequestBody @Valid UserRequestDTO dto) {
         UserResponseDTO user = service.update(id, dto);
+        return ResponseEntity.ok().body(user);
+    }
+
+    @PutMapping("/{id}/role-status")
+    public ResponseEntity<UserResponseDTO> updateRoleAndStatus(@PathVariable Long id, @RequestBody @Valid UserStatusUpdateDTO dto) {
+        UserResponseDTO user = service.updateRoleAndStatus(id, dto);
         return ResponseEntity.ok().body(user);
     }
 

@@ -2,6 +2,7 @@ package com.joaocuculo.letterbooks.services;
 
 import com.joaocuculo.letterbooks.dto.UserRequestDTO;
 import com.joaocuculo.letterbooks.dto.UserResponseDTO;
+import com.joaocuculo.letterbooks.dto.UserStatusUpdateDTO;
 import com.joaocuculo.letterbooks.entities.User;
 import com.joaocuculo.letterbooks.entities.enums.UserRole;
 import com.joaocuculo.letterbooks.entities.enums.UserStatus;
@@ -26,12 +27,27 @@ public class UserService {
 
     public Page<UserResponseDTO> findAll(Pageable pageable) {
         Page<User> users = repository.findAll(pageable);
-        return users.map(user -> new UserResponseDTO(user.getId(), user.getUsername(), user.getEmail()));
+        return users.map(
+                user -> new UserResponseDTO(
+                        user.getId(),
+                        user.getUsername(),
+                        user.getEmail(),
+                        user.getRole(),
+                        user.getStatus(),
+                        user.getCreatedAt())
+        );
     }
 
     public UserResponseDTO findById(Long id) {
         User user = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado."));
-        return new UserResponseDTO(user.getId(), user.getUsername(), user.getEmail());
+        return new UserResponseDTO(
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getRole(),
+                user.getStatus(),
+                user.getCreatedAt()
+        );
     }
 
     public UserResponseDTO register(UserRequestDTO dto) {
@@ -52,35 +68,68 @@ public class UserService {
 
         repository.save(user);
 
-        return new UserResponseDTO(user.getId(), user.getUsername(), user.getEmail());
+        return new UserResponseDTO(
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getRole(),
+                user.getStatus(),
+                user.getCreatedAt()
+        );
     }
 
     public void delete(Long id) {
+        if (!repository.existsById(id)) {
+            throw new ResourceNotFoundException("Usuário com id " + id + " não encotrado.");
+        }
         try {
             repository.deleteById(id);
-        } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException("Usuário com id " + id + " não encotrado.");
         } catch (DataIntegrityViolationException e) {
             throw new DatabaseException(e.getMessage());
         }
     }
 
     public UserResponseDTO update(Long id, UserRequestDTO dto) {
-        try {
-            User user = repository.getReferenceById(id);
-            updateData(user, dto);
-            repository.save(user);
-            return new UserResponseDTO(user.getId(), user.getUsername(), user.getEmail());
-        } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException("Usuário com id " + id + " não encotrado.");
+        User user = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário com id " + id + " não encotrado."));
+
+        if (!user.getEmail().equals(dto.email()) && repository.existsByEmail(dto.email())){
+            throw new BusinessException("Este e-mail já está cadastrado.");
         }
+        if (!user.getUsername().equals(dto.username()) && repository.existsByUsername(dto.username())) {
+            throw new BusinessException("Este username já está sendo usado.");
+        }
+
+        user.setUsername(dto.username());
+        user.setEmail(dto.email());
+        repository.save(user);
+
+        return new UserResponseDTO(
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getRole(),
+                user.getStatus(),
+                user.getCreatedAt()
+        );
     }
 
-    public void updateData(User entity, UserRequestDTO obj) {
-        entity.setUsername(obj.username());
-        entity.setEmail(obj.email());
-        if (obj.password() != null) {
-            entity.setPassword(obj.password());
+    public UserResponseDTO updateRoleAndStatus(Long id, UserStatusUpdateDTO dto) {
+        try {
+            User user = repository.getReferenceById(id);
+            user.setRole(dto.role());
+            user.setStatus(dto.status());
+            repository.save(user);
+            return new UserResponseDTO(
+                    user.getId(),
+                    user.getUsername(),
+                    user.getEmail(),
+                    user.getRole(),
+                    user.getStatus(),
+                    user.getCreatedAt()
+            );
+        } catch (EntityNotFoundException e) {
+            throw new ResourceNotFoundException("Usuário com id " + id + " não encotrado.");
         }
     }
 }
