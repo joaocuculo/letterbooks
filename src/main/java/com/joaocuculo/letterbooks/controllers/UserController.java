@@ -4,7 +4,6 @@ import com.joaocuculo.letterbooks.dto.UserRequestDTO;
 import com.joaocuculo.letterbooks.dto.UserResponseDTO;
 import com.joaocuculo.letterbooks.services.UserService;
 import jakarta.validation.Valid;
-import org.apache.coyote.Response;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
