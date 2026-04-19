@@ -1,8 +1,8 @@
 package com.joaocuculo.letterbooks.controllers;
 
-import com.joaocuculo.letterbooks.dto.UserRequestDTO;
-import com.joaocuculo.letterbooks.dto.UserResponseDTO;
-import com.joaocuculo.letterbooks.dto.UserStatusUpdateDTO;
+import com.joaocuculo.letterbooks.dto.request.UserRequestDTO;
+import com.joaocuculo.letterbooks.dto.response.UserResponseDTO;
+import com.joaocuculo.letterbooks.dto.request.UserStatusUpdateDTO;
 import com.joaocuculo.letterbooks.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -37,14 +37,14 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserResponseDTO> update(@PathVariable Long id, @RequestBody @Valid UserRequestDTO dto) {
-        UserResponseDTO user = service.update(id, dto);
+    public ResponseEntity<UserResponseDTO> update(@PathVariable Long id, @RequestBody @Valid UserRequestDTO request) {
+        UserResponseDTO user = service.update(id, request);
         return ResponseEntity.ok().body(user);
     }
 
     @PutMapping("/{id}/role-status")
-    public ResponseEntity<UserResponseDTO> updateRoleAndStatus(@PathVariable Long id, @RequestBody @Valid UserStatusUpdateDTO dto) {
-        UserResponseDTO user = service.updateRoleAndStatus(id, dto);
+    public ResponseEntity<UserResponseDTO> updateRoleAndStatus(@PathVariable Long id, @RequestBody @Valid UserStatusUpdateDTO request) {
+        UserResponseDTO user = service.updateRoleAndStatus(id, request);
         return ResponseEntity.ok().body(user);
     }
 

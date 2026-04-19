@@ -1,8 +1,9 @@
 package com.joaocuculo.letterbooks.services;
 
-import com.joaocuculo.letterbooks.dto.UserRequestDTO;
-import com.joaocuculo.letterbooks.dto.UserResponseDTO;
-import com.joaocuculo.letterbooks.dto.UserStatusUpdateDTO;
+import com.joaocuculo.letterbooks.dto.request.UserRequestDTO;
+import com.joaocuculo.letterbooks.dto.response.RegisterResponseDTO;
+import com.joaocuculo.letterbooks.dto.response.UserResponseDTO;
+import com.joaocuculo.letterbooks.dto.request.UserStatusUpdateDTO;
 import com.joaocuculo.letterbooks.entities.User;
 import com.joaocuculo.letterbooks.entities.enums.UserRole;
 import com.joaocuculo.letterbooks.entities.enums.UserStatus;
@@ -14,15 +15,18 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
 
     private final UserRepository repository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository repository) {
+    public UserService(UserRepository repository, PasswordEncoder passwordEncoder) {
         this.repository = repository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public Page<UserResponseDTO> findAll(Pageable pageable) {
@@ -30,7 +34,7 @@ public class UserService {
         return users.map(
                 user -> new UserResponseDTO(
                         user.getId(),
-                        user.getUsername(),
+                        user.getName(),
                         user.getEmail(),
                         user.getRole(),
                         user.getStatus(),
@@ -42,7 +46,7 @@ public class UserService {
         User user = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado."));
         return new UserResponseDTO(
                 user.getId(),
-                user.getUsername(),
+                user.getName(),
                 user.getEmail(),
                 user.getRole(),
                 user.getStatus(),
@@ -50,31 +54,25 @@ public class UserService {
         );
     }
 
-    public UserResponseDTO register(UserRequestDTO dto) {
+    public RegisterResponseDTO register(UserRequestDTO dto) {
         if (repository.existsByEmail(dto.email())) {
             throw new BusinessException("Este e-mail já está cadastrado.");
         }
-        if (repository.existsByUsername(dto.username())) {
-            throw new BusinessException("Este username já está sendo usado.");
-        }
 
         User user = new User(
-                dto.username(),
+                dto.name(),
                 dto.email(),
-                dto.password(),
+                passwordEncoder.encode(dto.password()),
                 UserRole.USER,
                 UserStatus.ACTIVE
         );
 
         repository.save(user);
 
-        return new UserResponseDTO(
+        return new RegisterResponseDTO(
                 user.getId(),
-                user.getUsername(),
-                user.getEmail(),
-                user.getRole(),
-                user.getStatus(),
-                user.getCreatedAt()
+                user.getName(),
+                user.getEmail()
         );
     }
 
@@ -96,17 +94,14 @@ public class UserService {
         if (!user.getEmail().equals(dto.email()) && repository.existsByEmail(dto.email())){
             throw new BusinessException("Este e-mail já está cadastrado.");
         }
-        if (!user.getUsername().equals(dto.username()) && repository.existsByUsername(dto.username())) {
-            throw new BusinessException("Este username já está sendo usado.");
-        }
 
-        user.setUsername(dto.username());
+        user.setName(dto.name());
         user.setEmail(dto.email());
         repository.save(user);
 
         return new UserResponseDTO(
                 user.getId(),
-                user.getUsername(),
+                user.getName(),
                 user.getEmail(),
                 user.getRole(),
                 user.getStatus(),
@@ -122,7 +117,7 @@ public class UserService {
             repository.save(user);
             return new UserResponseDTO(
                     user.getId(),
-                    user.getUsername(),
+                    user.getName(),
                     user.getEmail(),
                     user.getRole(),
                     user.getStatus(),

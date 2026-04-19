@@ -1,4 +1,4 @@
-package com.joaocuculo.letterbooks.dto;
+package com.joaocuculo.letterbooks.dto.response;
 
 import com.joaocuculo.letterbooks.entities.enums.UserRole;
 import com.joaocuculo.letterbooks.entities.enums.UserStatus;
@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 public record UserResponseDTO(
         Long id,
-        String username,
+        String name,
         String email,
         UserRole role,
         UserStatus status,

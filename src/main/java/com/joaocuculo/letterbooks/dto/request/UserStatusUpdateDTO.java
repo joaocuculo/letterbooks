@@ -1,4 +1,4 @@
-package com.joaocuculo.letterbooks.dto;
+package com.joaocuculo.letterbooks.dto.request;
 
 import com.joaocuculo.letterbooks.entities.enums.UserRole;
 import com.joaocuculo.letterbooks.entities.enums.UserStatus;
