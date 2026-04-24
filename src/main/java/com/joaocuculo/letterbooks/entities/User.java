@@ -59,6 +59,10 @@ public class User implements UserDetails, Serializable {
     @OneToMany(mappedBy = "user")
     private Set<UserBook> userBooks = new HashSet<>();
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "user")
+    private List<PasswordReset> passwordResets = new ArrayList<>();
+
     public User() {
     }
 
@@ -100,6 +104,7 @@ public class User implements UserDetails, Serializable {
     public boolean isEnabled() {
         return UserDetails.super.isEnabled();
     }
+
     // End Spring Security --------
 
     public Long getId() {
@@ -164,6 +169,10 @@ public class User implements UserDetails, Serializable {
 
     public Set<UserBook> getUserBooks() {
         return userBooks;
+    }
+
+    public List<PasswordReset> getPasswordResets() {
+        return passwordResets;
     }
 
     @Override
