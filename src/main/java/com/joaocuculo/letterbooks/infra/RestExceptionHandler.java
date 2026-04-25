@@ -1,9 +1,6 @@
 package com.joaocuculo.letterbooks.infra;
 
-import com.joaocuculo.letterbooks.exceptions.BusinessException;
-import com.joaocuculo.letterbooks.exceptions.DatabaseException;
-import com.joaocuculo.letterbooks.exceptions.ForbiddenException;
-import com.joaocuculo.letterbooks.exceptions.ResourceNotFoundException;
+import com.joaocuculo.letterbooks.exceptions.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +30,16 @@ public class RestExceptionHandler {
     @ExceptionHandler(ForbiddenException.class)
     public ResponseEntity<StandardError> forbidden(ForbiddenException e, HttpServletRequest request) {
         return errorBuilder(e, request, "Forbidden error.", HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<StandardError> invalidToken(InvalidTokenException e, HttpServletRequest request) {
+        return errorBuilder(e, request, "Invalid token.", HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(ExpiredTokenException.class)
+    public ResponseEntity<StandardError> expiredToken(ExpiredTokenException e, HttpServletRequest request) {
+        return errorBuilder(e, request, "Expired token.", HttpStatus.UNAUTHORIZED);
     }
 
     private ResponseEntity<StandardError> errorBuilder(

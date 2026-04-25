@@ -15,7 +15,7 @@ public class PasswordReset implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String token;
 
     @Column(nullable = false)
@@ -29,8 +29,7 @@ public class PasswordReset implements Serializable {
     public PasswordReset() {
     }
 
-    public PasswordReset(Long id, String token, LocalDateTime expiresAt, User user) {
-        this.id = id;
+    public PasswordReset(String token, LocalDateTime expiresAt, User user) {
         this.token = token;
         this.expiresAt = expiresAt;
         this.user = user;
