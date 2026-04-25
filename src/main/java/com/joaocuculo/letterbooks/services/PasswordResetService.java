@@ -23,11 +23,13 @@ public class PasswordResetService {
     private final PasswordResetRepository passwordResetRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
-    public PasswordResetService(PasswordResetRepository passwordResetRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public PasswordResetService(PasswordResetRepository passwordResetRepository, UserRepository userRepository, PasswordEncoder passwordEncoder, EmailService emailService) {
         this.passwordResetRepository = passwordResetRepository;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.emailService = emailService;
     }
 
     public void requestReset(ForgotPasswordRequestDTO dto) {
@@ -37,7 +39,7 @@ public class PasswordResetService {
             return;
         }
 
-        User user = (User) userOpt.get();
+        User user = userOpt.get();
         passwordResetRepository.deleteByUser(user);
 
         String tokenReset = UUID.randomUUID().toString();
@@ -46,7 +48,7 @@ public class PasswordResetService {
         PasswordReset passwordReset = new PasswordReset(tokenReset, expiresAt, user);
         passwordResetRepository.save(passwordReset);
 
-        // send email
+        emailService.sendPasswordResetMail(user.getEmail(), user.getName(), tokenReset);
     }
 
     public void resetPassword(ResetPasswordRequestDTO dto) {
