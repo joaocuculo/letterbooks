@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
+import java.util.Optional;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record GoogleBooksResponseDTO(
@@ -37,8 +38,49 @@ public record GoogleBooksResponseDTO(
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record ImageLinks(
-            @JsonProperty("extraLarge") String imageUrl,
-            @JsonProperty("thumbnail") String thumbnailUrl
+            @JsonProperty("smallThumbnail") String smallThumbnail,
+            @JsonProperty("thumbnail") String thumbnail,
+            @JsonProperty("small") String small,
+            @JsonProperty("medium") String medium,
+            @JsonProperty("large") String large,
+            @JsonProperty("extraLarge") String extraLarge
     ) {
+    }
+
+    public String getIsbn() {
+        if (volumeInfo == null || volumeInfo.industryIdentifiers == null) {
+            return null;
+        }
+
+        Optional<String> isbn13 = volumeInfo.industryIdentifiers.stream()
+                .filter(isbn -> "ISBN_13".equals(isbn.type))
+                .map(IndustryIdentifiers::identifier)
+                .findFirst();
+
+        return isbn13.orElseGet(() -> volumeInfo.industryIdentifiers.stream()
+                .filter(isbn -> "ISBN_10".equals(isbn.type))
+                .map(IndustryIdentifiers::identifier)
+                .findFirst()
+                .orElse(null));
+    }
+
+    public String getThumbnailUrl() {
+        if (volumeInfo == null || volumeInfo.imageLinks == null) {
+            return null;
+        }
+        if (volumeInfo.imageLinks.thumbnail != null) return volumeInfo.imageLinks.thumbnail;
+        return volumeInfo.imageLinks.smallThumbnail;
+    }
+
+    public String getPreferredImageUrl() {
+        if (volumeInfo == null || volumeInfo.imageLinks == null) {
+            return null;
+        }
+        ImageLinks images = volumeInfo.imageLinks;
+        if (images.extraLarge != null) return images.extraLarge;
+        if (images.large != null) return images.large;
+        if (images.medium != null) return images.medium;
+        if (images.small != null) return images.small;
+        return images.thumbnail;
     }
 }
