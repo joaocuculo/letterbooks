@@ -1,5 +1,6 @@
 package com.joaocuculo.letterbooks.dto.external;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -47,6 +48,7 @@ public record GoogleBooksResponseDTO(
     ) {
     }
 
+    @JsonIgnore
     public String getIsbn() {
         if (volumeInfo == null || volumeInfo.industryIdentifiers == null) {
             return null;
@@ -64,6 +66,7 @@ public record GoogleBooksResponseDTO(
                 .orElse(null));
     }
 
+    @JsonIgnore
     public String getThumbnailUrl() {
         if (volumeInfo == null || volumeInfo.imageLinks == null) {
             return null;
@@ -72,6 +75,7 @@ public record GoogleBooksResponseDTO(
         return volumeInfo.imageLinks.smallThumbnail;
     }
 
+    @JsonIgnore
     public String getPreferredImageUrl() {
         if (volumeInfo == null || volumeInfo.imageLinks == null) {
             return null;
