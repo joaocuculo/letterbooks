@@ -36,19 +36,19 @@ public class UserController {
         return ResponseEntity.ok().body(user);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}")
     public ResponseEntity<UserResponseDTO> update(@PathVariable Long id, @RequestBody @Valid UserRequestDTO request) {
         UserResponseDTO user = service.update(id, request);
         return ResponseEntity.ok().body(user);
     }
 
-    @PutMapping("/{id}/role-status")
+    @PutMapping(value = "/{id}/role-status")
     public ResponseEntity<UserResponseDTO> updateRoleAndStatus(@PathVariable Long id, @RequestBody @Valid UserStatusUpdateDTO request) {
         UserResponseDTO user = service.updateRoleAndStatus(id, request);
         return ResponseEntity.ok().body(user);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
