@@ -9,7 +9,12 @@ public record BookSearchResponseDTO(
         List<String> authors,
         String publisher,
         String publishedDate,
+        List<String> categories,
+        String description,
+        Integer pageCount,
+        String language,
         String isbn,
+        String maturityRating,
         String imageUrl,
         String thumbnailUrl,
         String source
