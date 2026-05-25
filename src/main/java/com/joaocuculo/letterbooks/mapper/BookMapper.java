@@ -24,7 +24,6 @@ public class BookMapper {
                 dto.volumeInfo().maturityRating(),
                 dto.getPreferredImageUrl(),
                 dto.getThumbnailUrl(),
-
                 "GOOGLE"
         );
     }

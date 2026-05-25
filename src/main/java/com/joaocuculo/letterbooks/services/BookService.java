@@ -4,11 +4,14 @@ import com.joaocuculo.letterbooks.client.GoogleBooksClient;
 import com.joaocuculo.letterbooks.dto.request.BookSearchRequestDTO;
 import com.joaocuculo.letterbooks.dto.response.BookSearchResponseDTO;
 import com.joaocuculo.letterbooks.entities.Book;
+import com.joaocuculo.letterbooks.exceptions.BusinessException;
 import com.joaocuculo.letterbooks.mapper.BookMapper;
 import com.joaocuculo.letterbooks.repositories.BookRepository;
+import com.joaocuculo.letterbooks.specifications.BookSpecifications;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClientException;
 
@@ -37,13 +40,15 @@ public class BookService {
         this.googleBooksClient = googleBooksClient;
     }
 
-    public Page<BookSearchResponseDTO> search(BookSearchRequestDTO searchRequestDTO, int page, int size) {
+    public Page<BookSearchResponseDTO> search(BookSearchRequestDTO searchRequestDTO, Pageable pageable) {
         String query = queryBuilder(searchRequestDTO);
 
-        int startIndex = page * size;
+        if (query.isBlank()) throw new BusinessException("É preciso informar ao menos um parãmetro de busca.");
+
+        int startIndex = (int) pageable.getOffset();
 
         try {
-            var googleResponse = googleBooksClient.search(query, size, startIndex);
+            var googleResponse = googleBooksClient.search(query, pageable.getPageSize(), startIndex);
 
             List<BookSearchResponseDTO> content = googleResponse.items() == null ? List.of() :
                     googleResponse.items()
@@ -51,10 +56,15 @@ public class BookService {
                             .map(BookMapper::fromGoogle)
                             .toList();
 
-            return new PageImpl<>(content, PageRequest.of(page, size), googleResponse.totalItems());
+            return new PageImpl<>(content, pageable, googleResponse.totalItems());
         } catch (WebClientException e) {
-            return searchLocal(searchRequestDTO, page, size);
+            return searchLocal(searchRequestDTO, pageable);
         }
+    }
+
+    private Page<BookSearchResponseDTO> searchLocal(BookSearchRequestDTO searchRequestDTO, Pageable pageable) {
+        return bookRepository.findAll(BookSpecifications.withFilters(searchRequestDTO), pageable)
+                .map(BookMapper::fromEntity);
     }
 
     private String queryBuilder(BookSearchRequestDTO dto) {
@@ -74,33 +84,4 @@ public class BookService {
 
         return String.join(" ", terms);
     }
-
-    private String normalizeFreeText(String freeText) {
-        if (freeText == null || freeText.isBlank()) {
-            return null;
-        }
-
-        freeText = freeText.trim();
-
-        if (freeText.startsWith("\"") && freeText.endsWith("\"")) {
-            return freeText.substring(1, freeText.length() - 1);
-        }
-
-        return freeText;
-    }
-
-    private Page<BookSearchResponseDTO> searchLocal(BookSearchRequestDTO searchRequestDTO, int page, int size) {
-        Page<Book> localPage = bookRepository.search(
-                searchRequestDTO.title(),
-                searchRequestDTO.author(),
-                searchRequestDTO.publisher(),
-                searchRequestDTO.subject(),
-                searchRequestDTO.isbn(),
-                normalizeFreeText(searchRequestDTO.freeText()),
-                PageRequest.of(page, size)
-        );
-
-        return localPage.map(BookMapper::fromEntity);
-    }
-
 }

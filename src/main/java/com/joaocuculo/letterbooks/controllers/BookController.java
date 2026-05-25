@@ -8,6 +8,8 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,11 +24,9 @@ public class BookController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Page<BookSearchResponseDTO>> search(
-            @Valid @ModelAttribute BookSearchRequestDTO searchRequestDTO,
-            @RequestParam(defaultValue = "0") @PositiveOrZero int page,
-            @RequestParam(defaultValue = "10") @Positive @Max(40) int size) {
-        Page<BookSearchResponseDTO> searchResult = service.search(searchRequestDTO, page, size);
+    public ResponseEntity<Page<BookSearchResponseDTO>> search(@Valid @ModelAttribute BookSearchRequestDTO searchRequestDTO,
+            @PageableDefault(page = 0, size = 10) Pageable pageable) {
+        Page<BookSearchResponseDTO> searchResult = service.search(searchRequestDTO, pageable);
         return ResponseEntity.ok(searchResult);
     }
 }
