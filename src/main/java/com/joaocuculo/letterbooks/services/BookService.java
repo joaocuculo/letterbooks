@@ -1,19 +1,19 @@
 package com.joaocuculo.letterbooks.services;
 
 import com.joaocuculo.letterbooks.client.GoogleBooksClient;
+import com.joaocuculo.letterbooks.dto.external.GoogleBooksSearchResponseDTO;
 import com.joaocuculo.letterbooks.dto.request.BookSearchRequestDTO;
 import com.joaocuculo.letterbooks.dto.response.BookSearchResponseDTO;
-import com.joaocuculo.letterbooks.entities.Book;
 import com.joaocuculo.letterbooks.exceptions.BusinessException;
 import com.joaocuculo.letterbooks.mapper.BookMapper;
 import com.joaocuculo.letterbooks.repositories.BookRepository;
 import com.joaocuculo.letterbooks.specifications.BookSpecifications;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClientException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +31,7 @@ public class BookService {
                     "subject:", BookSearchRequestDTO::subject,
                     "isbn:", BookSearchRequestDTO::isbn
             );
-
+    private static final Logger log = LoggerFactory.getLogger(BookService.class);
     private final BookRepository bookRepository;
     private final GoogleBooksClient googleBooksClient;
 
@@ -46,20 +46,19 @@ public class BookService {
         if (query.isBlank()) throw new BusinessException("É preciso informar ao menos um parãmetro de busca.");
 
         int startIndex = (int) pageable.getOffset();
+        GoogleBooksSearchResponseDTO googleResponse = googleBooksClient.search(query, pageable.getPageSize(), startIndex);
 
-        try {
-            var googleResponse = googleBooksClient.search(query, pageable.getPageSize(), startIndex);
-
-            List<BookSearchResponseDTO> content = googleResponse.items() == null ? List.of() :
-                    googleResponse.items()
-                            .stream()
-                            .map(BookMapper::fromGoogle)
-                            .toList();
-
-            return new PageImpl<>(content, pageable, googleResponse.totalItems());
-        } catch (WebClientException e) {
+        if (googleResponse == null || googleResponse.items() == null) {
+            log.warn("Google Books indisponível. Executando busca local.");
             return searchLocal(searchRequestDTO, pageable);
         }
+
+        List<BookSearchResponseDTO> content = googleResponse.items()
+                .stream()
+                .map(BookMapper::fromGoogle)
+                .toList();
+
+        return new PageImpl<>(content, pageable, googleResponse.totalItems());
     }
 
     private Page<BookSearchResponseDTO> searchLocal(BookSearchRequestDTO searchRequestDTO, Pageable pageable) {
