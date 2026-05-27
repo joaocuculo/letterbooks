@@ -2,7 +2,7 @@ package com.joaocuculo.letterbooks.dto.response;
 
 import java.util.List;
 
-public record BookSearchResponseDTO(
+public record BookResponseDTO(
         String id,
         String title,
         String subtitle,

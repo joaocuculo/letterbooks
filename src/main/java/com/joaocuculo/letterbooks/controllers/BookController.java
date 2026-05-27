@@ -1,12 +1,9 @@
 package com.joaocuculo.letterbooks.controllers;
 
 import com.joaocuculo.letterbooks.dto.request.BookSearchRequestDTO;
-import com.joaocuculo.letterbooks.dto.response.BookSearchResponseDTO;
+import com.joaocuculo.letterbooks.dto.response.BookResponseDTO;
 import com.joaocuculo.letterbooks.services.BookService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.PositiveOrZero;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -24,9 +21,9 @@ public class BookController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Page<BookSearchResponseDTO>> search(@Valid @ModelAttribute BookSearchRequestDTO searchRequestDTO,
-            @PageableDefault(page = 0, size = 10) Pageable pageable) {
-        Page<BookSearchResponseDTO> searchResult = service.search(searchRequestDTO, pageable);
+    public ResponseEntity<Page<BookResponseDTO>> search(@Valid @ModelAttribute BookSearchRequestDTO searchRequestDTO,
+                                                        @PageableDefault(page = 0, size = 10) Pageable pageable) {
+        Page<BookResponseDTO> searchResult = service.search(searchRequestDTO, pageable);
         return ResponseEntity.ok(searchResult);
     }
 }

@@ -1,15 +1,36 @@
 package com.joaocuculo.letterbooks.mapper;
 
 import com.joaocuculo.letterbooks.dto.external.GoogleBooksResponseDTO;
-import com.joaocuculo.letterbooks.dto.response.BookSearchResponseDTO;
+import com.joaocuculo.letterbooks.dto.response.BookResponseDTO;
 import com.joaocuculo.letterbooks.entities.Author;
 import com.joaocuculo.letterbooks.entities.Book;
 import com.joaocuculo.letterbooks.entities.Category;
+import com.joaocuculo.letterbooks.entities.enums.MaturityRating;
+
+import java.util.Locale;
 
 public class BookMapper {
 
-    public static BookSearchResponseDTO fromGoogle(GoogleBooksResponseDTO dto) {
-        return new BookSearchResponseDTO(
+    public static Book ToEntity(GoogleBooksResponseDTO dto) {
+        return new Book(
+                dto.googleBooksId(),
+                dto.volumeInfo().title(),
+                dto.volumeInfo().subtitle(),
+                dto.volumeInfo().description(),
+                dto.volumeInfo().publisher(),
+                dto.volumeInfo().publishedDate(),
+                extractedPublishedYear(dto.volumeInfo().publishedDate()),
+                dto.getPreferredImageUrl(),
+                dto.getThumbnailUrl(),
+                dto.volumeInfo().pageCount(),
+                dto.volumeInfo().language(),
+                dto.getIsbn(),
+                parseMaturityRating(dto.volumeInfo().maturityRating())
+        );
+    }
+
+    public static BookResponseDTO fromGoogle(GoogleBooksResponseDTO dto) {
+        return new BookResponseDTO(
                 dto.googleBooksId(),
                 dto.volumeInfo().title(),
                 dto.volumeInfo().subtitle(),
@@ -28,8 +49,8 @@ public class BookMapper {
         );
     }
 
-    public static BookSearchResponseDTO fromEntity(Book entity) {
-        return new BookSearchResponseDTO(
+    public static BookResponseDTO fromEntity(Book entity) {
+        return new BookResponseDTO(
                 entity.getGoogleBooksId(),
                 entity.getTitle(),
                 entity.getSubtitle(),
@@ -46,5 +67,27 @@ public class BookMapper {
                 entity.getThumbnailUrl(),
                 "LOCAL"
         );
+    }
+
+    private static Integer extractedPublishedYear(String publishedDate) {
+        if (publishedDate == null || publishedDate.length() < 4) {
+            return null;
+        }
+        try {
+            return Integer.parseInt(publishedDate.substring(0, 4));
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    private static MaturityRating parseMaturityRating(String maturityRating) {
+        if (maturityRating == null || maturityRating.isBlank()) {
+            return MaturityRating.NOT_MATURE;
+        }
+        try {
+            return MaturityRating.valueOf(maturityRating.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return MaturityRating.NOT_MATURE;
+        }
     }
 }

@@ -1,9 +1,11 @@
 package com.joaocuculo.letterbooks.services;
 
 import com.joaocuculo.letterbooks.client.GoogleBooksClient;
+import com.joaocuculo.letterbooks.dto.external.GoogleBooksResponseDTO;
 import com.joaocuculo.letterbooks.dto.external.GoogleBooksSearchResponseDTO;
 import com.joaocuculo.letterbooks.dto.request.BookSearchRequestDTO;
-import com.joaocuculo.letterbooks.dto.response.BookSearchResponseDTO;
+import com.joaocuculo.letterbooks.dto.response.BookResponseDTO;
+import com.joaocuculo.letterbooks.entities.Book;
 import com.joaocuculo.letterbooks.exceptions.BusinessException;
 import com.joaocuculo.letterbooks.mapper.BookMapper;
 import com.joaocuculo.letterbooks.repositories.BookRepository;
@@ -40,7 +42,7 @@ public class BookService {
         this.googleBooksClient = googleBooksClient;
     }
 
-    public Page<BookSearchResponseDTO> search(BookSearchRequestDTO searchRequestDTO, Pageable pageable) {
+    public Page<BookResponseDTO> search(BookSearchRequestDTO searchRequestDTO, Pageable pageable) {
         String query = queryBuilder(searchRequestDTO);
 
         if (query.isBlank()) throw new BusinessException("É preciso informar ao menos um parãmetro de busca.");
@@ -53,7 +55,7 @@ public class BookService {
             return searchLocal(searchRequestDTO, pageable);
         }
 
-        List<BookSearchResponseDTO> content = googleResponse.items()
+        List<BookResponseDTO> content = googleResponse.items()
                 .stream()
                 .map(BookMapper::fromGoogle)
                 .toList();
@@ -61,7 +63,7 @@ public class BookService {
         return new PageImpl<>(content, pageable, googleResponse.totalItems());
     }
 
-    private Page<BookSearchResponseDTO> searchLocal(BookSearchRequestDTO searchRequestDTO, Pageable pageable) {
+    private Page<BookResponseDTO> searchLocal(BookSearchRequestDTO searchRequestDTO, Pageable pageable) {
         return bookRepository.findAll(BookSpecifications.withFilters(searchRequestDTO), pageable)
                 .map(BookMapper::fromEntity);
     }
@@ -82,5 +84,16 @@ public class BookService {
         }
 
         return String.join(" ", terms);
+    }
+
+    public Book findOrCreateByGoogleBooksId(String googleBooksId) {
+        return bookRepository.findByGoogleBooksId(googleBooksId)
+                .orElseGet(() -> createFromGoogleBooks(googleBooksId));
+    }
+
+    private Book createFromGoogleBooks(String googleBooksId) {
+        GoogleBooksResponseDTO googleBook = googleBooksClient.findByGoogleBooksId(googleBooksId);
+        Book newBook = BookMapper.ToEntity(googleBook);
+        return bookRepository.save(newBook);
     }
 }
