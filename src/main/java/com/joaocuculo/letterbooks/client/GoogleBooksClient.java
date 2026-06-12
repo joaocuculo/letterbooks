@@ -31,6 +31,7 @@ public class GoogleBooksClient {
                         .queryParam("q", q)
                         .queryParam("maxResults", maxResults != null ? maxResults : 10)
                         .queryParam("startIndex", startIndex != null ? startIndex : 0)
+                        .queryParam("printType", "books")
                         .queryParam("key", apiKey)
                         .build())
                 .retrieve()

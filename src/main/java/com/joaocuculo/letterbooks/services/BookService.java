@@ -5,7 +5,9 @@ import com.joaocuculo.letterbooks.dto.external.GoogleBooksResponseDTO;
 import com.joaocuculo.letterbooks.dto.external.GoogleBooksSearchResponseDTO;
 import com.joaocuculo.letterbooks.dto.request.BookSearchRequestDTO;
 import com.joaocuculo.letterbooks.dto.response.BookResponseDTO;
+import com.joaocuculo.letterbooks.entities.Author;
 import com.joaocuculo.letterbooks.entities.Book;
+import com.joaocuculo.letterbooks.entities.Category;
 import com.joaocuculo.letterbooks.exceptions.BusinessException;
 import com.joaocuculo.letterbooks.mapper.BookMapper;
 import com.joaocuculo.letterbooks.repositories.BookRepository;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 @Service
@@ -35,10 +38,14 @@ public class BookService {
             );
     private static final Logger log = LoggerFactory.getLogger(BookService.class);
     private final BookRepository bookRepository;
+    private final AuthorService authorService;
+    private final CategoryService categoryService;
     private final GoogleBooksClient googleBooksClient;
 
-    public BookService(BookRepository bookRepository, GoogleBooksClient googleBooksClient) {
+    public BookService(BookRepository bookRepository, GoogleBooksClient googleBooksClient, AuthorService authorService, CategoryService categoryService) {
         this.bookRepository = bookRepository;
+        this.authorService = authorService;
+        this.categoryService = categoryService;
         this.googleBooksClient = googleBooksClient;
     }
 
@@ -93,7 +100,13 @@ public class BookService {
 
     private Book createFromGoogleBooks(String googleBooksId) {
         GoogleBooksResponseDTO googleBook = googleBooksClient.findByGoogleBooksId(googleBooksId);
-        Book newBook = BookMapper.ToEntity(googleBook);
+
+        // PROCESSO DE PEGAR OU CRIAR AUTOR E CATEGORIA PARA INSERIR NO LIVRO CADASTRADO.
+        Set<Author> authors = authorService.resolveAuthors(googleBook.volumeInfo().authors());
+        Set<Category> categories = categoryService.resolveCategories(googleBook.volumeInfo().categories());
+
+        Book newBook = BookMapper.ToEntity(googleBook, authors, categories);
+
         return bookRepository.save(newBook);
     }
 }

@@ -8,11 +8,12 @@ import com.joaocuculo.letterbooks.entities.Category;
 import com.joaocuculo.letterbooks.entities.enums.MaturityRating;
 
 import java.util.Locale;
+import java.util.Set;
 
 public class BookMapper {
 
-    public static Book ToEntity(GoogleBooksResponseDTO dto) {
-        return new Book(
+    public static Book ToEntity(GoogleBooksResponseDTO dto, Set<Author> authors, Set<Category> categories) {
+        Book book = new Book(
                 dto.googleBooksId(),
                 dto.volumeInfo().title(),
                 dto.volumeInfo().subtitle(),
@@ -27,6 +28,11 @@ public class BookMapper {
                 dto.getIsbn(),
                 parseMaturityRating(dto.volumeInfo().maturityRating())
         );
+
+        book.getAuthors().addAll(authors);
+        book.getCategories().addAll(categories);
+
+        return book;
     }
 
     public static BookResponseDTO fromGoogle(GoogleBooksResponseDTO dto) {
