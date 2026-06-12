@@ -4,8 +4,7 @@ import com.joaocuculo.letterbooks.entities.Author;
 import com.joaocuculo.letterbooks.repositories.AuthorRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class AuthorService {
@@ -20,8 +19,17 @@ public class AuthorService {
 
     }
 
-    private String normalizeAuthors(String rawAuthor) {
+    private String normalizeAuthor(String rawAuthor) {
+        String normalizedAuthor = rawAuthor.trim();
+        if (normalizedAuthor.contains(",")) {
+            List<String> cleanName = Arrays.stream(rawAuthor.split(",")).map(String::trim).toList();
 
+            List<String> reversedName = new ArrayList<>(cleanName);
+            Collections.reverse(reversedName);
+
+            return String.join("", reversedName);
+        }
+        return normalizedAuthor;
     }
     // vou receber uma lista de string com um ou mais autores
     // tenho que normalizar o que chegar
