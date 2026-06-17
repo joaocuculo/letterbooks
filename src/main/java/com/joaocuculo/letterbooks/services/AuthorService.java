@@ -20,15 +20,22 @@ public class AuthorService {
         if (rawAuthors == null || rawAuthors.isEmpty()) {
             return Set.of();
         }
-        List<String> authorNames = rawAuthors.stream()
-                .map(this::normalizeDisplayName)
-                .toList();
-
-        List<String> normalizedNames = authorNames.stream()
-                .map(this::normalizeKey)
-                .toList();
 
         Set<Author> authors = new HashSet<>();
+        for (String rawAuthor : rawAuthors) {
+            if (rawAuthor == null || rawAuthor.isBlank()) {
+                continue;
+            }
+
+            String displayName = normalizeDisplayName(rawAuthor);
+            String normalizedName = normalizeKey(displayName);
+
+            Author author = findOrCreateAuthor(normalizedName, displayName);
+
+            authors.add(author);
+        }
+
+        return authors;
     }
 
     private Author findOrCreateAuthor(String normalizedName, String name) {
@@ -59,9 +66,4 @@ public class AuthorService {
         }
         return normalizedDisplayName;
     }
-    // (X) vou receber uma lista de string com um ou mais autores
-    // (X) tenho que normalizar o que chegar
-    // ( ) buscar ou criar a partir do autor normalizado
-    // ( ) retornar um set de authors vindos do banco para trazer o nome e o id (um set de repository.save(authors))
-    // (X) caso a lista de autores venha null ou vazia, devemos retornar um Set vazio
 }
