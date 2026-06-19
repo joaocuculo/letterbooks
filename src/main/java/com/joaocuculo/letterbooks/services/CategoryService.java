@@ -4,9 +4,8 @@ import com.joaocuculo.letterbooks.entities.Category;
 import com.joaocuculo.letterbooks.repositories.CategoryRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class CategoryService {
@@ -21,7 +20,21 @@ public class CategoryService {
         if (rawCategories == null || rawCategories.isEmpty()) {
             return Set.of();
         }
-        return Set.of(); // só para não gritar erro
+
+        Set<Category> categories = new HashSet<>();
+        for (String rawCategory : rawCategories) {
+            if (rawCategory == null || rawCategory.isBlank()) {
+                continue;
+            }
+
+            List<String> normalizedNames = normalizeDisplayName(rawCategory);
+            for (String name : normalizedNames) {
+                Category category = findOrCreateCategory(name);
+                categories.add(category);
+            }
+        }
+
+        return categories; // IMPLEMENTAR ATRIBUTO DE NOME DA CATEGORIA NORMALIZADO E OUTRAS QUESTOES E PONTOS DE MELHORIA
     }
 
     private Category findOrCreateCategory(String name) {
@@ -29,16 +42,20 @@ public class CategoryService {
                 .orElseGet(() -> categoryRepository.save(new Category(name)));
     }
 
-    private String normalizeDisplayName(String rawDisplayName) {
+    private List<String> normalizeDisplayName(String rawDisplayName) {
         String normalizedDisplayName = rawDisplayName.trim();
-        if (normalizedDisplayName.contains("/")) {
-            List<String> cleanDisplayName = Arrays.stream(normalizedDisplayName.split("/"))
-                    .map(String::trim)
-                    .toList();
+        List<String> normalizedDisplayNames = new ArrayList<>();
 
-            return "TEM A POSSIBILIDADE DE RETORNAR UMA LISTA DE STRING OU UMA LISTA DE STRING";
+        if (normalizedDisplayName.contains("/")) {
+            Set<String> cleanDisplayNames = Arrays.stream(normalizedDisplayName.split("/"))
+                    .map(String::trim)
+                    .collect(Collectors.toSet()); // transformado em Set para evitar duplicatas
+
+            normalizedDisplayNames.addAll(cleanDisplayNames);
+        } else {
+            normalizedDisplayNames.add(normalizedDisplayName);
         }
 
-        return normalizedDisplayName;
+        return normalizedDisplayNames;
     }
 }
