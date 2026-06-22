@@ -4,6 +4,7 @@ import com.joaocuculo.letterbooks.entities.Category;
 import com.joaocuculo.letterbooks.repositories.CategoryRepository;
 import org.springframework.stereotype.Service;
 
+import java.text.Normalizer;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -40,6 +41,15 @@ public class CategoryService {
     private Category findOrCreateCategory(String name) {
         return categoryRepository.findByName(name)
                 .orElseGet(() -> categoryRepository.save(new Category(name)));
+    }
+
+    private String normalizeKey(String rawName) {
+        return Normalizer.normalize(rawName, Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "") // remove os acentos
+                .replaceAll("[^a-zA-Z0-9\\s]", "") // remove os caracteres especiais
+                .replaceAll("\\s+", " ")
+                .trim()
+                .toLowerCase();
     }
 
     private List<String> normalizeDisplayName(String rawDisplayName) {
