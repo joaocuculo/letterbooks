@@ -30,17 +30,18 @@ public class CategoryService {
 
             List<String> normalizedNames = normalizeDisplayName(rawCategory);
             for (String name : normalizedNames) {
-                Category category = findOrCreateCategory(name);
+                String normalizedName = normalizeKey(name);
+                Category category = findOrCreateCategory(name, normalizedName);
                 categories.add(category);
             }
         }
 
-        return categories; // IMPLEMENTAR ATRIBUTO DE NOME DA CATEGORIA NORMALIZADO E OUTRAS QUESTOES E PONTOS DE MELHORIA
+        return categories;
     }
 
-    private Category findOrCreateCategory(String name) {
-        return categoryRepository.findByName(name)
-                .orElseGet(() -> categoryRepository.save(new Category(name)));
+    private Category findOrCreateCategory(String name, String normalizedName) {
+        return categoryRepository.findByNormalizedName(normalizedName)
+                .orElseGet(() -> categoryRepository.save(new Category(name, normalizedName)));
     }
 
     private String normalizeKey(String rawName) {
