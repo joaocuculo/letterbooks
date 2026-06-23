@@ -1,7 +1,10 @@
 package com.joaocuculo.letterbooks.services;
 
+import com.joaocuculo.letterbooks.dto.response.CategoryResponseDTO;
 import com.joaocuculo.letterbooks.entities.Category;
 import com.joaocuculo.letterbooks.repositories.CategoryRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.text.Normalizer;
@@ -15,6 +18,17 @@ public class CategoryService {
 
     public CategoryService(CategoryRepository categoryRepository) {
         this.categoryRepository = categoryRepository;
+    }
+
+    public Page<CategoryResponseDTO> findAll(Pageable pageable) {
+        Page<Category> categories = categoryRepository.findAll(pageable);
+        return categories.map(
+                category -> new CategoryResponseDTO(
+                        category.getId(),
+                        category.getName(),
+                        category.getNormalizedName()
+                )
+        );
     }
 
     public Set<Category> resolveCategories(List<String> rawCategories) {
