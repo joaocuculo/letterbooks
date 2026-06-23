@@ -21,8 +21,9 @@ public class BookController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Page<BookResponseDTO>> search(@Valid @ModelAttribute BookSearchRequestDTO searchRequestDTO,
-                                                        @PageableDefault(page = 0, size = 10) Pageable pageable) {
+    public ResponseEntity<Page<BookResponseDTO>> search(
+            @Valid @ModelAttribute BookSearchRequestDTO searchRequestDTO,
+            @PageableDefault(page = 0, size = 10) Pageable pageable) {
         Page<BookResponseDTO> searchResult = service.search(searchRequestDTO, pageable);
         return ResponseEntity.ok(searchResult);
     }

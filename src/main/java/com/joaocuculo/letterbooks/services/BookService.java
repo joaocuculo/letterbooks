@@ -100,8 +100,7 @@ public class BookService {
 
     private Book createFromGoogleBooks(String googleBooksId) {
         GoogleBooksResponseDTO googleBook = googleBooksClient.findByGoogleBooksId(googleBooksId);
-
-        // PROCESSO DE PEGAR OU CRIAR AUTOR E CATEGORIA PARA INSERIR NO LIVRO CADASTRADO.
+        
         Set<Author> authors = authorService.resolveAuthors(googleBook.volumeInfo().authors());
         Set<Category> categories = categoryService.resolveCategories(googleBook.volumeInfo().categories());
 
