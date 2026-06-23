@@ -104,7 +104,7 @@ public class BookService {
         Set<Author> authors = authorService.resolveAuthors(googleBook.volumeInfo().authors());
         Set<Category> categories = categoryService.resolveCategories(googleBook.volumeInfo().categories());
 
-        Book newBook = BookMapper.ToEntity(googleBook, authors, categories);
+        Book newBook = BookMapper.toEntity(googleBook, authors, categories);
 
         return bookRepository.save(newBook);
     }

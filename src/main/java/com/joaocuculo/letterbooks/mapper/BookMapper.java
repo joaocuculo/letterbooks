@@ -12,7 +12,7 @@ import java.util.Set;
 
 public class BookMapper {
 
-    public static Book ToEntity(GoogleBooksResponseDTO dto, Set<Author> authors, Set<Category> categories) {
+    public static Book toEntity(GoogleBooksResponseDTO dto, Set<Author> authors, Set<Category> categories) {
         Book book = new Book(
                 dto.googleBooksId(),
                 dto.volumeInfo().title(),
