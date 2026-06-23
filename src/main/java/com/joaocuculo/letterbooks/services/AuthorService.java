@@ -1,7 +1,10 @@
 package com.joaocuculo.letterbooks.services;
 
+import com.joaocuculo.letterbooks.dto.response.AuthorResponseDTO;
 import com.joaocuculo.letterbooks.entities.Author;
 import com.joaocuculo.letterbooks.repositories.AuthorRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.text.Normalizer;
@@ -14,6 +17,17 @@ public class AuthorService {
 
     public AuthorService(AuthorRepository authorRepository) {
         this.authorRepository = authorRepository;
+    }
+
+    public Page<AuthorResponseDTO> findAll(Pageable pageable) {
+        Page<Author> authors = authorRepository.findAll(pageable);
+        return authors.map(
+                author -> new AuthorResponseDTO(
+                        author.getId(),
+                        author.getName(),
+                        author.getNormalizedName()
+                )
+        );
     }
 
     public Set<Author> resolveAuthors(List<String> rawAuthors) {
