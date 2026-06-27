@@ -33,7 +33,11 @@ public class Book implements Serializable {
     private String publisher;
     private String publishedDate;
     private Integer publishedYear;
+
+    @Column(length = 1500)
     private String imageUrl;
+
+    @Column(length = 1500)
     private String thumbnailUrl;
     private Integer pageCount;
     private String language;
