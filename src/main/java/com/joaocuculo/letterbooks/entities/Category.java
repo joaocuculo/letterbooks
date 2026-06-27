@@ -19,6 +19,9 @@ public class Category implements Serializable {
     @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false, unique = true)
+    private String normalizedName;
+
     @JsonIgnore
     @ManyToMany(mappedBy = "categories")
     private Set<Book> books = new HashSet<>();
@@ -26,8 +29,9 @@ public class Category implements Serializable {
     public Category() {
     }
 
-    public Category(String name) {
+    public Category(String name, String normalizedName) {
         this.name = name;
+        this.normalizedName = normalizedName;
     }
 
     public Long getId() {
@@ -40,6 +44,14 @@ public class Category implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getNormalizedName() {
+        return normalizedName;
+    }
+
+    public void setNormalizedName(String normalizedName) {
+        this.normalizedName = normalizedName;
     }
 
     public Set<Book> getBooks() {
