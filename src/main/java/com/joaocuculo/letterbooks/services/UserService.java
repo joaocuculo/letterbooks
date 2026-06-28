@@ -43,7 +43,7 @@ public class UserService {
     }
 
     public UserResponseDTO findById(Long id) {
-        User user = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado."));
+        User user = getByIdOrThrow(id);
         return new UserResponseDTO(
                 user.getId(),
                 user.getName(),
@@ -52,6 +52,10 @@ public class UserService {
                 user.getStatus(),
                 user.getCreatedAt()
         );
+    }
+
+    public User getByIdOrThrow(Long id) {
+        return repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado."));
     }
 
     public RegisterResponseDTO register(UserRequestDTO dto) {
