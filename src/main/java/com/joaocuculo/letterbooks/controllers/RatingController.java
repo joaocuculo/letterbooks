@@ -23,6 +23,12 @@ public class RatingController {
         this.ratingService = ratingService;
     }
 
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<RatingResponseDTO> findById(@PathVariable Long id) {
+        RatingResponseDTO rating = ratingService.findById(id);
+        return ResponseEntity.ok().body(rating);
+    }
+
     @GetMapping(value = "/user/{userId}")
     public ResponseEntity<Page<RatingResponseDTO>> findByUserId(
             @PathVariable Long userId, @PageableDefault(size = 20) Pageable pageable) {
