@@ -1,15 +1,17 @@
 package com.joaocuculo.letterbooks.controllers;
 
+import com.joaocuculo.letterbooks.dto.request.RatingRequestDTO;
 import com.joaocuculo.letterbooks.dto.response.RatingResponseDTO;
 import com.joaocuculo.letterbooks.services.RatingService;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.net.URI;
 
 @RestController
 @RequestMapping(value = "/ratings")
@@ -33,5 +35,12 @@ public class RatingController {
             @PathVariable Long bookId, @PageableDefault(size = 20) Pageable pageable) {
         Page<RatingResponseDTO> ratings = ratingService.findByBookId(bookId, pageable);
         return ResponseEntity.ok().body(ratings);
+    }
+
+    @PostMapping
+    public ResponseEntity<RatingResponseDTO> create(@RequestBody @Valid RatingRequestDTO request) {
+        RatingResponseDTO rating = ratingService.create(request);
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(rating.id()).toUri();
+        return ResponseEntity.created(uri).body(rating);
     }
 }
