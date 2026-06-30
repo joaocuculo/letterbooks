@@ -5,6 +5,7 @@ import com.joaocuculo.letterbooks.dto.response.RatingResponseDTO;
 import com.joaocuculo.letterbooks.entities.Book;
 import com.joaocuculo.letterbooks.entities.Rating;
 import com.joaocuculo.letterbooks.entities.User;
+import com.joaocuculo.letterbooks.exceptions.BusinessException;
 import com.joaocuculo.letterbooks.exceptions.ResourceNotFoundException;
 import com.joaocuculo.letterbooks.repositories.RatingRepository;
 import org.springframework.data.domain.Page;
@@ -69,24 +70,13 @@ public class RatingService {
         );
     }
 
-    public RatingResponseDTO findByUserIdAndBookId(Long userId, Long bookId) {
-        Rating rating = ratingRepository.findByUserIdAndBookId(userId, bookId)
-                .orElseThrow(() -> new ResourceNotFoundException("Avaliação não encontrada."));
-
-        return new RatingResponseDTO(
-                rating.getId(),
-                rating.getScore(),
-                rating.getComment(),
-                rating.getCreatedAt(),
-                rating.getUpdatedAt(),
-                rating.getUser(),
-                rating.getBook()
-        );
-    }
-
     public RatingResponseDTO create(RatingRequestDTO dto) {
         User user = userService.getByIdOrThrow(dto.userId());
         Book book = bookService.findOrCreateByGoogleBooksId(dto.googleBooksId());
+
+        if (ratingRepository.existsByUserIdAndBookId(user.getId(), book.getId()).isPresent()) {
+            throw new BusinessException("O usuário já avaliou esse livro.");
+        }
 
         Rating rating = ratingRepository.save(new Rating(dto.score(), dto.comment(), user, book));
 
