@@ -10,6 +10,7 @@ import com.joaocuculo.letterbooks.entities.enums.UserStatus;
 import com.joaocuculo.letterbooks.exceptions.BusinessException;
 import com.joaocuculo.letterbooks.exceptions.DatabaseException;
 import com.joaocuculo.letterbooks.exceptions.ResourceNotFoundException;
+import com.joaocuculo.letterbooks.mapper.UserMapper;
 import com.joaocuculo.letterbooks.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -31,27 +32,12 @@ public class UserService {
 
     public Page<UserResponseDTO> findAll(Pageable pageable) {
         Page<User> users = repository.findAll(pageable);
-        return users.map(
-                user -> new UserResponseDTO(
-                        user.getId(),
-                        user.getName(),
-                        user.getEmail(),
-                        user.getRole(),
-                        user.getStatus(),
-                        user.getCreatedAt())
-        );
+        return users.map(UserMapper::toResponseDTO);
     }
 
     public UserResponseDTO findById(Long id) {
         User user = getByIdOrThrow(id);
-        return new UserResponseDTO(
-                user.getId(),
-                user.getName(),
-                user.getEmail(),
-                user.getRole(),
-                user.getStatus(),
-                user.getCreatedAt()
-        );
+        return UserMapper.toResponseDTO(user);
     }
 
     public User getByIdOrThrow(Long id) {
@@ -103,14 +89,7 @@ public class UserService {
         user.setEmail(dto.email());
         repository.save(user);
 
-        return new UserResponseDTO(
-                user.getId(),
-                user.getName(),
-                user.getEmail(),
-                user.getRole(),
-                user.getStatus(),
-                user.getCreatedAt()
-        );
+        return UserMapper.toResponseDTO(user);
     }
 
     public UserResponseDTO updateRoleAndStatus(Long id, UserStatusUpdateDTO dto) {
@@ -119,14 +98,7 @@ public class UserService {
             user.setRole(dto.role());
             user.setStatus(dto.status());
             repository.save(user);
-            return new UserResponseDTO(
-                    user.getId(),
-                    user.getName(),
-                    user.getEmail(),
-                    user.getRole(),
-                    user.getStatus(),
-                    user.getCreatedAt()
-            );
+            return UserMapper.toResponseDTO(user);
         } catch (EntityNotFoundException e) {
             throw new ResourceNotFoundException("Usuário com id " + id + " não encotrado.");
         }
