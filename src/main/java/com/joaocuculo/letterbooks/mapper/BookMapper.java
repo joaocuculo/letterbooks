@@ -35,7 +35,7 @@ public class BookMapper {
         return book;
     }
 
-    public static BookResponseDTO fromGoogle(GoogleBooksResponseDTO dto) {
+    public static BookResponseDTO toResponseDTO(GoogleBooksResponseDTO dto) {
         return new BookResponseDTO(
                 dto.googleBooksId(),
                 dto.volumeInfo().title(),
@@ -55,7 +55,7 @@ public class BookMapper {
         );
     }
 
-    public static BookResponseDTO fromEntity(Book entity) {
+    public static BookResponseDTO toResponseDTO(Book entity) {
         return new BookResponseDTO(
                 entity.getGoogleBooksId(),
                 entity.getTitle(),

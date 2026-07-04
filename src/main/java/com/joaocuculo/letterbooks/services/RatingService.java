@@ -8,7 +8,6 @@ import com.joaocuculo.letterbooks.entities.User;
 import com.joaocuculo.letterbooks.exceptions.BusinessException;
 import com.joaocuculo.letterbooks.exceptions.DatabaseException;
 import com.joaocuculo.letterbooks.exceptions.ResourceNotFoundException;
-import com.joaocuculo.letterbooks.mapper.BookMapper;
 import com.joaocuculo.letterbooks.mapper.RatingMapper;
 import com.joaocuculo.letterbooks.repositories.RatingRepository;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -32,17 +31,17 @@ public class RatingService {
     public RatingResponseDTO findById(Long id) {
         Rating rating = ratingRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Avaliação não encontrada."));
-        return RatingMapper.fromEntity(rating);
+        return RatingMapper.toResponseDTO(rating);
     }
 
     public Page<RatingResponseDTO> findByUserId(Long userId, Pageable pageable) {
         Page<Rating> ratings = ratingRepository.findByUserId(userId, pageable);
-        return ratings.map(RatingMapper::fromEntity);
+        return ratings.map(RatingMapper::toResponseDTO);
     }
 
     public Page<RatingResponseDTO> findByBookId(Long bookId, Pageable pageable) {
         Page<Rating> ratings = ratingRepository.findByBookId(bookId, pageable);
-        return ratings.map(RatingMapper::fromEntity);
+        return ratings.map(RatingMapper::toResponseDTO);
     }
 
     public RatingResponseDTO create(RatingRequestDTO dto) {
@@ -56,7 +55,7 @@ public class RatingService {
         Rating rating = new Rating(dto.score(), dto.comment(), user, book);
         rating = ratingRepository.save(rating);
 
-        return RatingMapper.fromEntity(rating);
+        return RatingMapper.toResponseDTO(rating);
     }
 
     public void delete(Long id) {

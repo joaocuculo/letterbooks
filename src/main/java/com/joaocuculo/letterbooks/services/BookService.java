@@ -64,7 +64,7 @@ public class BookService {
 
         List<BookResponseDTO> content = googleResponse.items()
                 .stream()
-                .map(BookMapper::fromGoogle)
+                .map(BookMapper::toResponseDTO)
                 .toList();
 
         return new PageImpl<>(content, pageable, googleResponse.totalItems());
@@ -72,7 +72,7 @@ public class BookService {
 
     private Page<BookResponseDTO> searchLocal(BookSearchRequestDTO searchRequestDTO, Pageable pageable) {
         return bookRepository.findAll(BookSpecifications.withFilters(searchRequestDTO), pageable)
-                .map(BookMapper::fromEntity);
+                .map(BookMapper::toResponseDTO);
     }
 
     private String queryBuilder(BookSearchRequestDTO dto) {

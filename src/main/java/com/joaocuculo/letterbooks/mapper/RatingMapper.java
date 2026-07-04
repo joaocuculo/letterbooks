@@ -5,7 +5,7 @@ import com.joaocuculo.letterbooks.entities.Rating;
 
 public class RatingMapper {
 
-    public static RatingResponseDTO fromEntity(Rating rating) {
+    public static RatingResponseDTO toResponseDTO(Rating rating) {
         return new RatingResponseDTO(
                 rating.getId(),
                 rating.getScore(),
