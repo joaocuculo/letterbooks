@@ -1,6 +1,7 @@
 package com.joaocuculo.letterbooks.services;
 
 import com.joaocuculo.letterbooks.dto.request.RatingRequestDTO;
+import com.joaocuculo.letterbooks.dto.request.RatingUpdateDTO;
 import com.joaocuculo.letterbooks.dto.response.RatingResponseDTO;
 import com.joaocuculo.letterbooks.entities.Book;
 import com.joaocuculo.letterbooks.entities.Rating;
@@ -10,7 +11,9 @@ import com.joaocuculo.letterbooks.exceptions.DatabaseException;
 import com.joaocuculo.letterbooks.exceptions.ResourceNotFoundException;
 import com.joaocuculo.letterbooks.mapper.RatingMapper;
 import com.joaocuculo.letterbooks.repositories.RatingRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -52,20 +55,28 @@ public class RatingService {
             throw new BusinessException("O usuário já avaliou esse livro.");
         }
 
-        Rating rating = new Rating(dto.score(), dto.comment(), user, book);
-        rating = ratingRepository.save(rating);
+        Rating rating = ratingRepository.save(new Rating(dto.score(), dto.comment(), user, book));
 
         return RatingMapper.toResponseDTO(rating);
     }
 
     public void delete(Long id) {
-        if (!ratingRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Avaliação não encontrada.");
-        }
         try {
             ratingRepository.deleteById(id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new ResourceNotFoundException("Avaliação não encontrada.");
         } catch (DataIntegrityViolationException e) {
             throw new DatabaseException(e.getMessage());
+        }
+    }
+
+    public RatingResponseDTO update(Long id, RatingUpdateDTO dto) {
+        try {
+            Rating entity = ratingRepository.getReferenceById(id);
+            RatingMapper.updateEntity(entity, dto);
+            return RatingMapper.toResponseDTO(ratingRepository.save(entity));
+        } catch (EntityNotFoundException e) {
+            throw new ResourceNotFoundException("Avaliação não encontrada.");
         }
     }
 }
