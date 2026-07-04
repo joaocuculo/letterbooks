@@ -4,6 +4,8 @@ import com.joaocuculo.letterbooks.exceptions.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -42,13 +44,39 @@ public class RestExceptionHandler {
         return errorBuilder(e, request, "Expired token.", HttpStatus.UNAUTHORIZED);
     }
 
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ValidationError> validation(MethodArgumentNotValidException e, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        ValidationError err = new ValidationError(
+                Instant.now(),
+                status.value(),
+                "Request validation failed.",
+                "Um ou mais campos são inválidos.",
+                request.getRequestURI()
+        );
+
+        for (FieldError fieldError : e.getBindingResult().getFieldErrors()) {
+            err.addError(
+                    fieldError.getField(),
+                    fieldError.getDefaultMessage()
+            );
+        }
+
+        return ResponseEntity.status(status).body(err);
+    }
+
     private ResponseEntity<StandardError> errorBuilder(
             Exception e,
             HttpServletRequest request,
             String error,
             HttpStatus status
     ) {
-        StandardError err = new StandardError(Instant.now(), status.value(), error, e.getMessage(), request.getRequestURI());
+        StandardError err = new StandardError(
+                Instant.now(),
+                status.value(),
+                error,
+                e.getMessage(),
+                request.getRequestURI());
         return ResponseEntity.status(status).body(err);
     }
 }
