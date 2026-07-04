@@ -14,8 +14,8 @@ public class RatingMapper {
                 rating.getComment(),
                 rating.getCreatedAt(),
                 rating.getUpdatedAt(),
-                rating.getUser(),
-                rating.getBook()
+                UserMapper.toSummaryDTO(rating.getUser()),
+                BookMapper.toSummaryDTO(rating.getBook())
         );
     }
 

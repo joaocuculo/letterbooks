@@ -2,12 +2,12 @@ package com.joaocuculo.letterbooks.mapper;
 
 import com.joaocuculo.letterbooks.dto.external.GoogleBooksResponseDTO;
 import com.joaocuculo.letterbooks.dto.response.BookResponseDTO;
+import com.joaocuculo.letterbooks.dto.response.BookSummaryDTO;
 import com.joaocuculo.letterbooks.entities.Author;
 import com.joaocuculo.letterbooks.entities.Book;
 import com.joaocuculo.letterbooks.entities.Category;
 import com.joaocuculo.letterbooks.entities.enums.MaturityRating;
 
-import java.util.Locale;
 import java.util.Set;
 
 public class BookMapper {
@@ -55,23 +55,31 @@ public class BookMapper {
         );
     }
 
-    public static BookResponseDTO toResponseDTO(Book entity) {
+    public static BookResponseDTO toResponseDTO(Book book) {
         return new BookResponseDTO(
-                entity.getGoogleBooksId(),
-                entity.getTitle(),
-                entity.getSubtitle(),
-                entity.getAuthors().stream().map(Author::getName).toList(),
-                entity.getPublisher(),
-                entity.getPublishedDate(),
-                entity.getCategories().stream().map(Category::getName).toList(),
-                entity.getDescription(),
-                entity.getPageCount(),
-                entity.getLanguage(),
-                entity.getIsbn(),
-                entity.getMaturityRating().toString(),
-                entity.getImageUrl(),
-                entity.getThumbnailUrl(),
+                book.getGoogleBooksId(),
+                book.getTitle(),
+                book.getSubtitle(),
+                book.getAuthors().stream().map(Author::getName).toList(),
+                book.getPublisher(),
+                book.getPublishedDate(),
+                book.getCategories().stream().map(Category::getName).toList(),
+                book.getDescription(),
+                book.getPageCount(),
+                book.getLanguage(),
+                book.getIsbn(),
+                book.getMaturityRating().toString(),
+                book.getImageUrl(),
+                book.getThumbnailUrl(),
                 "LOCAL"
+        );
+    }
+
+    public static BookSummaryDTO toSummaryDTO(Book book) {
+        return new BookSummaryDTO(
+                book.getId(),
+                book.getTitle(),
+                book.getThumbnailUrl()
         );
     }
 
