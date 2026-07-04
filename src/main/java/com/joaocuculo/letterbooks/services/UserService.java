@@ -82,7 +82,7 @@ public class UserService {
 
     public void delete(Long id) {
         if (!repository.existsById(id)) {
-            throw new ResourceNotFoundException("Usuário com id " + id + " não encotrado.");
+            throw new ResourceNotFoundException("Usuário com id " + id + " não encontrado.");
         }
         try {
             repository.deleteById(id);

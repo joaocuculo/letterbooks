@@ -6,10 +6,12 @@ import com.joaocuculo.letterbooks.entities.Book;
 import com.joaocuculo.letterbooks.entities.Rating;
 import com.joaocuculo.letterbooks.entities.User;
 import com.joaocuculo.letterbooks.exceptions.BusinessException;
+import com.joaocuculo.letterbooks.exceptions.DatabaseException;
 import com.joaocuculo.letterbooks.exceptions.ResourceNotFoundException;
 import com.joaocuculo.letterbooks.mapper.BookMapper;
 import com.joaocuculo.letterbooks.mapper.RatingMapper;
 import com.joaocuculo.letterbooks.repositories.RatingRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -47,12 +49,24 @@ public class RatingService {
         User user = userService.getByIdOrThrow(dto.userId());
         Book book = bookService.findOrCreateByGoogleBooksId(dto.googleBooksId());
 
-        if (ratingRepository.existsByUserIdAndBookId(user.getId(), book.getId()).isPresent()) {
+        if (ratingRepository.existsByUserIdAndBookId(user.getId(), book.getId())) {
             throw new BusinessException("O usuário já avaliou esse livro.");
         }
 
-        Rating rating = ratingRepository.save(new Rating(dto.score(), dto.comment(), user, book));
+        Rating rating = new Rating(dto.score(), dto.comment(), user, book);
+        rating = ratingRepository.save(rating);
 
         return RatingMapper.fromEntity(rating);
+    }
+
+    public void delete(Long id) {
+        if (!ratingRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Avaliação não encontrada.");
+        }
+        try {
+            ratingRepository.deleteById(id);
+        } catch (DataIntegrityViolationException e) {
+            throw new DatabaseException(e.getMessage());
+        }
     }
 }

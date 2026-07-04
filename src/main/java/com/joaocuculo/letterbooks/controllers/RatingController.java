@@ -49,4 +49,10 @@ public class RatingController {
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(rating.id()).toUri();
         return ResponseEntity.created(uri).body(rating);
     }
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        ratingService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
 }
