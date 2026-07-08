@@ -44,6 +44,11 @@ public class RestExceptionHandler {
         return errorBuilder(e, request, "Expired token.", HttpStatus.UNAUTHORIZED);
     }
 
+    @ExceptionHandler(ExternalServiceException.class)
+    public ResponseEntity<StandardError> externalService(ExternalServiceException e, HttpServletRequest request) {
+        return errorBuilder(e, request, "External service error.", HttpStatus.BAD_GATEWAY);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ValidationError> validation(MethodArgumentNotValidException e, HttpServletRequest request) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
