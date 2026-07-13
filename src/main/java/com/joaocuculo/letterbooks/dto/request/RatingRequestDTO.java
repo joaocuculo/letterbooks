@@ -11,8 +11,6 @@ public record RatingRequestDTO(
         @Max(value = 5, message = "A pontuação não pode ser maior que 5.")
         Integer score,
         String comment,
-        @NotNull(message = "ID do usuário é obrigatório.")
-        Long userId,
         @NotBlank(message = "ID do livro no Google Books é obrigatório.")
         String googleBooksId
 ) {

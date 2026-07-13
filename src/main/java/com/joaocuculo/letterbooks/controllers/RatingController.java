@@ -1,5 +1,6 @@
 package com.joaocuculo.letterbooks.controllers;
 
+import com.joaocuculo.letterbooks.config.JWTUserData;
 import com.joaocuculo.letterbooks.dto.request.RatingRequestDTO;
 import com.joaocuculo.letterbooks.dto.request.RatingUpdateDTO;
 import com.joaocuculo.letterbooks.dto.response.RatingResponseDTO;
@@ -9,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -30,10 +32,10 @@ public class RatingController {
         return ResponseEntity.ok().body(rating);
     }
 
-    @GetMapping(value = "/user/{userId}")
+    @GetMapping(value = "/user")
     public ResponseEntity<Page<RatingResponseDTO>> findByUserId(
-            @PathVariable Long userId, @PageableDefault(size = 20) Pageable pageable) {
-        Page<RatingResponseDTO> ratings = ratingService.findByUserId(userId, pageable);
+            @AuthenticationPrincipal JWTUserData user, @PageableDefault(size = 20) Pageable pageable) {
+        Page<RatingResponseDTO> ratings = ratingService.findByUserId(user.userId(), pageable);
         return ResponseEntity.ok().body(ratings);
     }
 
@@ -45,8 +47,8 @@ public class RatingController {
     }
 
     @PostMapping
-    public ResponseEntity<RatingResponseDTO> create(@RequestBody @Valid RatingRequestDTO request) {
-        RatingResponseDTO rating = ratingService.create(request);
+    public ResponseEntity<RatingResponseDTO> create(@AuthenticationPrincipal JWTUserData user, @RequestBody @Valid RatingRequestDTO request) {
+        RatingResponseDTO rating = ratingService.create(user.userId(), request);
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")

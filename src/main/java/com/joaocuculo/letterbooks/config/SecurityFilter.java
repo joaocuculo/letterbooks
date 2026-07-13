@@ -14,11 +14,11 @@ import java.io.IOException;
 import java.util.Optional;
 
 @Component
-public class SecuritytFilter extends OncePerRequestFilter {
+public class SecurityFilter extends OncePerRequestFilter {
 
     private final TokenConfig tokenConfig;
 
-    public SecuritytFilter(TokenConfig tokenConfig) {
+    public SecurityFilter(TokenConfig tokenConfig) {
         this.tokenConfig = tokenConfig;
     }
 

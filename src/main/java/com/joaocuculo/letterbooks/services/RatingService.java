@@ -47,8 +47,8 @@ public class RatingService {
         return ratings.map(RatingMapper::toResponseDTO);
     }
 
-    public RatingResponseDTO create(RatingRequestDTO dto) {
-        User user = userService.getByIdOrThrow(dto.userId());
+    public RatingResponseDTO create(Long userId, RatingRequestDTO dto) {
+        User user = userService.getByIdOrThrow(userId);
         Book book = bookService.findOrCreateByGoogleBooksId(dto.googleBooksId());
 
         if (ratingRepository.existsByUserIdAndBookId(user.getId(), book.getId())) {
