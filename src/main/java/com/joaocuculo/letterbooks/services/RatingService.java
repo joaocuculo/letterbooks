@@ -53,7 +53,7 @@ public class RatingService {
         Book book = bookService.findOrCreateByGoogleBooksId(dto.googleBooksId());
 
         if (ratingRepository.existsByUserIdAndBookId(user.getId(), book.getId())) {
-            throw new BusinessException("O usuário já avaliou esse livro.");
+            throw new BusinessException("Você já avaliou esse livro.");
         }
 
         Rating rating = ratingRepository.save(new Rating(dto.score(), dto.comment(), user, book));

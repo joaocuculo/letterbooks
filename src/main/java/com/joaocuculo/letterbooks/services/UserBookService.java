@@ -1,8 +1,12 @@
 package com.joaocuculo.letterbooks.services;
 
+import com.joaocuculo.letterbooks.dto.request.UserBookRequestDTO;
 import com.joaocuculo.letterbooks.dto.response.UserBookResponseDTO;
+import com.joaocuculo.letterbooks.entities.Book;
+import com.joaocuculo.letterbooks.entities.User;
 import com.joaocuculo.letterbooks.entities.UserBook;
 import com.joaocuculo.letterbooks.entities.enums.UserBookStatus;
+import com.joaocuculo.letterbooks.exceptions.BusinessException;
 import com.joaocuculo.letterbooks.mapper.UserBookMapper;
 import com.joaocuculo.letterbooks.repositories.UserBookRepository;
 import org.springframework.data.domain.Page;
@@ -13,9 +17,13 @@ import org.springframework.stereotype.Service;
 public class UserBookService {
 
     private final UserBookRepository userBookRepository;
+    private final UserService userService;
+    private final BookService bookService;
 
-    public UserBookService(UserBookRepository userBookRepository) {
+    public UserBookService(UserBookRepository userBookRepository, UserService userService, BookService bookService) {
         this.userBookRepository = userBookRepository;
+        this.userService = userService;
+        this.bookService = bookService;
     }
 
     public Page<UserBookResponseDTO> findByUserId(Long id, UserBookStatus status, Pageable pageable) {
@@ -26,5 +34,27 @@ public class UserBookService {
             userBooks = userBookRepository.findByUserIdAndStatus(id, status, pageable);
         }
         return userBooks.map(UserBookMapper::toResponseDTO);
+    }
+
+    public UserBookResponseDTO create(Long userId, UserBookRequestDTO dto) {
+        User user = userService.getByIdOrThrow(userId);
+        Book book = bookService.findOrCreateByGoogleBooksId(dto.googleBooksId());
+
+        if (userBookRepository.existsByUserIdAndBookId(user.getId(), book.getId())) {
+            throw new BusinessException("Você já possui relação com esse livro.");
+        }
+
+        UserBook userBook = userBookRepository.save(
+                new UserBook(
+                        dto.status(),
+                        dto.isFavorite(),
+                        dto.currentPage(),
+                        dto.startedAt(),
+                        dto.finishedAt(),
+                        user,
+                        book
+                ));
+
+        return UserBookMapper.toResponseDTO(userBook);
     }
 }

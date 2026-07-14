@@ -11,4 +11,5 @@ import org.springframework.stereotype.Repository;
 public interface UserBookRepository extends JpaRepository<UserBook, Long> {
     Page<UserBook> findByUserId(Long userId, Pageable pageable);
     Page<UserBook> findByUserIdAndStatus(Long userId, UserBookStatus status, Pageable pageable);
+    boolean existsByUserIdAndBookId(Long userId, Long bookId);
 }
