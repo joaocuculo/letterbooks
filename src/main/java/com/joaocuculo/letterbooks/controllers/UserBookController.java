@@ -38,6 +38,12 @@ public class UserBookController {
         UserBookResponseDTO userBook = userBookService.create(user.userId(), request);
         return ResponseEntity.status(HttpStatus.CREATED).body(userBook);
     }
-    //delete
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id, @AuthenticationPrincipal JWTUserData user) {
+        userBookService.delete(id, user.userId());
+        return ResponseEntity.noContent().build();
+    }
+
     //update
 }
