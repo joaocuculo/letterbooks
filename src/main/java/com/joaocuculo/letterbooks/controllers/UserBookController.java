@@ -1,16 +1,17 @@
 package com.joaocuculo.letterbooks.controllers;
 
+import com.joaocuculo.letterbooks.config.JWTUserData;
+import com.joaocuculo.letterbooks.dto.request.UserBookRequestDTO;
 import com.joaocuculo.letterbooks.dto.response.UserBookResponseDTO;
 import com.joaocuculo.letterbooks.entities.enums.UserBookStatus;
 import com.joaocuculo.letterbooks.services.UserBookService;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(value = "/user-books")
@@ -31,7 +32,10 @@ public class UserBookController {
         return ResponseEntity.ok().body(userBooks);
     }
 
-    //create
+    @PostMapping
+    public ResponseEntity<UserBookResponseDTO> create(@AuthenticationPrincipal JWTUserData user, @RequestBody @Valid UserBookRequestDTO request) {
+        return null;
+    }
     //delete
     //update
 }
