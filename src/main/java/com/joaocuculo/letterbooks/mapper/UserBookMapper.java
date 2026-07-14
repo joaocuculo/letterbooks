@@ -1,6 +1,10 @@
 package com.joaocuculo.letterbooks.mapper;
 
+import com.joaocuculo.letterbooks.dto.request.UserBookRequestDTO;
+import com.joaocuculo.letterbooks.dto.request.UserBookUpdateDTO;
 import com.joaocuculo.letterbooks.dto.response.UserBookResponseDTO;
+import com.joaocuculo.letterbooks.entities.Book;
+import com.joaocuculo.letterbooks.entities.User;
 import com.joaocuculo.letterbooks.entities.UserBook;
 
 public class UserBookMapper {
@@ -18,5 +22,25 @@ public class UserBookMapper {
                 userBook.getCreatedAt(),
                 userBook.getUpdatedAt()
         );
+    }
+
+    public static UserBook toEntity(UserBookRequestDTO dto, User user, Book book) {
+        return new UserBook(
+                dto.status(),
+                dto.isFavorite(),
+                dto.currentPage(),
+                dto.startedAt(),
+                dto.finishedAt(),
+                user,
+                book
+        );
+    }
+
+    public static void updateEntity(UserBook userBook, UserBookUpdateDTO dto) {
+        userBook.setStatus(dto.status());
+        userBook.setFavorite(dto.isFavorite());
+        userBook.setCurrentPage(dto.currentPage());
+        userBook.setStartedAt(dto.startedAt());
+        userBook.setFinishedAt(dto.finishedAt());
     }
 }

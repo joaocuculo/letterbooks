@@ -1,6 +1,7 @@
 package com.joaocuculo.letterbooks.services;
 
 import com.joaocuculo.letterbooks.dto.request.UserBookRequestDTO;
+import com.joaocuculo.letterbooks.dto.request.UserBookUpdateDTO;
 import com.joaocuculo.letterbooks.dto.response.UserBookResponseDTO;
 import com.joaocuculo.letterbooks.entities.Book;
 import com.joaocuculo.letterbooks.entities.User;
@@ -30,12 +31,12 @@ public class UserBookService {
         this.bookService = bookService;
     }
 
-    public Page<UserBookResponseDTO> findByUserId(Long id, UserBookStatus status, Pageable pageable) {
+    public Page<UserBookResponseDTO> findByUserId(Long userId, UserBookStatus status, Pageable pageable) {
         Page<UserBook> userBooks;
         if (status == null) {
-            userBooks = userBookRepository.findByUserId(id, pageable);
+            userBooks = userBookRepository.findByUserId(userId, pageable);
         } else {
-            userBooks = userBookRepository.findByUserIdAndStatus(id, status, pageable);
+            userBooks = userBookRepository.findByUserIdAndStatus(userId, status, pageable);
         }
         return userBooks.map(UserBookMapper::toResponseDTO);
     }
@@ -48,16 +49,7 @@ public class UserBookService {
             throw new BusinessException("Você já possui relação com esse livro.");
         }
 
-        UserBook userBook = userBookRepository.save(
-                new UserBook(
-                        dto.status(),
-                        dto.isFavorite(),
-                        dto.currentPage(),
-                        dto.startedAt(),
-                        dto.finishedAt(),
-                        user,
-                        book
-                ));
+        UserBook userBook = userBookRepository.save(UserBookMapper.toEntity(dto, user, book));
 
         return UserBookMapper.toResponseDTO(userBook);
     }
@@ -75,5 +67,17 @@ public class UserBookService {
         } catch (DataIntegrityViolationException e) {
             throw new DatabaseException(e.getMessage());
         }
+    }
+
+    public UserBookResponseDTO update(Long id, UserBookUpdateDTO dto, Long userId) {
+        UserBook userBook = userBookRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Relação não encontrada."));
+
+        if (!userBook.getUser().getId().equals(userId)) {
+            throw new ForbiddenException("Você não tem permissão para alterar essa relação.");
+        }
+
+        UserBookMapper.updateEntity(userBook, dto);
+        return UserBookMapper.toResponseDTO(userBookRepository.save(userBook));
     }
 }

@@ -2,6 +2,7 @@ package com.joaocuculo.letterbooks.controllers;
 
 import com.joaocuculo.letterbooks.config.JWTUserData;
 import com.joaocuculo.letterbooks.dto.request.UserBookRequestDTO;
+import com.joaocuculo.letterbooks.dto.request.UserBookUpdateDTO;
 import com.joaocuculo.letterbooks.dto.response.UserBookResponseDTO;
 import com.joaocuculo.letterbooks.entities.enums.UserBookStatus;
 import com.joaocuculo.letterbooks.services.UserBookService;
@@ -26,10 +27,10 @@ public class UserBookController {
 
     @GetMapping(value = "/user/{userId}")
     public ResponseEntity<Page<UserBookResponseDTO>> findByUserId(
-            @PathVariable Long id,
-            UserBookStatus status,
+            @PathVariable Long userId,
+            @RequestParam(required = false) UserBookStatus status,
             @PageableDefault(size = 20) Pageable pageable) {
-        Page<UserBookResponseDTO> userBooks = userBookService.findByUserId(id, status, pageable);
+        Page<UserBookResponseDTO> userBooks = userBookService.findByUserId(userId, status, pageable);
         return ResponseEntity.ok().body(userBooks);
     }
 
@@ -45,5 +46,10 @@ public class UserBookController {
         return ResponseEntity.noContent().build();
     }
 
-    //update
+    @PatchMapping(value = "/{id}")
+    public ResponseEntity<UserBookResponseDTO> update(
+            @PathVariable Long id, @RequestBody @Valid UserBookUpdateDTO request, @AuthenticationPrincipal JWTUserData user) {
+        UserBookResponseDTO userBook = userBookService.update(id, request, user.userId());
+        return ResponseEntity.ok().body(userBook);
+    }
 }
