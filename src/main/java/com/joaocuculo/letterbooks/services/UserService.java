@@ -10,9 +10,11 @@ import com.joaocuculo.letterbooks.entities.enums.UserStatus;
 import com.joaocuculo.letterbooks.exceptions.BusinessException;
 import com.joaocuculo.letterbooks.exceptions.DatabaseException;
 import com.joaocuculo.letterbooks.exceptions.ResourceNotFoundException;
+import com.joaocuculo.letterbooks.mapper.UserMapper;
 import com.joaocuculo.letterbooks.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,27 +33,16 @@ public class UserService {
 
     public Page<UserResponseDTO> findAll(Pageable pageable) {
         Page<User> users = repository.findAll(pageable);
-        return users.map(
-                user -> new UserResponseDTO(
-                        user.getId(),
-                        user.getName(),
-                        user.getEmail(),
-                        user.getRole(),
-                        user.getStatus(),
-                        user.getCreatedAt())
-        );
+        return users.map(UserMapper::toResponseDTO);
     }
 
     public UserResponseDTO findById(Long id) {
-        User user = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado."));
-        return new UserResponseDTO(
-                user.getId(),
-                user.getName(),
-                user.getEmail(),
-                user.getRole(),
-                user.getStatus(),
-                user.getCreatedAt()
-        );
+        User user = getByIdOrThrow(id);
+        return UserMapper.toResponseDTO(user);
+    }
+
+    public User getByIdOrThrow(Long id) {
+        return repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado."));
     }
 
     public RegisterResponseDTO register(UserRequestDTO dto) {
@@ -77,11 +68,10 @@ public class UserService {
     }
 
     public void delete(Long id) {
-        if (!repository.existsById(id)) {
-            throw new ResourceNotFoundException("Usuário com id " + id + " não encotrado.");
-        }
         try {
             repository.deleteById(id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new ResourceNotFoundException("Usuário com id " + id + " não encontrado.");
         } catch (DataIntegrityViolationException e) {
             throw new DatabaseException(e.getMessage());
         }
@@ -99,14 +89,7 @@ public class UserService {
         user.setEmail(dto.email());
         repository.save(user);
 
-        return new UserResponseDTO(
-                user.getId(),
-                user.getName(),
-                user.getEmail(),
-                user.getRole(),
-                user.getStatus(),
-                user.getCreatedAt()
-        );
+        return UserMapper.toResponseDTO(user);
     }
 
     public UserResponseDTO updateRoleAndStatus(Long id, UserStatusUpdateDTO dto) {
@@ -115,14 +98,7 @@ public class UserService {
             user.setRole(dto.role());
             user.setStatus(dto.status());
             repository.save(user);
-            return new UserResponseDTO(
-                    user.getId(),
-                    user.getName(),
-                    user.getEmail(),
-                    user.getRole(),
-                    user.getStatus(),
-                    user.getCreatedAt()
-            );
+            return UserMapper.toResponseDTO(user);
         } catch (EntityNotFoundException e) {
             throw new ResourceNotFoundException("Usuário com id " + id + " não encotrado.");
         }

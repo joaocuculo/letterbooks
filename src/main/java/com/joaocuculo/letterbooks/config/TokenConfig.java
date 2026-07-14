@@ -6,6 +6,7 @@ import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.joaocuculo.letterbooks.entities.User;
+import com.joaocuculo.letterbooks.entities.enums.UserRole;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -25,6 +26,7 @@ public class TokenConfig {
                     .withIssuer("letterbooks")
                     .withSubject(user.getId().toString())
                     .withClaim("userEmail", user.getEmail())
+                    .withClaim("userRole", user.getRole().name())
                     .withExpiresAt(Instant.now().plusSeconds(60 * 60 * 2)) // 2 horas
                     .withIssuedAt(Instant.now())
                     .sign(algorithm);
@@ -42,7 +44,8 @@ public class TokenConfig {
                     .verify(token);
             return Optional.of(new JWTUserData(
                     Long.parseLong(decode.getSubject()),
-                    decode.getClaim("userEmail").asString()
+                    decode.getClaim("userEmail").asString(),
+                    decode.getClaim("userRole").as(UserRole.class)
             ));
         } catch (JWTVerificationException e) {
             return Optional.empty();

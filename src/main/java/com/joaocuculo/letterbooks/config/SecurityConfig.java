@@ -24,10 +24,10 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private final SecuritytFilter securitytFilter;
+    private final SecurityFilter securityFilter;
 
-    public SecurityConfig(SecuritytFilter securitytFilter) {
-        this.securitytFilter = securitytFilter;
+    public SecurityConfig(SecurityFilter securityFilter) {
+        this.securityFilter = securityFilter;
     }
 
     @Bean
@@ -43,7 +43,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/auth/forgot-password").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/reset-password").permitAll()
                         .anyRequest().authenticated())
-                .addFilterBefore(securitytFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
