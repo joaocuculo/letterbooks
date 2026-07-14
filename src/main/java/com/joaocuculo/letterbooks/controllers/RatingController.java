@@ -58,14 +58,15 @@ public class RatingController {
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        ratingService.delete(id);
+    public ResponseEntity<Void> delete(@PathVariable Long id, @AuthenticationPrincipal JWTUserData user) {
+        ratingService.delete(id, user);
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping(value = "/{id}")
-    public ResponseEntity<RatingResponseDTO> update(@PathVariable Long id, @RequestBody @Valid RatingUpdateDTO request) {
-        RatingResponseDTO rating = ratingService.update(id, request);
+    public ResponseEntity<RatingResponseDTO> update(
+            @PathVariable Long id, @RequestBody @Valid RatingUpdateDTO request, @AuthenticationPrincipal JWTUserData user) {
+        RatingResponseDTO rating = ratingService.update(id, request, user.userId());
         return ResponseEntity.ok().body(rating);
     }
 }
