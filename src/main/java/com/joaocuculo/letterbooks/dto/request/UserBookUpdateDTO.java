@@ -1,7 +1,6 @@
 package com.joaocuculo.letterbooks.dto.request;
 
 import com.joaocuculo.letterbooks.entities.enums.UserBookStatus;
-import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 

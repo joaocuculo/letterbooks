@@ -37,10 +37,20 @@ public class UserBookMapper {
     }
 
     public static void updateEntity(UserBook userBook, UserBookUpdateDTO dto) {
-        userBook.setStatus(dto.status());
-        userBook.setFavorite(dto.isFavorite());
-        userBook.setCurrentPage(dto.currentPage());
-        userBook.setStartedAt(dto.startedAt());
-        userBook.setFinishedAt(dto.finishedAt());
+        if (dto.status() != null) {
+            userBook.setStatus(dto.status());
+        }
+        if (dto.isFavorite() != null) {
+            userBook.setFavorite(dto.isFavorite());
+        }
+        if (dto.currentPage() != null) {
+            userBook.setCurrentPage(dto.currentPage());
+        }
+        if (dto.startedAt() != null) {
+            userBook.setStartedAt(dto.startedAt());
+        }
+        if (dto.finishedAt() != null) {
+            userBook.setFinishedAt(dto.finishedAt());
+        }
     }
 }
