@@ -34,6 +34,16 @@ public class UserBookController {
         return ResponseEntity.ok().body(userBooks);
     }
 
+    @GetMapping(value = "/book/{bookId}")
+    public ResponseEntity<UserBookResponseDTO> findByUserIdAndBookId(
+            @AuthenticationPrincipal JWTUserData user, @PathVariable Long bookId) {
+        UserBookResponseDTO userBook = userBookService.findByUserIdAndBookId(user.userId(), bookId);
+        if (userBook == null) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok().body(userBook);
+    }
+
     @PostMapping
     public ResponseEntity<UserBookResponseDTO> create(@AuthenticationPrincipal JWTUserData user, @RequestBody @Valid UserBookRequestDTO request) {
         UserBookResponseDTO userBook = userBookService.create(user.userId(), request);

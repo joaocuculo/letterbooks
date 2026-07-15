@@ -32,6 +32,7 @@ public class UserBookService {
     }
 
     public Page<UserBookResponseDTO> findByUserId(Long userId, UserBookStatus status, Pageable pageable) {
+        userService.getByIdOrThrow(userId);
         Page<UserBook> userBooks;
         if (status == null) {
             userBooks = userBookRepository.findByUserId(userId, pageable);
@@ -39,6 +40,12 @@ public class UserBookService {
             userBooks = userBookRepository.findByUserIdAndStatus(userId, status, pageable);
         }
         return userBooks.map(UserBookMapper::toResponseDTO);
+    }
+
+    public UserBookResponseDTO findByUserIdAndBookId(Long userId, Long bookId) {
+        return userBookRepository.findByUserIdAndBookId(userId, bookId)
+                .map(UserBookMapper::toResponseDTO)
+                .orElse(null);
     }
 
     public UserBookResponseDTO create(Long userId, UserBookRequestDTO dto) {
