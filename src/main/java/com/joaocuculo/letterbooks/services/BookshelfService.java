@@ -1,7 +1,9 @@
 package com.joaocuculo.letterbooks.services;
 
+import com.joaocuculo.letterbooks.dto.response.BookshelfResponseDTO;
 import com.joaocuculo.letterbooks.dto.response.BookshelfSummaryDTO;
 import com.joaocuculo.letterbooks.entities.Bookshelf;
+import com.joaocuculo.letterbooks.exceptions.ResourceNotFoundException;
 import com.joaocuculo.letterbooks.mapper.BookshelfMapper;
 import com.joaocuculo.letterbooks.repositories.BookshelfRepository;
 import org.springframework.data.domain.Page;
@@ -17,6 +19,12 @@ public class BookshelfService {
     public BookshelfService(BookshelfRepository bookshelfRepository, UserService userService) {
         this.bookshelfRepository = bookshelfRepository;
         this.userService = userService;
+    }
+
+    public BookshelfResponseDTO findById(Long id) {
+        Bookshelf bookshelf = bookshelfRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Estante não encontrada."));
+        return BookshelfMapper.toResponseDTO(bookshelf);
     }
 
     public Page<BookshelfSummaryDTO> findByUserId(Long userId, Long authUserId, Pageable pageable) {

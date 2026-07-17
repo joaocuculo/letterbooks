@@ -1,6 +1,7 @@
 package com.joaocuculo.letterbooks.controllers;
 
 import com.joaocuculo.letterbooks.config.JWTUserData;
+import com.joaocuculo.letterbooks.dto.response.BookshelfResponseDTO;
 import com.joaocuculo.letterbooks.dto.response.BookshelfSummaryDTO;
 import com.joaocuculo.letterbooks.services.BookshelfService;
 import org.springframework.data.domain.Page;
@@ -21,6 +22,12 @@ public class BookshelfController {
 
     public BookshelfController(BookshelfService bookshelfService) {
         this.bookshelfService = bookshelfService;
+    }
+
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<BookshelfResponseDTO> findById(@PathVariable Long id) {
+        BookshelfResponseDTO bookshelf = bookshelfService.findById(id);
+        return ResponseEntity.ok().body(bookshelf);
     }
 
     @GetMapping(value = "/user/{userId}")
