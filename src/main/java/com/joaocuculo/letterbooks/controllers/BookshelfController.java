@@ -1,18 +1,20 @@
 package com.joaocuculo.letterbooks.controllers;
 
 import com.joaocuculo.letterbooks.config.JWTUserData;
+import com.joaocuculo.letterbooks.dto.request.BookshelfRequestDTO;
 import com.joaocuculo.letterbooks.dto.response.BookshelfResponseDTO;
 import com.joaocuculo.letterbooks.dto.response.BookshelfSummaryDTO;
 import com.joaocuculo.letterbooks.services.BookshelfService;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.net.URI;
 
 @RestController
 @RequestMapping(value = "/bookshelves")
@@ -36,4 +38,18 @@ public class BookshelfController {
         Page<BookshelfSummaryDTO> bookshelves = bookshelfService.findByUserId(userId, user.userId(), pageable);
         return ResponseEntity.ok().body(bookshelves);
     }
+
+    @PostMapping
+    public ResponseEntity<BookshelfResponseDTO> create(
+            @AuthenticationPrincipal JWTUserData user, @RequestBody @Valid BookshelfRequestDTO request) {
+        BookshelfResponseDTO bookshelf = bookshelfService.create(user.userId(), request);
+        URI uri = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(bookshelf.id())
+                .toUri();
+        return ResponseEntity.created(uri).body(bookshelf);
+    }
+    // patch /{id}
+    // delete /{id}
 }

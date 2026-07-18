@@ -12,7 +12,12 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Table(name = "bookshelves")
+@Table(
+        name = "bookshelves",
+        uniqueConstraints = @UniqueConstraint(
+                columnNames = {"user_id, name"}
+        )
+)
 public class Bookshelf implements Serializable {
 
     @Id

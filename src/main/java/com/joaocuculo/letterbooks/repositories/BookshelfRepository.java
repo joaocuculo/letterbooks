@@ -10,4 +10,5 @@ import org.springframework.stereotype.Repository;
 public interface BookshelfRepository extends JpaRepository<Bookshelf, Long> {
     Page<Bookshelf> findByUserId(Long userId, Pageable pageable);
     Page<Bookshelf> findByUserIdAndIsPublicShelfTrue(Long userId, Pageable pageable);
+    boolean existsByUserIdAndName(Long userId, String name);
 }

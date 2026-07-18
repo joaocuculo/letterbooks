@@ -1,9 +1,11 @@
 package com.joaocuculo.letterbooks.mapper;
 
+import com.joaocuculo.letterbooks.dto.request.BookshelfRequestDTO;
 import com.joaocuculo.letterbooks.dto.response.BookshelfResponseDTO;
 import com.joaocuculo.letterbooks.dto.response.BookshelfSummaryDTO;
 import com.joaocuculo.letterbooks.entities.Bookshelf;
 import com.joaocuculo.letterbooks.entities.BookshelfItem;
+import com.joaocuculo.letterbooks.entities.User;
 
 public class BookshelfMapper {
 
@@ -32,6 +34,15 @@ public class BookshelfMapper {
                         .toList(),
                 bookshelf.getCreatedAt(),
                 bookshelf.getUpdatedAt()
+        );
+    }
+
+    public static Bookshelf toEntity(BookshelfRequestDTO dto, User user) {
+        return new Bookshelf(
+                dto.name(),
+                dto.description(),
+                dto.isPublicShelf(),
+                user
         );
     }
 }

@@ -1,8 +1,11 @@
 package com.joaocuculo.letterbooks.services;
 
+import com.joaocuculo.letterbooks.dto.request.BookshelfRequestDTO;
 import com.joaocuculo.letterbooks.dto.response.BookshelfResponseDTO;
 import com.joaocuculo.letterbooks.dto.response.BookshelfSummaryDTO;
 import com.joaocuculo.letterbooks.entities.Bookshelf;
+import com.joaocuculo.letterbooks.entities.User;
+import com.joaocuculo.letterbooks.exceptions.BusinessException;
 import com.joaocuculo.letterbooks.exceptions.ResourceNotFoundException;
 import com.joaocuculo.letterbooks.mapper.BookshelfMapper;
 import com.joaocuculo.letterbooks.repositories.BookshelfRepository;
@@ -36,5 +39,14 @@ public class BookshelfService {
             bookshelves = bookshelfRepository.findByUserIdAndIsPublicShelfTrue(userId, pageable);
         }
         return bookshelves.map(BookshelfMapper::toSummaryDTO);
+    }
+
+    public BookshelfResponseDTO create(Long userId, BookshelfRequestDTO dto) {
+        User user = userService.getByIdOrThrow(userId);
+        if (bookshelfRepository.existsByUserIdAndName(userId, dto.name())){
+            throw new BusinessException("Você já possui uma estante com esse nome.");
+        }
+        Bookshelf bookshelf = bookshelfRepository.save(BookshelfMapper.toEntity(dto, user));
+        return BookshelfMapper.toResponseDTO(bookshelf);
     }
 }
