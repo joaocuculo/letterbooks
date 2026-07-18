@@ -2,6 +2,7 @@ package com.joaocuculo.letterbooks.controllers;
 
 import com.joaocuculo.letterbooks.config.JWTUserData;
 import com.joaocuculo.letterbooks.dto.request.BookshelfRequestDTO;
+import com.joaocuculo.letterbooks.dto.request.BookshelfUpdateDTO;
 import com.joaocuculo.letterbooks.dto.response.BookshelfResponseDTO;
 import com.joaocuculo.letterbooks.dto.response.BookshelfSummaryDTO;
 import com.joaocuculo.letterbooks.services.BookshelfService;
@@ -56,5 +57,11 @@ public class BookshelfController {
         bookshelfService.delete(id, user.userId());
         return ResponseEntity.noContent().build();
     }
-    // patch /{id}
+
+    @PatchMapping(value = "/{id}")
+    public ResponseEntity<BookshelfResponseDTO> update(
+            @PathVariable Long id, @RequestBody @Valid BookshelfUpdateDTO request, @AuthenticationPrincipal JWTUserData user) {
+        BookshelfResponseDTO bookshelf = bookshelfService.update(id, request, user.userId());
+        return ResponseEntity.ok().body(bookshelf);
+    }
 }

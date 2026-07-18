@@ -1,6 +1,7 @@
 package com.joaocuculo.letterbooks.services;
 
 import com.joaocuculo.letterbooks.dto.request.BookshelfRequestDTO;
+import com.joaocuculo.letterbooks.dto.request.BookshelfUpdateDTO;
 import com.joaocuculo.letterbooks.dto.response.BookshelfResponseDTO;
 import com.joaocuculo.letterbooks.dto.response.BookshelfSummaryDTO;
 import com.joaocuculo.letterbooks.entities.Bookshelf;
@@ -64,5 +65,20 @@ public class BookshelfService {
         } catch (DataIntegrityViolationException e) {
             throw new DatabaseException(e.getMessage());
         }
+    }
+
+    public BookshelfResponseDTO update(Long id, BookshelfUpdateDTO dto, Long userId) {
+        Bookshelf bookshelf = bookshelfRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Estante não encontrada."));
+        if (!bookshelf.getUser().getId().equals(userId)) {
+            throw new ForbiddenException("Você não tem permissão para alterar essa estante");
+        }
+        if (dto.name() != null
+                && bookshelfRepository.existsByUserIdAndName(userId, dto.name())
+                && !bookshelf.getName().equals(dto.name())){
+            throw new BusinessException("Você já possui uma estante com esse nome.");
+        }
+        BookshelfMapper.updateEntity(bookshelf, dto);
+        return BookshelfMapper.toResponseDTO(bookshelfRepository.save(bookshelf));
     }
 }

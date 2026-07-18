@@ -1,6 +1,7 @@
 package com.joaocuculo.letterbooks.mapper;
 
 import com.joaocuculo.letterbooks.dto.request.BookshelfRequestDTO;
+import com.joaocuculo.letterbooks.dto.request.BookshelfUpdateDTO;
 import com.joaocuculo.letterbooks.dto.response.BookshelfResponseDTO;
 import com.joaocuculo.letterbooks.dto.response.BookshelfSummaryDTO;
 import com.joaocuculo.letterbooks.entities.Bookshelf;
@@ -44,5 +45,17 @@ public class BookshelfMapper {
                 dto.isPublicShelf(),
                 user
         );
+    }
+
+    public static void updateEntity(Bookshelf bookshelf, BookshelfUpdateDTO dto) {
+        if (dto.name() != null) {
+            bookshelf.setName(dto.name());
+        }
+        if (dto.description() != null) {
+            bookshelf.setDescription(dto.description());
+        }
+        if (dto.isPublicShelf() != null) {
+            bookshelf.setPublicShelf(dto.isPublicShelf());
+        }
     }
 }
