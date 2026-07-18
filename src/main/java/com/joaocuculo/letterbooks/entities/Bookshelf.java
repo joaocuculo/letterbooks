@@ -45,7 +45,11 @@ public class Bookshelf implements Serializable {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "id.bookshelf")
+    @OneToMany(
+            mappedBy = "id.bookshelf",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     private Set<BookshelfItem> items = new HashSet<>();
 
     public Bookshelf() {

@@ -50,6 +50,11 @@ public class BookshelfController {
                 .toUri();
         return ResponseEntity.created(uri).body(bookshelf);
     }
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id, @AuthenticationPrincipal JWTUserData user) {
+        bookshelfService.delete(id, user.userId());
+        return ResponseEntity.noContent().build();
+    }
     // patch /{id}
-    // delete /{id}
 }

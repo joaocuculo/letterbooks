@@ -6,9 +6,12 @@ import com.joaocuculo.letterbooks.dto.response.BookshelfSummaryDTO;
 import com.joaocuculo.letterbooks.entities.Bookshelf;
 import com.joaocuculo.letterbooks.entities.User;
 import com.joaocuculo.letterbooks.exceptions.BusinessException;
+import com.joaocuculo.letterbooks.exceptions.DatabaseException;
+import com.joaocuculo.letterbooks.exceptions.ForbiddenException;
 import com.joaocuculo.letterbooks.exceptions.ResourceNotFoundException;
 import com.joaocuculo.letterbooks.mapper.BookshelfMapper;
 import com.joaocuculo.letterbooks.repositories.BookshelfRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -48,5 +51,18 @@ public class BookshelfService {
         }
         Bookshelf bookshelf = bookshelfRepository.save(BookshelfMapper.toEntity(dto, user));
         return BookshelfMapper.toResponseDTO(bookshelf);
+    }
+
+    public void delete(Long id, Long userId) {
+        Bookshelf bookshelf = bookshelfRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Estante não encontrada."));
+        if (!bookshelf.getUser().getId().equals(userId)) {
+            throw new ForbiddenException("Você não tem permissão para deletar essa estante.");
+        }
+        try {
+            bookshelfRepository.delete(bookshelf);
+        } catch (DataIntegrityViolationException e) {
+            throw new DatabaseException(e.getMessage());
+        }
     }
 }
