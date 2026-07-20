@@ -1,15 +1,18 @@
 package com.joaocuculo.letterbooks.controllers;
 
 import com.joaocuculo.letterbooks.config.JWTUserData;
+import com.joaocuculo.letterbooks.dto.request.BookshelfItemRequestDTO;
 import com.joaocuculo.letterbooks.dto.request.BookshelfRequestDTO;
 import com.joaocuculo.letterbooks.dto.request.BookshelfUpdateDTO;
 import com.joaocuculo.letterbooks.dto.response.BookshelfResponseDTO;
 import com.joaocuculo.letterbooks.dto.response.BookshelfSummaryDTO;
+import com.joaocuculo.letterbooks.services.BookshelfItemService;
 import com.joaocuculo.letterbooks.services.BookshelfService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -22,9 +25,11 @@ import java.net.URI;
 public class BookshelfController {
 
     private final BookshelfService bookshelfService;
+    private final BookshelfItemService bookshelfItemService;
 
-    public BookshelfController(BookshelfService bookshelfService) {
+    public BookshelfController(BookshelfService bookshelfService, BookshelfItemService bookshelfItemService) {
         this.bookshelfService = bookshelfService;
+        this.bookshelfItemService = bookshelfItemService;
     }
 
     @GetMapping(value = "/{id}")
@@ -63,5 +68,20 @@ public class BookshelfController {
             @PathVariable Long id, @RequestBody @Valid BookshelfUpdateDTO request, @AuthenticationPrincipal JWTUserData user) {
         BookshelfResponseDTO bookshelf = bookshelfService.update(id, request, user.userId());
         return ResponseEntity.ok().body(bookshelf);
+    }
+
+    // itens da estante
+    @PostMapping(value = "/{bookshelfId}/book")
+    public ResponseEntity<Void> add(
+            @PathVariable Long bookshelfId, @RequestBody @Valid BookshelfItemRequestDTO request, @AuthenticationPrincipal JWTUserData user) {
+        bookshelfItemService.add(bookshelfId, request, user.userId());
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @DeleteMapping(value = "/{bookshelfId}/book/{bookId}")
+    public ResponseEntity<Void> remove(
+            @PathVariable Long bookshelfId, @PathVariable Long bookId, @AuthenticationPrincipal JWTUserData user) {
+        bookshelfItemService.remove(bookshelfId, bookId, user.userId());
+        return ResponseEntity.noContent().build();
     }
 }

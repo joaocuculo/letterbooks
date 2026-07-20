@@ -29,9 +29,13 @@ public class BookshelfService {
     }
 
     public BookshelfResponseDTO findById(Long id) {
-        Bookshelf bookshelf = bookshelfRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Estante não encontrada."));
+        Bookshelf bookshelf = getByIdOrThrow(id);
         return BookshelfMapper.toResponseDTO(bookshelf);
+    }
+
+    public Bookshelf getByIdOrThrow(Long id) {
+        return bookshelfRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Estante não encontrada."));
     }
 
     public Page<BookshelfSummaryDTO> findByUserId(Long userId, Long authUserId, Pageable pageable) {
