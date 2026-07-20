@@ -6,10 +6,8 @@ import com.joaocuculo.letterbooks.entities.PasswordReset;
 import com.joaocuculo.letterbooks.entities.User;
 import com.joaocuculo.letterbooks.exceptions.ExpiredTokenException;
 import com.joaocuculo.letterbooks.exceptions.InvalidTokenException;
-import com.joaocuculo.letterbooks.exceptions.ResourceNotFoundException;
 import com.joaocuculo.letterbooks.repositories.PasswordResetRepository;
 import com.joaocuculo.letterbooks.repositories.UserRepository;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
