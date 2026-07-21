@@ -17,6 +17,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class BookshelfService {
 
@@ -47,6 +49,13 @@ public class BookshelfService {
             bookshelves = bookshelfRepository.findByUserIdAndIsPublicShelfTrue(userId, pageable);
         }
         return bookshelves.map(BookshelfMapper::toSummaryDTO);
+    }
+
+    public List<BookshelfResponseDTO> findByUserIdAndBookId(Long userId, Long bookId) {
+        List<Bookshelf> bookshelves = bookshelfRepository.findByUserIdAndItemsIdBookId(userId, bookId);
+        return bookshelves.stream()
+                .map(BookshelfMapper::toResponseDTO)
+                .toList();
     }
 
     public BookshelfResponseDTO create(Long userId, BookshelfRequestDTO dto) {
