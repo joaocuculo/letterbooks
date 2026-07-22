@@ -1,8 +1,8 @@
 package com.joaocuculo.letterbooks.controllers;
 
 import com.joaocuculo.letterbooks.dto.request.UserRequestDTO;
-import com.joaocuculo.letterbooks.dto.response.UserResponseDTO;
 import com.joaocuculo.letterbooks.dto.request.UserStatusUpdateDTO;
+import com.joaocuculo.letterbooks.dto.response.UserResponseDTO;
 import com.joaocuculo.letterbooks.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;

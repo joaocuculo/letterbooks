@@ -1,9 +1,9 @@
 package com.joaocuculo.letterbooks.services;
 
 import com.joaocuculo.letterbooks.dto.request.UserRequestDTO;
+import com.joaocuculo.letterbooks.dto.request.UserStatusUpdateDTO;
 import com.joaocuculo.letterbooks.dto.response.RegisterResponseDTO;
 import com.joaocuculo.letterbooks.dto.response.UserResponseDTO;
-import com.joaocuculo.letterbooks.dto.request.UserStatusUpdateDTO;
 import com.joaocuculo.letterbooks.entities.User;
 import com.joaocuculo.letterbooks.entities.enums.UserRole;
 import com.joaocuculo.letterbooks.entities.enums.UserStatus;

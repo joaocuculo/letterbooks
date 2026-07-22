@@ -1,6 +1,5 @@
 package com.joaocuculo.letterbooks.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -12,7 +11,12 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Table(name = "bookshelves")
+@Table(
+        name = "bookshelves",
+        uniqueConstraints = @UniqueConstraint(
+                columnNames = {"user_id, name"}
+        )
+)
 public class Bookshelf implements Serializable {
 
     @Id
@@ -40,7 +44,11 @@ public class Bookshelf implements Serializable {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "id.bookshelf")
+    @OneToMany(
+            mappedBy = "id.bookshelf",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     private Set<BookshelfItem> items = new HashSet<>();
 
     public Bookshelf() {
