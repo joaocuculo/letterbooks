@@ -1,5 +1,6 @@
 package com.joaocuculo.letterbooks.services;
 
+import com.joaocuculo.letterbooks.config.JWTUserData;
 import com.joaocuculo.letterbooks.dto.request.UserRequestDTO;
 import com.joaocuculo.letterbooks.dto.request.UserStatusUpdateDTO;
 import com.joaocuculo.letterbooks.dto.response.RegisterResponseDTO;
@@ -9,6 +10,7 @@ import com.joaocuculo.letterbooks.entities.enums.UserRole;
 import com.joaocuculo.letterbooks.entities.enums.UserStatus;
 import com.joaocuculo.letterbooks.exceptions.BusinessException;
 import com.joaocuculo.letterbooks.exceptions.DatabaseException;
+import com.joaocuculo.letterbooks.exceptions.ForbiddenException;
 import com.joaocuculo.letterbooks.exceptions.ResourceNotFoundException;
 import com.joaocuculo.letterbooks.mapper.UserMapper;
 import com.joaocuculo.letterbooks.repositories.UserRepository;
@@ -67,21 +69,24 @@ public class UserService {
         );
     }
 
-    public void delete(Long id) {
+    public void delete(Long id, JWTUserData authUser) {
+        User user = getByIdOrThrow(id);
+        if (!user.getId().equals(authUser.userId()) && authUser.role() != UserRole.ADMIN) {
+            throw new ForbiddenException("Você não tem permissão para deletar este usuário.");
+        }
         try {
-            repository.deleteById(id);
-        } catch (EmptyResultDataAccessException e) {
-            throw new ResourceNotFoundException("Usuário com id " + id + " não encontrado.");
+            repository.delete(user);
         } catch (DataIntegrityViolationException e) {
             throw new DatabaseException(e.getMessage());
         }
     }
 
-    public UserResponseDTO update(Long id, UserRequestDTO dto) {
-        User user = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuário com id " + id + " não encotrado."));
-
-        if (!user.getEmail().equals(dto.email()) && repository.existsByEmail(dto.email())){
+    public UserResponseDTO update(Long id, UserRequestDTO dto, JWTUserData authUser) {
+        User user = getByIdOrThrow(id);
+        if (!user.getId().equals(authUser.userId()) && authUser.role() != UserRole.ADMIN) {
+            throw new ForbiddenException("Você não tem permissão para alterar este usuário.");
+        }
+        if (!user.getEmail().equals(dto.email()) && repository.existsByEmail(dto.email())) {
             throw new BusinessException("Este e-mail já está cadastrado.");
         }
 
@@ -92,15 +97,14 @@ public class UserService {
         return UserMapper.toResponseDTO(user);
     }
 
-    public UserResponseDTO updateRoleAndStatus(Long id, UserStatusUpdateDTO dto) {
-        try {
-            User user = repository.getReferenceById(id);
-            user.setRole(dto.role());
-            user.setStatus(dto.status());
-            repository.save(user);
-            return UserMapper.toResponseDTO(user);
-        } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException("Usuário com id " + id + " não encotrado.");
+    public UserResponseDTO updateRoleAndStatus(Long id, UserStatusUpdateDTO dto, Long authUserId) {
+        User user = getByIdOrThrow(id);
+        if (user.getId().equals(authUserId)) {
+            throw new BusinessException("Você não pode alterar suas próprias permissões.");
         }
+        user.setRole(dto.role());
+        user.setStatus(dto.status());
+        repository.save(user);
+        return UserMapper.toResponseDTO(user);
     }
 }

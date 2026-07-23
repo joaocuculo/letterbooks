@@ -102,7 +102,7 @@ public class User implements UserDetails, Serializable {
 
     @Override
     public boolean isEnabled() {
-        return UserDetails.super.isEnabled();
+        return this.status == UserStatus.ACTIVE;
     }
 
     // End Spring Security --------
