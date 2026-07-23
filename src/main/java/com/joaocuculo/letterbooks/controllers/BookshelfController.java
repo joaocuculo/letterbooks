@@ -33,8 +33,9 @@ public class BookshelfController {
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<BookshelfResponseDTO> findById(@PathVariable Long id) {
-        BookshelfResponseDTO bookshelf = bookshelfService.findById(id);
+    public ResponseEntity<BookshelfResponseDTO> findById(
+            @PathVariable Long id, @AuthenticationPrincipal JWTUserData user) {
+        BookshelfResponseDTO bookshelf = bookshelfService.findById(id, user.userId());
         return ResponseEntity.ok().body(bookshelf);
     }
 

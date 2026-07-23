@@ -6,7 +6,7 @@ public record BookshelfSummaryDTO(
         Long id,
         String name,
         String description,
-        Boolean isPublicShelf,
+        boolean isPublicShelf,
         Integer booksCount,
         LocalDateTime createdAt,
         LocalDateTime updatedAt

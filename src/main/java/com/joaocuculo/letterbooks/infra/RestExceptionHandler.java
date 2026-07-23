@@ -26,7 +26,7 @@ public class RestExceptionHandler {
 
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<StandardError> business(BusinessException e, HttpServletRequest request) {
-        return errorBuilder(e, request, "Request validation failed.", HttpStatus.BAD_REQUEST);
+        return errorBuilder(e, request, "Business rule violation.", HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(ForbiddenException.class)

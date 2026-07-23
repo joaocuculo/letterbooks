@@ -11,6 +11,6 @@ public record BookshelfRequestDTO(
         @Size(max = 1000, message = "Descrição deve ter no máximo 1000 caracteres.")
         String description,
         @NotNull(message = "É obrigatório informar se a estante é pública.")
-        Boolean isPublicShelf
+        boolean isPublicShelf
 ) {
 }

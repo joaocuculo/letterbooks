@@ -12,7 +12,7 @@ public record UserBookRequestDTO(
         @NotNull(message = "Status do livro é obrigatório.")
         UserBookStatus status,
         @NotNull(message = "É obrigatório informar se o livro é favorito.")
-        Boolean isFavorite,
+        boolean isFavorite,
         Integer currentPage,
         LocalDateTime startedAt,
         LocalDateTime finishedAt

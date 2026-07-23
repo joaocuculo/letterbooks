@@ -14,7 +14,7 @@ import java.util.Set;
 @Table(
         name = "bookshelves",
         uniqueConstraints = @UniqueConstraint(
-                columnNames = {"user_id, name"}
+                columnNames = {"user_id", "name"}
         )
 )
 public class Bookshelf implements Serializable {

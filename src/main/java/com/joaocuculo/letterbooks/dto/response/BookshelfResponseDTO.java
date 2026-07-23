@@ -7,7 +7,7 @@ public record BookshelfResponseDTO(
         Long id,
         String name,
         String description,
-        Boolean isPublicShelf,
+        boolean isPublicShelf,
         UserSummaryDTO user,
         List<BookSummaryDTO> book,
         LocalDateTime createdAt,

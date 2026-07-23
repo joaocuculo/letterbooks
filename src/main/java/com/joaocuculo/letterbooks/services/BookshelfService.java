@@ -30,8 +30,11 @@ public class BookshelfService {
         this.userService = userService;
     }
 
-    public BookshelfResponseDTO findById(Long id) {
+    public BookshelfResponseDTO findById(Long id, Long userId) {
         Bookshelf bookshelf = getByIdOrThrow(id);
+        if (!bookshelf.getUser().getId().equals(userId)) {
+            throw new ForbiddenException("Você não tem permissão para visualizar essa estante.");
+        }
         return BookshelfMapper.toResponseDTO(bookshelf);
     }
 
