@@ -20,4 +20,9 @@ public class AuthorizationService implements UserDetailsService {
         return userRepository.findUserByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException(username));
     }
+
+    public UserDetails loadUserById(Long userId) throws UsernameNotFoundException {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + userId));
+    }
 }

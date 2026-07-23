@@ -48,8 +48,9 @@ public class UserController {
 
     @PutMapping(value = "/{id}/role-status")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<UserResponseDTO> updateRoleAndStatus(@PathVariable Long id, @RequestBody @Valid UserStatusUpdateDTO request) {
-        UserResponseDTO user = service.updateRoleAndStatus(id, request);
+    public ResponseEntity<UserResponseDTO> updateRoleAndStatus(
+            @PathVariable Long id, @RequestBody @Valid UserStatusUpdateDTO request, @AuthenticationPrincipal JWTUserData authUser) {
+        UserResponseDTO user = service.updateRoleAndStatus(id, request, authUser.userId());
         return ResponseEntity.ok().body(user);
     }
 
