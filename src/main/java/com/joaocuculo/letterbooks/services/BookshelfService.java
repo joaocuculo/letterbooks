@@ -32,15 +32,10 @@ public class BookshelfService {
 
     public BookshelfResponseDTO findById(Long id, Long userId) {
         Bookshelf bookshelf = getByIdOrThrow(id);
-        if (!bookshelf.getUser().getId().equals(userId)) {
+        if (!bookshelf.getUser().getId().equals(userId) && !bookshelf.isPublicShelf()) {
             throw new ForbiddenException("Você não tem permissão para visualizar essa estante.");
         }
         return BookshelfMapper.toResponseDTO(bookshelf);
-    }
-
-    public Bookshelf getByIdOrThrow(Long id) {
-        return bookshelfRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Estante não encontrada."));
     }
 
     public Page<BookshelfSummaryDTO> findByUserId(Long userId, Long authUserId, Pageable pageable) {
@@ -63,7 +58,7 @@ public class BookshelfService {
 
     public BookshelfResponseDTO create(Long userId, BookshelfRequestDTO dto) {
         User user = userService.getByIdOrThrow(userId);
-        if (bookshelfRepository.existsByUserIdAndName(userId, dto.name())){
+        if (bookshelfRepository.existsByUserIdAndName(userId, dto.name())) {
             throw new BusinessException("Você já possui uma estante com esse nome.");
         }
         Bookshelf bookshelf = bookshelfRepository.save(BookshelfMapper.toEntity(dto, user));
@@ -71,11 +66,7 @@ public class BookshelfService {
     }
 
     public void delete(Long id, Long userId) {
-        Bookshelf bookshelf = bookshelfRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Estante não encontrada."));
-        if (!bookshelf.getUser().getId().equals(userId)) {
-            throw new ForbiddenException("Você não tem permissão para deletar essa estante.");
-        }
+        Bookshelf bookshelf = getOwnedBookshelf(id, userId);
         try {
             bookshelfRepository.delete(bookshelf);
         } catch (DataIntegrityViolationException e) {
@@ -84,17 +75,26 @@ public class BookshelfService {
     }
 
     public BookshelfResponseDTO update(Long id, BookshelfUpdateDTO dto, Long userId) {
-        Bookshelf bookshelf = bookshelfRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Estante não encontrada."));
-        if (!bookshelf.getUser().getId().equals(userId)) {
-            throw new ForbiddenException("Você não tem permissão para alterar essa estante");
-        }
+        Bookshelf bookshelf = getOwnedBookshelf(id, userId);
         if (dto.name() != null
                 && bookshelfRepository.existsByUserIdAndName(userId, dto.name())
-                && !bookshelf.getName().equals(dto.name())){
+                && !bookshelf.getName().equals(dto.name())) {
             throw new BusinessException("Você já possui uma estante com esse nome.");
         }
         BookshelfMapper.updateEntity(bookshelf, dto);
         return BookshelfMapper.toResponseDTO(bookshelfRepository.save(bookshelf));
+    }
+
+    public Bookshelf getOwnedBookshelf(Long id, Long userId) {
+        Bookshelf bookshelf = getByIdOrThrow(id);
+        if (!bookshelf.getUser().getId().equals(userId)) {
+            throw new ForbiddenException("Você não tem permissão para acessar esta estante.");
+        }
+        return bookshelf;
+    }
+
+    public Bookshelf getByIdOrThrow(Long id) {
+        return bookshelfRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Estante não encontrada."));
     }
 }

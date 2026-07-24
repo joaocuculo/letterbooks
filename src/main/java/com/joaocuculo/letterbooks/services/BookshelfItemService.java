@@ -26,10 +26,7 @@ public class BookshelfItemService {
     }
 
     public void add(Long bookshelfId, BookshelfItemRequestDTO dto, Long userId) {
-        Bookshelf bookshelf = bookshelfService.getByIdOrThrow(bookshelfId);
-        if (!bookshelf.getUser().getId().equals(userId)) {
-            throw new ForbiddenException("Você não tem permissão para adicionar esse item na estante.");
-        }
+        Bookshelf bookshelf = bookshelfService.getOwnedBookshelf(bookshelfId, userId);
         Book book = bookService.findOrCreateByGoogleBooksId(dto.googleBooksId());
         if (bookshelfItemRepository.existsByIdBookshelfIdAndIdBookId(bookshelfId, book.getId())) {
             throw new BusinessException("Este livro já está nesta estante.");
@@ -38,10 +35,7 @@ public class BookshelfItemService {
     }
 
     public void remove(Long bookshelfId, Long bookId, Long userId) {
-        Bookshelf bookshelf = bookshelfService.getByIdOrThrow(bookshelfId);
-        if (!bookshelf.getUser().getId().equals(userId)) {
-            throw new ForbiddenException("Você não tem permissão para remover esse item da estante.");
-        }
+        bookshelfService.getOwnedBookshelf(bookshelfId, userId);
         BookshelfItem item = bookshelfItemRepository.findByIdBookshelfIdAndIdBookId(bookshelfId, bookId)
                 .orElseThrow(() -> new ResourceNotFoundException("Item não encontrado nesta estante."));
         try {
