@@ -56,6 +56,7 @@ public class UserBookService {
             throw new BusinessException("Você já possui relação com esse livro.");
         }
 
+        validateCurrentPage(dto.currentPage(), book.getPageCount());
         UserBook userBook = userBookRepository.save(UserBookMapper.toEntity(dto, user, book));
 
         return UserBookMapper.toResponseDTO(userBook);
@@ -83,8 +84,14 @@ public class UserBookService {
         if (!userBook.getUser().getId().equals(userId)) {
             throw new ForbiddenException("Você não tem permissão para alterar essa relação.");
         }
-
+        validateCurrentPage(dto.currentPage(), userBook.getBook().getPageCount());
         UserBookMapper.updateEntity(userBook, dto);
         return UserBookMapper.toResponseDTO(userBookRepository.save(userBook));
+    }
+
+    private void validateCurrentPage(Integer currentPage, Integer totalPages) {
+        if (totalPages != null && currentPage != null && (currentPage < 0 || currentPage > totalPages)) {
+            throw new BusinessException("A página atual não pode ser menor que zero ou maior que o número total de páginas do livro.");
+        }
     }
 }

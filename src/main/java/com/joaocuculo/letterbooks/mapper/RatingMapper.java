@@ -19,7 +19,11 @@ public class RatingMapper {
     }
 
     public static void updateEntity(Rating rating, RatingUpdateDTO dto) {
-        rating.setScore(dto.score());
-        rating.setComment(dto.comment());
+        if (dto.score() != null) {
+            rating.setScore(dto.score());
+        }
+        if (dto.comment() != null) {
+            rating.setComment(dto.comment());
+        }
     }
 }
