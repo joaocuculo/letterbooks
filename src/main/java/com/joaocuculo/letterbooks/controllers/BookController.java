@@ -36,6 +36,12 @@ public class BookController {
         return ResponseEntity.ok(searchResult);
     }
 
+    @GetMapping("/{googleBooksId}")
+    public ResponseEntity<BookResponseDTO> findByGoogleBooksId(@PathVariable String googleBooksId) {
+        BookResponseDTO book = bookService.findByGoogleBooksId(googleBooksId);
+        return ResponseEntity.ok(book);
+    }
+
     @GetMapping("/{bookId}/bookshelves")
     public ResponseEntity<List<BookshelfResponseDTO>> findBookshelvesByBookId(
             @PathVariable Long bookId, @AuthenticationPrincipal JWTUserData user) {

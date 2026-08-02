@@ -9,6 +9,7 @@ import com.joaocuculo.letterbooks.entities.Author;
 import com.joaocuculo.letterbooks.entities.Book;
 import com.joaocuculo.letterbooks.entities.Category;
 import com.joaocuculo.letterbooks.exceptions.BusinessException;
+import com.joaocuculo.letterbooks.exceptions.ResourceNotFoundException;
 import com.joaocuculo.letterbooks.mapper.BookMapper;
 import com.joaocuculo.letterbooks.repositories.BookRepository;
 import com.joaocuculo.letterbooks.specifications.BookSpecifications;
@@ -19,10 +20,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 
 @Service
@@ -47,6 +45,17 @@ public class BookService {
         this.authorService = authorService;
         this.categoryService = categoryService;
         this.googleBooksClient = googleBooksClient;
+    }
+
+    public BookResponseDTO findByGoogleBooksId(String googleBooksId) {
+        Optional<Book> book = bookRepository.findByGoogleBooksId(googleBooksId);
+        return book
+                .map(BookMapper::toResponseDTO)
+                .orElseGet(() ->
+                        BookMapper.toResponseDTO(
+                                googleBooksClient.findByGoogleBooksId(googleBooksId)
+                        )
+                );
     }
 
     public Page<BookResponseDTO> search(BookSearchRequestDTO searchRequestDTO, Pageable pageable) {
