@@ -4,8 +4,10 @@ import com.joaocuculo.letterbooks.config.JWTUserData;
 import com.joaocuculo.letterbooks.dto.request.BookSearchRequestDTO;
 import com.joaocuculo.letterbooks.dto.response.BookResponseDTO;
 import com.joaocuculo.letterbooks.dto.response.BookshelfResponseDTO;
+import com.joaocuculo.letterbooks.dto.response.DiscoverResponseDTO;
 import com.joaocuculo.letterbooks.services.BookService;
 import com.joaocuculo.letterbooks.services.BookshelfService;
+import com.joaocuculo.letterbooks.services.DiscoverService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,10 +24,12 @@ public class BookController {
 
     private final BookService bookService;
     private final BookshelfService bookshelfService;
+    private final DiscoverService discoverService;
 
-    public BookController(BookService bookService, BookshelfService bookshelfService) {
+    public BookController(BookService bookService, BookshelfService bookshelfService, DiscoverService discoverService) {
         this.bookService = bookService;
         this.bookshelfService = bookshelfService;
+        this.discoverService = discoverService;
     }
 
     @GetMapping("/search")
@@ -34,6 +38,12 @@ public class BookController {
             @PageableDefault(page = 0, size = 10) Pageable pageable) {
         Page<BookResponseDTO> searchResult = bookService.search(searchRequestDTO, pageable);
         return ResponseEntity.ok(searchResult);
+    }
+
+    @GetMapping("/discover")
+    public ResponseEntity<DiscoverResponseDTO> discover() {
+        DiscoverResponseDTO discover = discoverService.discover();
+        return ResponseEntity.ok().body(discover);
     }
 
     @GetMapping("/{googleBooksId}")

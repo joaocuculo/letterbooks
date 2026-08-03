@@ -1,6 +1,7 @@
 package com.joaocuculo.letterbooks.mapper;
 
 import com.joaocuculo.letterbooks.dto.external.GoogleBooksResponseDTO;
+import com.joaocuculo.letterbooks.dto.response.BookCardResponseDTO;
 import com.joaocuculo.letterbooks.dto.response.BookResponseDTO;
 import com.joaocuculo.letterbooks.dto.response.BookSummaryDTO;
 import com.joaocuculo.letterbooks.entities.Author;
@@ -80,6 +81,16 @@ public class BookMapper {
                 book.getId(),
                 book.getTitle(),
                 book.getThumbnailUrl()
+        );
+    }
+
+    public static BookCardResponseDTO toCardResponseDTO(GoogleBooksResponseDTO dto) {
+        return new BookCardResponseDTO(
+                dto.googleBooksId(),
+                dto.volumeInfo().title(),
+                dto.volumeInfo().authors(),
+                dto.volumeInfo().publishedDate(),
+                dto.getThumbnailUrl()
         );
     }
 
