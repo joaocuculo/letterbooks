@@ -1,13 +1,20 @@
-import Footer from './components/Footer'
-import Header from './components/Header'
+import { Route, Routes } from 'react-router-dom';
+import AppLayout from './layouts/AppLayout';
+import HomePage from './pages/HomePage';
+import BookDetailsPage from './pages/BookDetailsPage';
 
 function App() {
-  return (
-    <>
-      <Header></Header>
-      <Footer></Footer>
-    </>
-  )
+    return (
+        <Routes>
+            <Route element={<AppLayout />}>
+                <Route index element={<HomePage />} />
+                <Route
+                    path="books/:googleBooksId"
+                    element={<BookDetailsPage />}
+                />
+            </Route>
+        </Routes>
+    );
 }
 
-export default App
+export default App;
