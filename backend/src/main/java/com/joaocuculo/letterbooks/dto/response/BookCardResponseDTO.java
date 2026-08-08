@@ -6,6 +6,7 @@ public record BookCardResponseDTO(
         String id,
         String title,
         List<String> authors,
+        String publisher,
         String publishedDate,
         String thumbnailUrl
 ) {

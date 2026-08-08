@@ -89,6 +89,7 @@ public class BookMapper {
                 dto.googleBooksId(),
                 dto.volumeInfo().title(),
                 dto.volumeInfo().authors(),
+                dto.volumeInfo().publisher(),
                 dto.volumeInfo().publishedDate(),
                 dto.getThumbnailUrl()
         );
