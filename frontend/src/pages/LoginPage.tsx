@@ -1,3 +1,8 @@
+import { useState } from "react";
+import type { SubmitEvent } from "react";
+import { getApiErrorMessage } from "../utils/getApiErrorMessage.";
+import { login } from "../services/authService";
+
 interface LoginFormErrors {
     email?: string;
     password?: string;
@@ -21,7 +26,124 @@ function validateLoginForm(email: string, password: string): LoginFormErrors {
 }
 
 function LoginPage() {
-    return '';
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+
+    const [formErrors, setFormErrors] = useState<LoginFormErrors>({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+    async function handleSubmit(event:SubmitEvent<HTMLFormElement>) {
+        event.preventDefault();
+        
+        const validationErrors = validateLoginForm(email, password);
+
+        if (Object.keys(validationErrors).length > 0) {
+            setFormErrors(validationErrors);
+            setErrorMessage(null);
+            setSuccessMessage(null);
+            return;
+        }
+
+        try {
+            setIsSubmitting(true);
+            setFormErrors({});
+            setErrorMessage(null);
+            setSuccessMessage(null);
+
+            await login({
+                email: email.trim(),
+                password
+            });
+
+            setPassword("");
+            setSuccessMessage("Credenciais validadas. O token foi recebido pela aplicação.");
+        } catch (error) {
+            setErrorMessage(
+                getApiErrorMessage(
+                    error,
+                    "Não foi possível realizar o login",
+                    {
+                        401: "E-mail ou senha inválidos.",
+                        403: "E-mail ou senha inválidos.",
+                    }
+                )
+            );
+        } finally {
+            setIsSubmitting(false);
+        }
+    }
+
+    return (
+        <main>
+            <section>
+                <h1>Entrar</h1>
+
+                <p>Use seu e-mail e sua senha cadastrados no LetterBooks.</p>
+
+                <form onSubmit={handleSubmit} noValidate>
+                    <div>
+                        <label htmlFor="email">
+                            E-mail
+                        </label>
+
+                        <input type="email" id="email" name="email" autoComplete="email" value={email} onChange={(event) => {
+                            setEmail(event.target.value);
+
+                            setFormErrors((current) => ({
+                                ...current,
+                                email: undefined
+                            }));
+                        }} aria-invalid={Boolean(
+                            formErrors.email
+                        )} aria-describedby={
+                            formErrors.email ? "email-error" : undefined
+                        } disabled={isSubmitting}/>
+
+                        {formErrors.email && (
+                            <p id="email-error">{formErrors.email}</p>
+                        )}
+                    </div>
+
+                    <div>
+                        <label htmlFor="password">
+                            Senha
+                        </label>
+
+                        <input type="password" id="password" name="password" autoComplete="password" value={password} onChange={(event) => {
+                            setPassword(event.target.value);
+
+                            setFormErrors((current) => ({
+                                ...current,
+                                password: undefined
+                            }));
+                        }} aria-invalid={Boolean(
+                            formErrors.password
+                        )} aria-describedby={
+                            formErrors.password ? "password-error" : undefined
+                        } disabled={isSubmitting}/>
+
+                        {formErrors.password && (
+                            <p id="password-error">{formErrors.password}</p>
+                        )}
+                    </div>
+
+                    {errorMessage && (
+                        <p role="alert">{errorMessage}</p>
+                    )}
+
+                    {successMessage && (
+                        <p role="status">{successMessage}</p>
+                    )}
+
+                    <button type="submit" disabled={isSubmitting}>
+                        {isSubmitting ? "Entrando..." : "Entrar"}
+                    </button>
+                </form>
+            </section>
+        </main>
+    );
 }
 
 export default LoginPage;
