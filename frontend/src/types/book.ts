@@ -1,4 +1,4 @@
-export type BookSource = "GOOGLE" | "LOCAL";
+export type BookSource = 'GOOGLE' | 'LOCAL';
 
 export interface BookCardResponse {
     id: string;
@@ -31,4 +31,14 @@ export interface BookSummary {
     id: number;
     title: string;
     thumbnailUrl: string | null;
+}
+
+export interface DiscoverSection {
+    key: string;
+    title: string;
+    books: BookCardResponse[];
+}
+
+export interface DiscoverResponse {
+    sections: DiscoverSection[];
 }

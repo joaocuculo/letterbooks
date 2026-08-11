@@ -1,5 +1,10 @@
-import type { BookResponse } from '../types/book';
+import type { BookResponse, DiscoverResponse } from '../types/book';
 import { api } from './api';
+
+export async function discover(): Promise<DiscoverResponse> {
+    const response = await api.get<DiscoverResponse>('books/discover');
+    return response.data;
+}
 
 export async function getBookById(
     googleBooksId: string,

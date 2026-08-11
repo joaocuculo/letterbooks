@@ -1,5 +1,15 @@
+import { useState } from 'react';
+
 function HomePage() {
-    return <p>teste</p>;
+    const [book, setBook] = useState(null);
+
+    return (
+        <main>
+            <h1>Discover</h1>
+
+            <p>teste</p>
+        </main>
+    );
 }
 
 export default HomePage;
