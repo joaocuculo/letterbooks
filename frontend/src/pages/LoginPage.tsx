@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { SubmitEvent } from "react";
 import { getApiErrorMessage } from "../utils/getApiErrorMessage.";
 import { login } from "../services/authService";
+import { Link } from "react-router-dom";
 
 interface LoginFormErrors {
     email?: string;
@@ -14,7 +15,7 @@ function validateLoginForm(email: string, password: string): LoginFormErrors {
 
     if (!normalizedEmail) {
         errors.email = 'Informe seu e-mail.';
-    } else if (!normalizedEmail.includes('@')) {
+    } else if (!normalizedEmail.includes('@')) { // inserir um regex de validação de e-mail
         errors.email = 'Informe um e-mail válido.';
     }
 
@@ -111,7 +112,7 @@ function LoginPage() {
                             Senha
                         </label>
 
-                        <input type="password" id="password" name="password" autoComplete="password" value={password} onChange={(event) => {
+                        <input type="password" id="password" name="password" autoComplete="current-password" value={password} onChange={(event) => {
                             setPassword(event.target.value);
 
                             setFormErrors((current) => ({
@@ -141,6 +142,8 @@ function LoginPage() {
                         {isSubmitting ? "Entrando..." : "Entrar"}
                     </button>
                 </form>
+                
+                <span>Ainda não possui uma conta? <Link to="/register">Cadastre-se</Link></span>
             </section>
         </main>
     );
