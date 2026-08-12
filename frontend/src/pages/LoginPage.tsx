@@ -2,7 +2,7 @@ import { useState } from "react";
 import type { SubmitEvent } from "react";
 import { getApiErrorMessage } from "../utils/getApiErrorMessage.";
 import { login } from "../services/authService";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
 interface LoginFormErrors {
@@ -37,6 +37,7 @@ function LoginPage() {
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
     const { signIn } = useAuth();
+    const navigate = useNavigate();
 
     async function handleSubmit(event:SubmitEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -63,7 +64,7 @@ function LoginPage() {
 
             signIn(token);
             setPassword("");
-            setSuccessMessage("Credenciais validadas. O token foi recebido pela aplicação.");
+            navigate("/", { replace: true });
         } catch (error) {
             setErrorMessage(
                 getApiErrorMessage(
