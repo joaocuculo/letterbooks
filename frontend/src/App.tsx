@@ -5,6 +5,8 @@ import BookDetailsPage from './pages/BookDetailsPage';
 import LoginPage from './pages/LoginPage';
 import NotFoundPage from './pages/NotFoundPage';
 import RegisterPage from './pages/RegisterPage';
+import ProtectedRoute from './components/ProtectedRoute';
+import ProfilePage from './pages/ProfilePage';
 
 function App() {
     return (
@@ -17,6 +19,9 @@ function App() {
                     path="books/:googleBooksId"
                     element={<BookDetailsPage />}
                 />
+                <Route element={<ProtectedRoute />}>
+                    <Route path='/profile' element={<ProfilePage />}/>
+                </Route>
                 <Route path="*" element={<NotFoundPage />} />
             </Route>
         </Routes>
