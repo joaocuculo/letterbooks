@@ -14,5 +14,7 @@ export interface RegisterRequest {
 }
 
 export interface RegisterResponse {
-    token: string;
+    id: number;
+    name: string;
+    email: string;
 }

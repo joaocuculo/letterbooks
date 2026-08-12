@@ -19,7 +19,7 @@ function validateRegisterForm(name: string, email: string, password: string): Re
     }
     if (!normalizedEmail) {
         errors.email = "Informe seu e-mail.";
-    } else if (!normalizedEmail.includes("@")) {
+    } else if (!normalizedEmail.includes("@")) { // inserir um regex de validação de e-mail
         errors.email = "Informe um e-mail válido.";
     }
     if (!password) {
@@ -106,6 +106,7 @@ function RegisterPage() {
                             onChange={(event) => {
                                 setName(event.target.value);
 
+                                // apaga erro quando o usuario começa a digitar
                                 setFormErrors((current) =>({
                                     ...current,
                                     name: undefined

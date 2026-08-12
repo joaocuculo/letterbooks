@@ -3,6 +3,7 @@ import type { SubmitEvent } from "react";
 import { getApiErrorMessage } from "../utils/getApiErrorMessage.";
 import { login } from "../services/authService";
 import { Link } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 
 interface LoginFormErrors {
     email?: string;
@@ -35,6 +36,8 @@ function LoginPage() {
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
+    const { signIn } = useAuth();
+
     async function handleSubmit(event:SubmitEvent<HTMLFormElement>) {
         event.preventDefault();
         
@@ -53,11 +56,12 @@ function LoginPage() {
             setErrorMessage(null);
             setSuccessMessage(null);
 
-            await login({
+            const { token } = await login({
                 email: email.trim(),
                 password
             });
 
+            signIn(token);
             setPassword("");
             setSuccessMessage("Credenciais validadas. O token foi recebido pela aplicação.");
         } catch (error) {

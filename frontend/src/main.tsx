@@ -3,11 +3,20 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
 import { BrowserRouter } from 'react-router-dom'
+import { AuthProvider } from './contexts/AuthProvider.tsx'
 
-createRoot(document.getElementById('root')!).render(
+const rootElement = document.getElementById("root");
+
+if (!rootElement) {
+  throw new Error("Elemento root não encontrado.");
+}
+
+createRoot(rootElement).render(
   <StrictMode>
       <BrowserRouter>
-      <App />
+        <AuthProvider>
+          <App />
+        </AuthProvider>
     </BrowserRouter>
   </StrictMode>
 )
