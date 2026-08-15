@@ -1,4 +1,5 @@
-import type { BookResponse, DiscoverResponse } from '../types/book';
+import type { BookResponse } from '../types/book';
+import type { DiscoverResponse } from '../types/discover';
 import { api } from './api';
 
 export async function discover(): Promise<DiscoverResponse> {

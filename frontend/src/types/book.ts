@@ -32,13 +32,3 @@ export interface BookSummary {
     title: string;
     thumbnailUrl: string | null;
 }
-
-export interface DiscoverSection {
-    key: string;
-    title: string;
-    books: BookCardResponse[];
-}
-
-export interface DiscoverResponse {
-    sections: DiscoverSection[];
-}

@@ -20,7 +20,7 @@ function App() {
                     element={<BookDetailsPage />}
                 />
                 <Route element={<ProtectedRoute />}>
-                    <Route path='/profile' element={<ProfilePage />}/>
+                    <Route path="/profile" element={<ProfilePage />} />
                 </Route>
                 <Route path="*" element={<NotFoundPage />} />
             </Route>
