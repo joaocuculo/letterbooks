@@ -1,4 +1,8 @@
+import { useState } from 'react';
+import { create } from '../services/userBookService';
+import type { BookCardResponse } from '../types/book';
 import type { DiscoverSection } from '../types/discover';
+import type { UserBookRequest } from '../types/userBook';
 import BookCard from './BookCard';
 
 interface BookSectionProps {
@@ -6,10 +10,27 @@ interface BookSectionProps {
 }
 
 function BookSection({ section }: BookSectionProps) {
-    console.log('BookSection recebeu: ', section);
+    const [favoriteBooks, setFavoriteBooks] = useState<Record<string, boolean>>(
+        {}
+    );
 
-    function handleFavorite() {
-        console.log('Usuário favoritou!');
+    async function handleFavorite(book: BookCardResponse) {
+        const userBook: UserBookRequest = {
+            googleBooksId: book.id,
+            currentPage: null,
+            isFavorite: true,
+            startedAt: null,
+            finishedAt: null,
+            status: 'WANT_TO_READ',
+        };
+
+        const result = await create(userBook);
+        setFavoriteBooks((previous) => ({
+            ...previous,
+            [book.id]: result.isFavorite,
+        }));
+
+        console.log(result);
     }
 
     return (
@@ -22,6 +43,7 @@ function BookSection({ section }: BookSectionProps) {
                         key={book.id}
                         book={book}
                         onFavorite={handleFavorite}
+                        isFavorite={favoriteBooks[book.id] ?? false}
                     />
                 ))}
             </div>

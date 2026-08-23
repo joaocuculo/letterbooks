@@ -2,10 +2,11 @@ import type { BookCardResponse } from '../types/book';
 
 interface BookCardProps {
     book: BookCardResponse;
-    onFavorite: () => void;
+    onFavorite: (book: BookCardResponse) => void;
+    isFavorite: boolean;
 }
 
-function BookCard({ book, onFavorite }: BookCardProps) {
+function BookCard({ book, onFavorite, isFavorite }: BookCardProps) {
     const authors = book.authors?.join(', ') ?? 'Autor não informado.';
 
     return (
@@ -22,7 +23,9 @@ function BookCard({ book, onFavorite }: BookCardProps) {
             <p>{book.publisher}</p>
             <p>{book.publishedDate}</p>
 
-            <button onClick={onFavorite}>Favoritar</button>
+            <button onClick={() => onFavorite(book)}>
+                {isFavorite ? 'Desfavoritar' : 'Favoritar'}
+            </button>
         </div>
     );
 }
