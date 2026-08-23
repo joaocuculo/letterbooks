@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import type { DiscoverSection } from '../types/discover';
 import { discover } from '../services/bookService';
 import { getApiErrorMessage } from '../utils/getApiErrorMessage.';
-import BookCard from '../components/BookCard';
+import type { DiscoverSection } from '../types/discover';
+import BookSection from '../components/BooksSection';
 
 function HomePage() {
     const [sections, setSections] = useState<DiscoverSection[] | null>(null);
@@ -54,15 +54,7 @@ function HomePage() {
             <h1>Página Inicial</h1>
 
             {sections?.map((section) => (
-                <div key={section.key} className="flez flex-col my-4">
-                    <p>{section.title}</p>
-
-                    <div className="flex flex-row gap-4">
-                        {section.books.map((book) => (
-                            <BookCard key={book.id} book={book} />
-                        ))}
-                    </div>
-                </div>
+                <BookSection key={section.key} section={section} />
             ))}
         </div>
     );

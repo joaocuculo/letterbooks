@@ -2,24 +2,27 @@ import type { BookCardResponse } from '../types/book';
 
 interface BookCardProps {
     book: BookCardResponse;
+    onFavorite: () => void;
 }
 
-function BookCard({ book }: BookCardProps) {
+function BookCard({ book, onFavorite }: BookCardProps) {
     const authors = book.authors?.join(', ') ?? 'Autor não informado.';
 
     return (
-        <div className="flex flex-col rounded-md shadow-md p-4 border border-purple-400 w-fit">
+        <div className="flex flex-col rounded-md shadow-md p-4 border border-purple-400 w-40">
             {book.thumbnailUrl && (
                 <img
                     src={book.thumbnailUrl}
                     alt={`Capa do livro ${book.title}`}
-                    className="max-w-36 "
+                    className="w-36 "
                 />
             )}
             <p>{book.title}</p>
             <p>{authors}</p>
             <p>{book.publisher}</p>
             <p>{book.publishedDate}</p>
+
+            <button onClick={onFavorite}>Favoritar</button>
         </div>
     );
 }
