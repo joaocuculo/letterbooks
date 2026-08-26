@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { create } from '../services/userBookService';
 import type { BookCardResponse } from '../types/book';
 import type { DiscoverSection } from '../types/discover';
-import type { UserBookRequest } from '../types/userBook';
+import type { UserBookRequest, UserBookResponse } from '../types/userBook';
 import BookCard from './BookCard';
 
 interface BookSectionProps {
@@ -10,11 +10,11 @@ interface BookSectionProps {
 }
 
 function BookSection({ section }: BookSectionProps) {
-    const [favoriteBooks, setFavoriteBooks] = useState<Record<string, boolean>>(
-        {}
-    );
+    const [favoriteBooks, setFavoriteBooks] = useState<
+        Record<string, UserBookResponse>
+    >({});
 
-    async function handleFavorite(book: BookCardResponse) {
+    async function handleFavoriteToggle(book: BookCardResponse) {
         const userBook: UserBookRequest = {
             googleBooksId: book.id,
             currentPage: null,
@@ -27,7 +27,7 @@ function BookSection({ section }: BookSectionProps) {
         const result = await create(userBook);
         setFavoriteBooks((previous) => ({
             ...previous,
-            [book.id]: result.isFavorite,
+            [book.id]: result,
         }));
 
         console.log(result);
@@ -42,8 +42,8 @@ function BookSection({ section }: BookSectionProps) {
                     <BookCard
                         key={book.id}
                         book={book}
-                        onFavorite={handleFavorite}
-                        isFavorite={favoriteBooks[book.id] ?? false}
+                        onFavorite={handleFavoriteToggle}
+                        isFavorite={favoriteBooks[book.id]?.isFavorite ?? false}
                     />
                 ))}
             </div>
