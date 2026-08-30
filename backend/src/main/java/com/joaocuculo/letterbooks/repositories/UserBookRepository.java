@@ -23,7 +23,7 @@ public interface UserBookRepository extends JpaRepository<UserBook, Long> {
     @Query("""
         SELECT ub FROM UserBook ub
         JOIN FETCH ub.book b
-        WHERE ub.user.id = :userId AND b.googleBookId IN :googleBooksId
+        WHERE ub.user.id = :userId AND b.googleBooksId IN :googleBooksId
     """)
     List<UserBook> findByUserIdAndBookGoogleBooksIdIn(
             @Param("userId") Long userId,
