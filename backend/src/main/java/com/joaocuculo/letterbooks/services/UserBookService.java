@@ -57,7 +57,9 @@ public class UserBookService {
         }
 
         validateCurrentPage(dto.currentPage(), book.getPageCount());
-        UserBook userBook = userBookRepository.save(UserBookMapper.toEntity(dto, user, book));
+
+        UserBookStatus status = dto.status() != null ? dto.status() : UserBookStatus.WANT_TO_READ;
+        UserBook userBook = userBookRepository.save(UserBookMapper.toEntity(dto, user, book, status));
 
         return UserBookMapper.toResponseDTO(userBook);
     }

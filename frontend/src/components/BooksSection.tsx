@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { create } from '../services/userBookService';
+import { create, update } from '../services/userBookService';
 import type { BookCardResponse } from '../types/book';
 import type { DiscoverSection } from '../types/discover';
-import type { UserBookRequest, UserBookResponse } from '../types/userBook';
+import type { UserBookResponse } from '../types/userBook';
 import BookCard from './BookCard';
 
 interface BookSectionProps {
@@ -15,22 +15,11 @@ function BookSection({ section }: BookSectionProps) {
     >({});
 
     async function handleFavoriteToggle(book: BookCardResponse) {
-        const userBook: UserBookRequest = {
-            googleBooksId: book.id,
-            currentPage: null,
-            isFavorite: true,
-            startedAt: null,
-            finishedAt: null,
-            status: 'WANT_TO_READ',
-        };
-
-        const result = await create(userBook);
-        setFavoriteBooks((previous) => ({
-            ...previous,
-            [book.id]: result,
-        }));
-
-        console.log(result);
+        if (book.userBookId) {
+            update(book.userBookId, { isFavorite: !book.isFavorite });
+        } else {
+            create({ googleBooksId: book.id, isFavorite: true });
+        }
     }
 
     return (

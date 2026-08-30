@@ -7,6 +7,8 @@ export interface BookCardResponse {
     publisher: string | null;
     publishedDate: string | null;
     thumbnailUrl: string | null;
+    isFavorite: boolean;
+    userBookId: number | null;
 }
 
 export interface BookResponse {

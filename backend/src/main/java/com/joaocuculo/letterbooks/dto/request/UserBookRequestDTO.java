@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 public record UserBookRequestDTO(
         @NotBlank(message = "ID do livro no Google Books é obrigatório.")
         String googleBooksId,
-        @NotNull(message = "Status do livro é obrigatório.")
         UserBookStatus status,
         @NotNull(message = "É obrigatório informar se o livro é favorito.")
         boolean isFavorite,

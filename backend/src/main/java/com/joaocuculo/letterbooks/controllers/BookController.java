@@ -41,8 +41,9 @@ public class BookController {
     }
 
     @GetMapping("/discover")
-    public ResponseEntity<DiscoverResponseDTO> discover() {
-        DiscoverResponseDTO discover = discoverService.discover();
+    public ResponseEntity<DiscoverResponseDTO> discover(@AuthenticationPrincipal JWTUserData user) {
+        Long userId = user != null ? user.userId() : null;
+        DiscoverResponseDTO discover = discoverService.discover(userId);
         return ResponseEntity.ok().body(discover);
     }
 

@@ -79,19 +79,22 @@ public class BookMapper {
     public static BookSummaryDTO toSummaryDTO(Book book) {
         return new BookSummaryDTO(
                 book.getId(),
+                book.getGoogleBooksId(),
                 book.getTitle(),
                 book.getThumbnailUrl()
         );
     }
 
-    public static BookCardResponseDTO toCardResponseDTO(GoogleBooksResponseDTO dto) {
+    public static BookCardResponseDTO toCardResponseDTO(GoogleBooksResponseDTO dto, boolean isFavorite, Long userBookId) {
         return new BookCardResponseDTO(
                 dto.googleBooksId(),
                 dto.volumeInfo().title(),
                 dto.volumeInfo().authors(),
                 dto.volumeInfo().publisher(),
                 dto.volumeInfo().publishedDate(),
-                dto.getThumbnailUrl()
+                dto.getThumbnailUrl(),
+                isFavorite,
+                userBookId
         );
     }
 

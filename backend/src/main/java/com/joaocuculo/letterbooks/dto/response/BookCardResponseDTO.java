@@ -8,6 +8,8 @@ public record BookCardResponseDTO(
         List<String> authors,
         String publisher,
         String publishedDate,
-        String thumbnailUrl
+        String thumbnailUrl,
+        boolean isFavorite,
+        Long userBookId
 ) {
 }

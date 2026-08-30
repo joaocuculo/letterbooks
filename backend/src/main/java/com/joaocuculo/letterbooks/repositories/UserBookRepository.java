@@ -5,8 +5,12 @@ import com.joaocuculo.letterbooks.entities.enums.UserBookStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -15,4 +19,13 @@ public interface UserBookRepository extends JpaRepository<UserBook, Long> {
     Page<UserBook> findByUserIdAndStatus(Long userId, UserBookStatus status, Pageable pageable);
     Optional<UserBook> findByUserIdAndBookId(Long userId, Long bookId);
     boolean existsByUserIdAndBookId(Long userId, Long bookId);
+
+    @Query("""
+        SELECT ub FROM UserBook ub
+        JOIN FETCH ub.book b
+        WHERE ub.user.id = :userId AND b.googleBookId IN :googleBooksId
+    """)
+    List<UserBook> findByUserIdAndBookGoogleBooksIdIn(
+            @Param("userId") Long userId,
+            @Param("googleBooksId") Collection<String> googleBooksIds);
 }

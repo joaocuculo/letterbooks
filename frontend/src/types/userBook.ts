@@ -9,11 +9,11 @@ export type UserBookStatus =
 
 export interface UserBookRequest {
     googleBooksId: string;
-    status: UserBookStatus;
+    status?: UserBookStatus;
     isFavorite: boolean;
-    currentPage: number | null;
-    startedAt: string | null;
-    finishedAt: string | null;
+    currentPage?: number | null;
+    startedAt?: string | null;
+    finishedAt?: string | null;
 }
 
 export interface UserBookResponse {
@@ -30,9 +30,9 @@ export interface UserBookResponse {
 }
 
 export interface UserBookUpdate {
-    status: UserBookStatus;
+    status?: UserBookStatus;
     isFavorite: boolean;
-    currentPage: number | null;
-    startedAt: string | null;
-    finishedAt: string | null;
+    currentPage?: number | null;
+    startedAt?: string | null;
+    finishedAt?: string | null;
 }

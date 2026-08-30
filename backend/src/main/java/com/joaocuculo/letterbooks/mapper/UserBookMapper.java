@@ -6,6 +6,7 @@ import com.joaocuculo.letterbooks.dto.response.UserBookResponseDTO;
 import com.joaocuculo.letterbooks.entities.Book;
 import com.joaocuculo.letterbooks.entities.User;
 import com.joaocuculo.letterbooks.entities.UserBook;
+import com.joaocuculo.letterbooks.entities.enums.UserBookStatus;
 
 public class UserBookMapper {
 
@@ -24,9 +25,9 @@ public class UserBookMapper {
         );
     }
 
-    public static UserBook toEntity(UserBookRequestDTO dto, User user, Book book) {
+    public static UserBook toEntity(UserBookRequestDTO dto, User user, Book book, UserBookStatus status) {
         return new UserBook(
-                dto.status(),
+                status,
                 dto.isFavorite(),
                 dto.currentPage(),
                 dto.startedAt(),
