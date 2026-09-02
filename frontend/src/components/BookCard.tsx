@@ -12,7 +12,7 @@ function BookCard({ book, onFavorite, isLoading }: BookCardProps) {
 
     return (
         <div className="flex flex-col rounded-md shadow-md p-4 border border-purple-400 w-40">
-            <Link to={`/book/${book.id}`}>
+            <Link to={`/books/${book.id}`}>
                 {book.thumbnailUrl && (
                     <img
                         src={book.thumbnailUrl}

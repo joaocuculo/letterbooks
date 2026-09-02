@@ -4,6 +4,7 @@ import type { BookResponse } from '../types/book';
 import axios from 'axios';
 import { getBookById } from '../services/bookService';
 import { getApiErrorMessage } from '../utils/getApiErrorMessage.';
+import DOMPurify from 'dompurify';
 
 function BookDetailsPage() {
     const { googleBooksId } = useParams<{ googleBooksId: string }>();
@@ -141,7 +142,13 @@ function BookDetailsPage() {
                             {book.isbn ?? 'Não informado.'}
                         </p>
 
-                        <p>{book.description ?? 'Descrição não disponível.'}</p>
+                        <div
+                            dangerouslySetInnerHTML={{
+                                __html: book.description
+                                    ? DOMPurify.sanitize(book.description)
+                                    : 'Descrição não disponível.',
+                            }}
+                        />
                     </div>
                 </div>
             </article>
