@@ -2,7 +2,7 @@ import { useState } from "react";
 import type { SubmitEvent } from "react";
 import { getApiErrorMessage } from "../utils/getApiErrorMessage.";
 import { login } from "../services/authService";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
 interface LoginFormErrors {
@@ -38,6 +38,15 @@ function LoginPage() {
 
     const { signIn } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
+
+    const requestedPath = (location.state as { from?: unknown } | null)?.from;
+    const destination =
+        typeof requestedPath === 'string' &&
+        requestedPath.startsWith('/') &&
+        !requestedPath.startsWith('//')
+            ? requestedPath
+            : '/';
 
     async function handleSubmit(event:SubmitEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -64,7 +73,7 @@ function LoginPage() {
 
             signIn(token);
             setPassword("");
-            navigate("/", { replace: true });
+            navigate(destination, { replace: true });
         } catch (error) {
             setErrorMessage(
                 getApiErrorMessage(

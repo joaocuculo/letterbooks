@@ -6,7 +6,6 @@ import com.joaocuculo.letterbooks.entities.Bookshelf;
 import com.joaocuculo.letterbooks.entities.BookshelfItem;
 import com.joaocuculo.letterbooks.exceptions.BusinessException;
 import com.joaocuculo.letterbooks.exceptions.DatabaseException;
-import com.joaocuculo.letterbooks.exceptions.ForbiddenException;
 import com.joaocuculo.letterbooks.exceptions.ResourceNotFoundException;
 import com.joaocuculo.letterbooks.repositories.BookshelfItemRepository;
 import org.springframework.dao.DataIntegrityViolationException;

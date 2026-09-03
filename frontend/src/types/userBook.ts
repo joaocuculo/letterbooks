@@ -31,7 +31,7 @@ export interface UserBookResponse {
 
 export interface UserBookUpdate {
     status?: UserBookStatus;
-    isFavorite: boolean;
+    isFavorite?: boolean;
     currentPage?: number | null;
     startedAt?: string | null;
     finishedAt?: string | null;

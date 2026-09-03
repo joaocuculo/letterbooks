@@ -1,12 +1,11 @@
 import { useState } from 'react';
-import { create, update } from '../services/userBookService';
+import { createOrUpdate } from '../services/userBookService';
 import type { BookCardResponse } from '../types/book';
 import type { DiscoverSection } from '../types/discover';
-import type { UserBookRequest, UserBookUpdate } from '../types/userBook';
 import BookCard from './BookCard';
 import { getApiErrorMessage } from '../utils/getApiErrorMessage.';
-import { useNavigate } from 'react-router-dom';
-import { getToken } from '../utils/authStorage';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 
 interface BookSectionProps {
     section: DiscoverSection;
@@ -21,12 +20,19 @@ function BookSection({ section, onBookUpdated }: BookSectionProps) {
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     const navigate = useNavigate();
+    const location = useLocation();
+    const { isAuthenticated } = useAuth();
 
     async function handleFavoriteToggle(book: BookCardResponse) {
-        const token = getToken();
-
-        if (!token) {
-            navigate('/login');
+        if (!isAuthenticated) {
+            navigate('/login', {
+                state: {
+                    from:
+                        location.pathname +
+                        location.search +
+                        location.hash,
+                },
+            });
             return;
         }
 
@@ -36,26 +42,11 @@ function BookSection({ section, onBookUpdated }: BookSectionProps) {
         }));
 
         try {
-            if (book.userBookId) {
-                const data: UserBookUpdate = { isFavorite: !book.isFavorite };
-
-                const result = await update(book.userBookId, data);
-
-                onBookUpdated({
-                    ...book,
-                    isFavorite: result.isFavorite,
-                    userBookId: result.id,
-                });
-
-                return;
-            }
-
-            const data: UserBookRequest = {
-                googleBooksId: book.id,
-                isFavorite: true,
-            };
-
-            const result = await create(data);
+            const result = await createOrUpdate(
+                book.id,
+                book.userBookId,
+                { isFavorite: !book.isFavorite }
+            );
 
             onBookUpdated({
                 ...book,

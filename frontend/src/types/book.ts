@@ -31,6 +31,7 @@ export interface BookResponse {
 
 export interface BookSummary {
     id: number;
+    googleBooksId: string;
     title: string;
     thumbnailUrl: string | null;
 }
