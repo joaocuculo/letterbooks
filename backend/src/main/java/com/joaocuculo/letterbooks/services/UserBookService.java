@@ -31,13 +31,17 @@ public class UserBookService {
         this.bookService = bookService;
     }
 
-    public Page<UserBookResponseDTO> findByUserId(Long userId, UserBookStatus status, Pageable pageable) {
+    public Page<UserBookResponseDTO> findByUserId(Long userId, UserBookStatus status, Boolean favorite, Pageable pageable) {
         userService.getByIdOrThrow(userId);
         Page<UserBook> userBooks;
-        if (status == null) {
-            userBooks = userBookRepository.findByUserId(userId, pageable);
-        } else {
+        if (status != null && favorite != null) {
+            userBooks = userBookRepository.findByUserIdAndStatusAndFavorite(userId, status, favorite, pageable);
+        } else if (status != null) {
             userBooks = userBookRepository.findByUserIdAndStatus(userId, status, pageable);
+        } else if (favorite != null) {
+            userBooks = userBookRepository.findByUserIdAndFavorite(userId, favorite, pageable);
+        } else {
+            userBooks = userBookRepository.findByUserId(userId, pageable);
         }
         return userBooks.map(UserBookMapper::toResponseDTO);
     }

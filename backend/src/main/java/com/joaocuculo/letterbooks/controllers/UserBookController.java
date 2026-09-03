@@ -25,12 +25,13 @@ public class UserBookController {
         this.userBookService = userBookService;
     }
 
-    @GetMapping(value = "/user/{userId}")
+    @GetMapping(value = "/me")
     public ResponseEntity<Page<UserBookResponseDTO>> findByUserId(
-            @PathVariable Long userId,
+            @AuthenticationPrincipal JWTUserData user,
             @RequestParam(required = false) UserBookStatus status,
+            @RequestParam(required = false) Boolean favorite,
             @PageableDefault(size = 20) Pageable pageable) {
-        Page<UserBookResponseDTO> userBooks = userBookService.findByUserId(userId, status, pageable);
+        Page<UserBookResponseDTO> userBooks = userBookService.findByUserId(user.userId(), status, favorite, pageable);
         return ResponseEntity.ok().body(userBooks);
     }
 
