@@ -43,9 +43,15 @@ public class RatingService {
         return ratings.map(RatingMapper::toResponseDTO);
     }
 
-    public Page<RatingResponseDTO> findByBookId(Long bookId, Pageable pageable) {
-        Page<Rating> ratings = ratingRepository.findByBookId(bookId, pageable);
+    public Page<RatingResponseDTO> findByGoogleBooksId(String googleBooksId, Pageable pageable) {
+        Page<Rating> ratings = ratingRepository.findByBookGoogleBooksId(googleBooksId, pageable);
         return ratings.map(RatingMapper::toResponseDTO);
+    }
+
+    public RatingResponseDTO findByGoogleBooksIdAndUserId(String googleBooksId, Long userId) {
+        return ratingRepository.findByUserIdAndBookGoogleBooksId(userId, googleBooksId)
+                .map(RatingMapper::toResponseDTO)
+                .orElse(null);
     }
 
     public RatingResponseDTO create(Long userId, RatingRequestDTO dto) {

@@ -34,10 +34,10 @@ public class UserBookController {
         return ResponseEntity.ok().body(userBooks);
     }
 
-    @GetMapping(value = "/book/{bookId}")
-    public ResponseEntity<UserBookResponseDTO> findByUserIdAndBookId(
-            @AuthenticationPrincipal JWTUserData user, @PathVariable Long bookId) {
-        UserBookResponseDTO userBook = userBookService.findByUserIdAndBookId(user.userId(), bookId);
+    @GetMapping(value = "/book/{googleBooksId}")
+    public ResponseEntity<UserBookResponseDTO> findByUserIdAndGoogleBooksId(
+            @AuthenticationPrincipal JWTUserData user, @PathVariable String googleBooksId) {
+        UserBookResponseDTO userBook = userBookService.findByUserIdAndGoogleBooksId(user.userId(), googleBooksId);
         if (userBook == null) {
             return ResponseEntity.noContent().build();
         }

@@ -42,8 +42,8 @@ public class UserBookService {
         return userBooks.map(UserBookMapper::toResponseDTO);
     }
 
-    public UserBookResponseDTO findByUserIdAndBookId(Long userId, Long bookId) {
-        return userBookRepository.findByUserIdAndBookId(userId, bookId)
+    public UserBookResponseDTO findByUserIdAndGoogleBooksId(Long userId, String googleBooksId) {
+        return userBookRepository.findByUserIdAndBookGoogleBooksId(userId, googleBooksId)
                 .map(UserBookMapper::toResponseDTO)
                 .orElse(null);
     }

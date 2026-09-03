@@ -39,11 +39,21 @@ public class RatingController {
         return ResponseEntity.ok().body(ratings);
     }
 
-    @GetMapping(value = "/book/{bookId}")
-    public ResponseEntity<Page<RatingResponseDTO>> findByBookId(
-            @PathVariable Long bookId, @PageableDefault(size = 20) Pageable pageable) {
-        Page<RatingResponseDTO> ratings = ratingService.findByBookId(bookId, pageable);
+    @GetMapping(value = "/book/google/{googleBooksId}")
+    public ResponseEntity<Page<RatingResponseDTO>> findByGoogleBooksId(
+            @PathVariable String googleBooksId, @PageableDefault(size = 20) Pageable pageable) {
+        Page<RatingResponseDTO> ratings = ratingService.findByGoogleBooksId(googleBooksId, pageable);
         return ResponseEntity.ok().body(ratings);
+    }
+
+    @GetMapping(value = "/book/google/{googleBooksId}/me")
+    public ResponseEntity<RatingResponseDTO> findByGoogleBooksIdAndUserId(
+            @PathVariable String googleBooksId, @AuthenticationPrincipal JWTUserData user) {
+        RatingResponseDTO rating = ratingService.findByGoogleBooksIdAndUserId(googleBooksId, user.userId());
+        if (rating == null) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok().body(rating);
     }
 
     @PostMapping
