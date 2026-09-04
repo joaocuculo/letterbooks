@@ -22,7 +22,36 @@ function NavBar() {
                     </NavLink>
 
                     {isAuthenticated ? (
-                        <button type="button" onClick={handleSignOut} className='cursor-pointer'>Sair</button>
+                        <>
+                            <details>
+                                <summary>Meus Livros</summary>
+                                <div>
+                                    <NavLink to="/my-books">
+                                        Visão geral
+                                    </NavLink>
+                                    <NavLink to="/my-books/list">
+                                        Todos
+                                    </NavLink>
+                                    <NavLink to="/my-books/list?status=WANT_TO_READ">
+                                        Quero ler
+                                    </NavLink>
+                                    <NavLink to="/my-books/list?status=READING">
+                                        Lendo
+                                    </NavLink>
+                                    <NavLink to="/my-books/list?status=COMPLETED">
+                                        Lidos
+                                    </NavLink>
+                                    <NavLink to="/my-books/list?status=ABANDONED">
+                                        Abandonados
+                                    </NavLink>
+                                    <NavLink to="/my-books/list?favorite=true">
+                                        Favoritos
+                                    </NavLink>
+                                </div>
+                            </details>
+
+                            <button type="button" onClick={handleSignOut} className='cursor-pointer'>Sair</button>
+                        </>
                     ) : (
                         <NavLink to={'/login'}>Entrar</NavLink>
                     )}

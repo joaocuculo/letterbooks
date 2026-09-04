@@ -2,16 +2,7 @@ import type {
     UserBookResponse,
     UserBookStatus,
 } from '../types/userBook';
-
-const statusOptions: Array<{
-    value: UserBookStatus;
-    label: string;
-}> = [
-    { value: 'WANT_TO_READ', label: 'Quero ler' },
-    { value: 'READING', label: 'Lendo' },
-    { value: 'COMPLETED', label: 'Lido' },
-    { value: 'ABANDONED', label: 'Abandonado' },
-];
+import { userBookStatusOptions } from '../utils/userBookStatus';
 
 interface BookRelationshipControlsProps {
     userBook: UserBookResponse | null;
@@ -71,7 +62,7 @@ function BookRelationshipControls({
                 <option value="" disabled>
                     Selecione um status
                 </option>
-                {statusOptions.map((option) => (
+                {userBookStatusOptions.map((option) => (
                     <option key={option.value} value={option.value}>
                         {option.label}
                     </option>

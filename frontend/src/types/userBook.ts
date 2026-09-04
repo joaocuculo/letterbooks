@@ -36,3 +36,11 @@ export interface UserBookUpdate {
     startedAt?: string | null;
     finishedAt?: string | null;
 }
+
+export interface UserBookFilters {
+    status?: UserBookStatus;
+    favorite?: boolean;
+    page?: number;
+    size?: number;
+    sort?: string;
+}

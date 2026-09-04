@@ -1,9 +1,26 @@
 import type {
+    UserBookFilters,
     UserBookRequest,
     UserBookResponse,
     UserBookUpdate,
 } from '../types/userBook';
+import type { PageResponse } from '../types/page';
 import { api } from './api';
+
+export async function findMine(
+    filters: UserBookFilters = {},
+    signal?: AbortSignal
+): Promise<PageResponse<UserBookResponse>> {
+    const response = await api.get<PageResponse<UserBookResponse>>(
+        '/user-books/me',
+        {
+            params: filters,
+            signal,
+        }
+    );
+
+    return response.data;
+}
 
 export async function findByGoogleBooksId(
     googleBooksId: string,

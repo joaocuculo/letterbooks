@@ -7,6 +7,8 @@ import NotFoundPage from './pages/NotFoundPage';
 import RegisterPage from './pages/RegisterPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import ProfilePage from './pages/ProfilePage';
+import MyBooksPage from './pages/MyBooksPage';
+import MyBooksListPage from './pages/MyBooksListPage';
 
 function App() {
     return (
@@ -20,7 +22,12 @@ function App() {
                     element={<BookDetailsPage />}
                 />
                 <Route element={<ProtectedRoute />}>
-                    <Route path="/profile" element={<ProfilePage />} />
+                    <Route path="profile" element={<ProfilePage />} />
+                    <Route path="my-books" element={<MyBooksPage />} />
+                    <Route
+                        path="my-books/list"
+                        element={<MyBooksListPage />}
+                    />
                 </Route>
                 <Route path="*" element={<NotFoundPage />} />
             </Route>

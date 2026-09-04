@@ -35,11 +35,11 @@ public class UserBookService {
         userService.getByIdOrThrow(userId);
         Page<UserBook> userBooks;
         if (status != null && favorite != null) {
-            userBooks = userBookRepository.findByUserIdAndStatusAndFavorite(userId, status, favorite, pageable);
+            userBooks = userBookRepository.findByUserIdAndStatusAndIsFavorite(userId, status, favorite, pageable);
         } else if (status != null) {
             userBooks = userBookRepository.findByUserIdAndStatus(userId, status, pageable);
         } else if (favorite != null) {
-            userBooks = userBookRepository.findByUserIdAndFavorite(userId, favorite, pageable);
+            userBooks = userBookRepository.findByUserIdAndIsFavorite(userId, favorite, pageable);
         } else {
             userBooks = userBookRepository.findByUserId(userId, pageable);
         }

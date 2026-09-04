@@ -17,8 +17,8 @@ import java.util.Optional;
 public interface UserBookRepository extends JpaRepository<UserBook, Long> {
     Page<UserBook> findByUserId(Long userId, Pageable pageable);
     Page<UserBook> findByUserIdAndStatus(Long userId, UserBookStatus status, Pageable pageable);
-    Page<UserBook> findByUserIdAndFavorite(Long userId, boolean favorite, Pageable pageable);
-    Page<UserBook> findByUserIdAndStatusAndFavorite(Long userId, UserBookStatus status, boolean favorite, Pageable pageable);
+    Page<UserBook> findByUserIdAndIsFavorite(Long userId, boolean favorite, Pageable pageable);
+    Page<UserBook> findByUserIdAndStatusAndIsFavorite(Long userId, UserBookStatus status, boolean favorite, Pageable pageable);
     Optional<UserBook> findByUserIdAndBookGoogleBooksId(Long userId, String googleBooksId);
     boolean existsByUserIdAndBookId(Long userId, Long bookId);
 
