@@ -9,6 +9,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import ProfilePage from './pages/ProfilePage';
 import MyBooksPage from './pages/MyBooksPage';
 import MyBooksListPage from './pages/MyBooksListPage';
+import SearchPage from './pages/SearchPage';
 
 function App() {
     return (
@@ -17,6 +18,7 @@ function App() {
                 <Route index element={<HomePage />} />
                 <Route path="login" element={<LoginPage />} />
                 <Route path="register" element={<RegisterPage />} />
+                <Route path="search" element={<SearchPage />} />
                 <Route
                     path="books/:googleBooksId"
                     element={<BookDetailsPage />}
