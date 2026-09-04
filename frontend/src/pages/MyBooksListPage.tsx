@@ -114,26 +114,30 @@ function MyBooksListPage() {
               : userBookStatusLabels[selectedFilter];
 
     return (
-        <div>
-            <Link to="/my-books">← Voltar para Meus Livros</Link>
-            <h1>{title}</h1>
+        <div className="mx-auto max-w-7xl px-4 py-6">
+            <Link className="mb-4 inline-block" to="/my-books">
+                ← Voltar para Meus Livros
+            </Link>
+            <h1 className="mb-4">{title}</h1>
 
-            <label htmlFor="my-books-filter">Filtrar livros</label>
-            <select
-                id="my-books-filter"
-                value={selectedFilter}
-                onChange={(event) =>
-                    handleFilterChange(event.target.value as FilterValue)
-                }
-            >
-                <option value="ALL">Todos</option>
-                {userBookStatusOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                        {option.label}
-                    </option>
-                ))}
-                <option value="FAVORITES">Favoritos</option>
-            </select>
+            <div className="mb-6 flex items-center gap-2">
+                <label htmlFor="my-books-filter">Filtrar livros</label>
+                <select
+                    id="my-books-filter"
+                    value={selectedFilter}
+                    onChange={(event) =>
+                        handleFilterChange(event.target.value as FilterValue)
+                    }
+                >
+                    <option value="ALL">Todos</option>
+                    {userBookStatusOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                            {option.label}
+                        </option>
+                    ))}
+                    <option value="FAVORITES">Favoritos</option>
+                </select>
+            </div>
 
             {isLoading ? (
                 <p>Carregando livros...</p>
@@ -142,7 +146,7 @@ function MyBooksListPage() {
             ) : result?.content.length === 0 ? (
                 <p>Nenhum livro encontrado.</p>
             ) : (
-                <div>
+                <div className="flex flex-wrap gap-6">
                     {result?.content.map((userBook) => (
                         <UserBookCard
                             key={userBook.id}
@@ -153,7 +157,10 @@ function MyBooksListPage() {
             )}
 
             {result && result.page.totalPages > 1 && (
-                <nav aria-label="Paginação dos meus livros">
+                <nav
+                    className="mt-6 flex items-center gap-4"
+                    aria-label="Paginação dos meus livros"
+                >
                     <button
                         type="button"
                         onClick={() => changePage(result.page.number - 1)}

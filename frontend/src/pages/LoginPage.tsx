@@ -91,19 +91,23 @@ function LoginPage() {
     }
 
     return (
-        <main>
-            <section>
+        <main className="mx-auto w-full max-w-md px-4 py-8">
+            <section className="flex flex-col gap-4">
                 <h1>Entrar</h1>
 
                 <p>Use seu e-mail e sua senha cadastrados no LetterBooks.</p>
 
-                <form onSubmit={handleSubmit} noValidate>
-                    <div>
+                <form
+                    className="flex flex-col gap-4"
+                    onSubmit={handleSubmit}
+                    noValidate
+                >
+                    <div className="flex flex-col gap-1">
                         <label htmlFor="email">
                             E-mail
                         </label>
 
-                        <input type="email" id="email" name="email" autoComplete="email" value={email} onChange={(event) => {
+                        <input className="w-full" type="email" id="email" name="email" autoComplete="email" value={email} onChange={(event) => {
                             setEmail(event.target.value);
 
                             setFormErrors((current) => ({
@@ -121,12 +125,12 @@ function LoginPage() {
                         )}
                     </div>
 
-                    <div>
+                    <div className="flex flex-col gap-1">
                         <label htmlFor="password">
                             Senha
                         </label>
 
-                        <input type="password" id="password" name="password" autoComplete="current-password" value={password} onChange={(event) => {
+                        <input className="w-full" type="password" id="password" name="password" autoComplete="current-password" value={password} onChange={(event) => {
                             setPassword(event.target.value);
 
                             setFormErrors((current) => ({
@@ -152,7 +156,7 @@ function LoginPage() {
                         <p role="status">{successMessage}</p>
                     )}
 
-                    <button type="submit" disabled={isSubmitting}>
+                    <button className="self-start" type="submit" disabled={isSubmitting}>
                         {isSubmitting ? "Entrando..." : "Entrar"}
                     </button>
                 </form>

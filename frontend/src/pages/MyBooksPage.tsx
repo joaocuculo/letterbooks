@@ -90,13 +90,17 @@ function MyBooksPage() {
     }, []);
 
     if (isLoading) {
-        return <p>Carregando seus livros...</p>;
+        return (
+            <p className="mx-auto max-w-7xl px-4 py-6">
+                Carregando seus livros...
+            </p>
+        );
     }
 
     if (errorMessage || !overview) {
         return (
-            <div>
-                <h1>Meus Livros</h1>
+            <div className="mx-auto max-w-7xl px-4 py-6">
+                <h1 className="mb-6">Meus Livros</h1>
                 <p role="alert">
                     {errorMessage ?? 'Não foi possível carregar seus livros.'}
                 </p>
@@ -105,8 +109,8 @@ function MyBooksPage() {
     }
 
     return (
-        <div>
-            <h1>Meus Livros</h1>
+        <div className="mx-auto max-w-7xl px-4 py-6">
+            <h1 className="mb-6">Meus Livros</h1>
 
             <MyBooksSection
                 title="Continuar lendo"

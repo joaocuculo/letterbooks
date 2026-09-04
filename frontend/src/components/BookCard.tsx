@@ -11,13 +11,13 @@ function BookCard({ book, onFavorite, isLoading }: BookCardProps) {
     const authors = book.authors?.join(', ') ?? 'Autor não informado.';
 
     return (
-        <div className="flex flex-col rounded-md shadow-md p-4 border border-purple-400 w-40">
-            <Link to={`/books/${book.id}`}>
+        <article className="flex w-44 flex-col gap-2 rounded-md border border-purple-400 p-4 shadow-md">
+            <Link className="flex flex-col gap-2" to={`/books/${book.id}`}>
                 {book.thumbnailUrl && (
                     <img
                         src={book.thumbnailUrl}
                         alt={`Capa do livro ${book.title}`}
-                        className="w-36 "
+                        className="h-48 w-full object-contain"
                     />
                 )}
                 <p>{book.title}</p>
@@ -33,7 +33,7 @@ function BookCard({ book, onFavorite, isLoading }: BookCardProps) {
                       ? 'Desfavoritar'
                       : 'Favoritar'}
             </button>
-        </div>
+        </article>
     );
 }
 

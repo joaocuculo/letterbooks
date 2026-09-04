@@ -24,8 +24,10 @@ function NavBar() {
                     {isAuthenticated ? (
                         <>
                             <details>
-                                <summary>Meus Livros</summary>
-                                <div>
+                                <summary className="cursor-pointer">
+                                    Meus Livros
+                                </summary>
+                                <div className="flex flex-col gap-1 p-2">
                                     <NavLink to="/my-books">
                                         Visão geral
                                     </NavLink>

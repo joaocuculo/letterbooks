@@ -69,12 +69,12 @@ function BookSection({ section, onBookUpdated }: BookSectionProps) {
     }
 
     return (
-        <div className="flex flex-col my-4">
-            <p>{section.title}</p>
+        <section className="my-8 flex flex-col gap-3">
+            <h2>{section.title}</h2>
 
             {errorMessage && <p>{errorMessage}</p>}
 
-            <div className="flex flex-row gap-4">
+            <div className="flex flex-wrap gap-4">
                 {section.books.map((book) => (
                     <BookCard
                         key={book.id}
@@ -84,7 +84,7 @@ function BookSection({ section, onBookUpdated }: BookSectionProps) {
                     />
                 ))}
             </div>
-        </div>
+        </section>
     );
 }
 

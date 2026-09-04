@@ -10,16 +10,22 @@ function UserBookCard({ userBook }: UserBookCardProps) {
     const { book } = userBook;
 
     return (
-        <article>
-            <Link to={`/books/${book.googleBooksId}`}>
+        <article className="flex w-44 flex-col gap-2">
+            <Link
+                className="flex flex-col gap-2"
+                to={`/books/${book.googleBooksId}`}
+            >
                 {book.thumbnailUrl ? (
                     <img
                         src={book.thumbnailUrl.replace(/^http:/, 'https:')}
                         alt={`Capa do livro ${book.title}`}
                         referrerPolicy="no-referrer"
+                        className="h-56 w-full object-contain"
                     />
                 ) : (
-                    <div>Sem capa disponível</div>
+                    <div className="flex h-56 items-center justify-center">
+                        Sem capa disponível
+                    </div>
                 )}
 
                 <h3>{book.title}</h3>

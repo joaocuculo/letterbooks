@@ -38,11 +38,15 @@ function RatingForm({
     }
 
     return (
-        <section>
+        <section className="mt-8">
             <h2>{rating ? 'Editar minha avaliação' : 'Avaliar este livro'}</h2>
 
-            <form onSubmit={handleSubmit} noValidate>
-                <div>
+            <form
+                className="mt-3 flex max-w-xl flex-col gap-4"
+                onSubmit={handleSubmit}
+                noValidate
+            >
+                <div className="flex flex-col items-start gap-1">
                     <label htmlFor="rating-score">Nota</label>
                     <select
                         id="rating-score"
@@ -72,9 +76,10 @@ function RatingForm({
                     )}
                 </div>
 
-                <div>
+                <div className="flex flex-col gap-1">
                     <label htmlFor="rating-comment">Comentário</label>
                     <textarea
+                        className="min-h-28 w-full"
                         id="rating-comment"
                         value={comment}
                         onChange={(event) => setComment(event.target.value)}
@@ -84,7 +89,7 @@ function RatingForm({
 
                 {errorMessage && <p role="alert">{errorMessage}</p>}
 
-                <button type="submit" disabled={isSaving}>
+                <button className="self-start" type="submit" disabled={isSaving}>
                     {isSaving ? 'Salvando...' : 'Salvar avaliação'}
                 </button>
             </form>

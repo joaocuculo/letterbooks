@@ -10,13 +10,13 @@ interface MyBooksSectionProps {
 
 function MyBooksSection({ title, books, viewMoreTo }: MyBooksSectionProps) {
     return (
-        <section>
-            <h2>{title}</h2>
+        <section className="mb-10">
+            <h2 className="mb-3">{title}</h2>
 
             {books.length === 0 ? (
                 <p>Nenhum livro nesta seção.</p>
             ) : (
-                <div>
+                <div className="flex flex-wrap gap-6">
                     {books.map((userBook) => (
                         <UserBookCard
                             key={userBook.id}
@@ -26,7 +26,9 @@ function MyBooksSection({ title, books, viewMoreTo }: MyBooksSectionProps) {
                 </div>
             )}
 
-            <Link to={viewMoreTo}>Ver mais</Link>
+            <Link className="mt-3 inline-block" to={viewMoreTo}>
+                Ver mais
+            </Link>
         </section>
     );
 }

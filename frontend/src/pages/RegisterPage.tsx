@@ -81,8 +81,8 @@ function RegisterPage() {
     }
 
     return (
-        <div>
-            <section>
+        <div className="mx-auto w-full max-w-md px-4 py-8">
+            <section className="flex flex-col gap-4">
                 <h1>
                     Cadastrar
                 </h1>
@@ -91,13 +91,18 @@ function RegisterPage() {
                     Cadastre-se no LetterBooks.
                 </p>
 
-                <form onSubmit={handleSubmit} noValidate>
-                    <div>
+                <form
+                    className="flex flex-col gap-4"
+                    onSubmit={handleSubmit}
+                    noValidate
+                >
+                    <div className="flex flex-col gap-1">
                         <label htmlFor="name">
                             Nome
                         </label>
 
-                        <input 
+                        <input
+                            className="w-full"
                             id="name"
                             name="name" 
                             type="text"
@@ -130,12 +135,13 @@ function RegisterPage() {
                         )}
                     </div>
 
-                    <div>
+                    <div className="flex flex-col gap-1">
                         <label htmlFor="email">
                             E-mail
                         </label>
 
-                        <input 
+                        <input
+                            className="w-full"
                             id="email"
                             name="email"
                             type="email"
@@ -167,7 +173,7 @@ function RegisterPage() {
                         )}
                     </div>
 
-                    <div>
+                    <div className="flex flex-col gap-1">
                         <label
                             htmlFor="password"
                         >
@@ -175,6 +181,7 @@ function RegisterPage() {
                         </label>
 
                         <input
+                            className="w-full"
                             id="password"
                             name="password"
                             type="password"
@@ -218,7 +225,7 @@ function RegisterPage() {
                         </p>
                     )}
 
-                    <button type="submit" disabled={isSubmitting}>
+                    <button className="self-start" type="submit" disabled={isSubmitting}>
                         {isSubmitting
                             ? "Cadastrando..."
                             : "Cadastrar"

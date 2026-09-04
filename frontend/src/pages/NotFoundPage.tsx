@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 
 function NotFoundPage() {
     return (
-        <section>
+        <section className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-6">
             <p>Erro 404</p>
 
             <h1>Página não encontrada</h1>

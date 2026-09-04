@@ -267,7 +267,7 @@ function BookDetailsPage() {
 
     if (!googleBooksId) {
         return (
-            <div>
+            <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-6">
                 <h1>Identificador inválido.</h1>
                 <p>O identificador do livro não foi informado na URL.</p>
                 <Link to="/"> Voltar à página inicial</Link>
@@ -277,7 +277,7 @@ function BookDetailsPage() {
 
     if (isLoading) {
         return (
-            <div>
+            <div className="mx-auto max-w-7xl px-4 py-6">
                 <p>Carregando livro...</p>
             </div>
         );
@@ -285,7 +285,7 @@ function BookDetailsPage() {
 
     if (errorMessage || !book) {
         return (
-            <div>
+            <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-6">
                 <h1>Livro não encontrado.</h1>
                 <p>{errorMessage ?? 'Não encontramos esse livro.'}</p>
                 <Link to="/">Voltar à página inicial</Link>
@@ -301,29 +301,34 @@ function BookDetailsPage() {
     );
 
     return (
-        <div>
-            <Link to="/">← Voltar à página inicial</Link>
+        <div className="mx-auto max-w-7xl px-4 py-6">
+            <Link className="mb-6 inline-block" to="/">
+                ← Voltar à página inicial
+            </Link>
 
-            <article>
-                <div>
+            <article className="flex flex-col gap-8 md:flex-row">
+                <div className="shrink-0">
                     {coverUrl ? (
                         <img
                             src={coverUrl}
                             alt={`Capa do livro ${book.title}`}
                             referrerPolicy="no-referrer"
+                            className="h-auto w-56 object-contain"
                         />
                     ) : (
-                        <div>Sem capa disponível</div>
+                        <div className="flex h-72 w-56 items-center justify-center">
+                            Sem capa disponível
+                        </div>
                     )}
                 </div>
 
-                <div>
+                <div className="flex min-w-0 flex-1 flex-col gap-4">
                     <h1>{book.title}</h1>
 
                     {book.subtitle && <p>{book.subtitle}</p>}
 
                     {isAuthenticated && userDataErrorMessage ? (
-                        <section>
+                        <section className="flex flex-col gap-2">
                             <h2>Minha relação com o livro</h2>
                             <p role="alert">{userDataErrorMessage}</p>
                         </section>
@@ -339,7 +344,7 @@ function BookDetailsPage() {
                         />
                     )}
 
-                    <div>
+                    <div className="flex flex-col gap-2">
                         <p>
                             <strong>Autores: </strong>
                             {authors}
@@ -371,6 +376,7 @@ function BookDetailsPage() {
                         </p>
 
                         <div
+                            className="mt-2"
                             dangerouslySetInnerHTML={{
                                 __html: book.description
                                     ? DOMPurify.sanitize(book.description)
@@ -394,7 +400,7 @@ function BookDetailsPage() {
                     />
                 )
             ) : (
-                <section>
+                <section className="mt-8 flex flex-col items-start gap-3">
                     <h2>Avaliar este livro</h2>
                     <button type="button" onClick={redirectToLogin}>
                         Entre para avaliar

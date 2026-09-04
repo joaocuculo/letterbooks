@@ -58,7 +58,7 @@ function HomePage() {
 
     if (isLoading) {
         return (
-            <div>
+            <div className="mx-auto max-w-7xl px-4 py-6">
                 <p>Carregando página inicial...</p>
             </div>
         );
@@ -66,7 +66,7 @@ function HomePage() {
 
     if (errorMessage != null) {
         return (
-            <div>
+            <div className="mx-auto max-w-7xl px-4 py-6">
                 <p>{errorMessage}</p>
             </div>
         );
@@ -74,16 +74,16 @@ function HomePage() {
 
     if (sections != null && sections.length === 0) {
         return (
-            <div>
-                <h1>Página Inicial</h1>
+            <div className="mx-auto max-w-7xl px-4 py-6">
+                <h1 className="mb-6">Página Inicial</h1>
                 <p>Nenhum livro disponível no momento.</p>
             </div>
         );
     }
 
     return (
-        <div>
-            <h1>Página Inicial</h1>
+        <div className="mx-auto max-w-7xl px-4 py-6">
+            <h1 className="mb-6">Página Inicial</h1>
 
             {sections?.map((section) => (
                 <BookSection

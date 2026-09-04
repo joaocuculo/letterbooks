@@ -25,7 +25,7 @@ function BookRelationshipControls({
 }: BookRelationshipControlsProps) {
     if (isAuthenticated && isLoading) {
         return (
-            <section>
+            <section className="flex flex-col items-start gap-2">
                 <h2>Minha relação com o livro</h2>
                 <p>Carregando seus dados...</p>
             </section>
@@ -33,7 +33,7 @@ function BookRelationshipControls({
     }
 
     return (
-        <section>
+        <section className="flex flex-col items-start gap-2">
             <h2>Minha relação com o livro</h2>
 
             {errorMessage && <p role="alert">{errorMessage}</p>}
