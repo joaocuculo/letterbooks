@@ -85,6 +85,21 @@ public class BookMapper {
         );
     }
 
+    public static BookCardResponseDTO toCardResponseDTO(Book book, boolean isFavorite, Long userBookId) {
+        return new BookCardResponseDTO(
+                book.getGoogleBooksId(),
+                book.getTitle(),
+                book.getAuthors().stream()
+                        .map(Author::getName)
+                        .toList(),
+                book.getPublisher(),
+                book.getPublishedDate(),
+                book.getThumbnailUrl(),
+                isFavorite,
+                userBookId
+        );
+    }
+
     public static BookCardResponseDTO toCardResponseDTO(GoogleBooksResponseDTO dto, boolean isFavorite, Long userBookId) {
         return new BookCardResponseDTO(
                 dto.googleBooksId(),

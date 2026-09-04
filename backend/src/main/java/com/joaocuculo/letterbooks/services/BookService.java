@@ -4,13 +4,16 @@ import com.joaocuculo.letterbooks.client.GoogleBooksClient;
 import com.joaocuculo.letterbooks.dto.external.GoogleBooksResponseDTO;
 import com.joaocuculo.letterbooks.dto.external.GoogleBooksSearchResponseDTO;
 import com.joaocuculo.letterbooks.dto.request.BookSearchRequestDTO;
+import com.joaocuculo.letterbooks.dto.response.BookCardResponseDTO;
 import com.joaocuculo.letterbooks.dto.response.BookResponseDTO;
 import com.joaocuculo.letterbooks.entities.Author;
 import com.joaocuculo.letterbooks.entities.Book;
 import com.joaocuculo.letterbooks.entities.Category;
+import com.joaocuculo.letterbooks.entities.UserBook;
 import com.joaocuculo.letterbooks.exceptions.BusinessException;
 import com.joaocuculo.letterbooks.mapper.BookMapper;
 import com.joaocuculo.letterbooks.repositories.BookRepository;
+import com.joaocuculo.letterbooks.repositories.UserBookRepository;
 import com.joaocuculo.letterbooks.specifications.BookSpecifications;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class BookService {
@@ -38,12 +42,14 @@ public class BookService {
     private final AuthorService authorService;
     private final CategoryService categoryService;
     private final GoogleBooksClient googleBooksClient;
+    private final UserBookRepository userBookRepository;
 
-    public BookService(BookRepository bookRepository, GoogleBooksClient googleBooksClient, AuthorService authorService, CategoryService categoryService) {
+    public BookService(BookRepository bookRepository, GoogleBooksClient googleBooksClient, AuthorService authorService, CategoryService categoryService, UserBookRepository userBookRepository) {
         this.bookRepository = bookRepository;
         this.authorService = authorService;
         this.categoryService = categoryService;
         this.googleBooksClient = googleBooksClient;
+        this.userBookRepository = userBookRepository;
     }
 
     public BookResponseDTO findByGoogleBooksId(String googleBooksId) {
@@ -57,7 +63,7 @@ public class BookService {
                 );
     }
 
-    public Page<BookResponseDTO> search(BookSearchRequestDTO searchRequestDTO, Pageable pageable) {
+    public Page<BookCardResponseDTO> search(BookSearchRequestDTO searchRequestDTO, Pageable pageable, Long userId) {
         String query = queryBuilder(searchRequestDTO);
 
         if (query.isBlank()) throw new BusinessException("É preciso informar ao menos um parãmetro de busca.");
@@ -67,20 +73,47 @@ public class BookService {
 
         if (googleResponse == null || googleResponse.items() == null) {
             log.warn("Google Books indisponível. Executando busca local.");
-            return searchLocal(searchRequestDTO, pageable);
+            return searchLocal(searchRequestDTO, pageable, userId);
         }
 
-        List<BookResponseDTO> content = googleResponse.items()
-                .stream()
-                .map(BookMapper::toResponseDTO)
+        List<GoogleBooksResponseDTO> items= googleResponse.items();
+        List<String> googleBooksIds = items.stream()
+                .map(GoogleBooksResponseDTO::googleBooksId)
+                .toList();
+        Map<String, UserBook> userBooksByGoogleId = resolveUserBooks(userId, googleBooksIds);
+
+        List<BookCardResponseDTO> content = items.stream()
+                .map(item -> {
+                    UserBook userBook = userBooksByGoogleId.get(item.googleBooksId());
+                    return BookMapper.toCardResponseDTO(
+                            item,
+                            userBook != null && userBook.isFavorite(),
+                            userBook != null ? userBook.getId() : null
+                    );
+                })
                 .toList();
 
         return new PageImpl<>(content, pageable, googleResponse.totalItems());
     }
 
-    private Page<BookResponseDTO> searchLocal(BookSearchRequestDTO searchRequestDTO, Pageable pageable) {
-        return bookRepository.findAll(BookSpecifications.withFilters(searchRequestDTO), pageable)
-                .map(BookMapper::toResponseDTO);
+    private Page<BookCardResponseDTO> searchLocal(BookSearchRequestDTO searchRequestDTO, Pageable pageable, Long userId) {
+        Page<Book> books = bookRepository.findAll(BookSpecifications.withFilters(searchRequestDTO), pageable);
+
+        List<String> googleBooksIds = books.getContent().stream()
+                .map(Book::getGoogleBooksId)
+                .toList();
+
+        Map<String, UserBook> userBooksByGoogleId = resolveUserBooks(userId, googleBooksIds);
+
+        return books.map(book -> {
+            UserBook userBook = userBooksByGoogleId.get(book.getGoogleBooksId());
+
+            return BookMapper.toCardResponseDTO(
+                    book,
+                    userBook != null && userBook.isFavorite(),
+                    userBook != null ? userBook.getId() : null
+            );
+        });
     }
 
     private String queryBuilder(BookSearchRequestDTO dto) {
@@ -115,5 +148,17 @@ public class BookService {
         Book newBook = BookMapper.toEntity(googleBook, authors, categories);
 
         return bookRepository.save(newBook);
+    }
+
+    private Map<String, UserBook> resolveUserBooks(Long userId, List<String> googleBooksIds) {
+        if (userId == null || googleBooksIds.isEmpty()) {
+            return Map.of();
+        }
+
+        return userBookRepository.findByUserIdAndBookGoogleBooksIdIn(userId, googleBooksIds).stream()
+                .collect(Collectors.toMap(
+                        userBook -> userBook.getBook().getGoogleBooksId(),
+                        userBook -> userBook
+                ));
     }
 }

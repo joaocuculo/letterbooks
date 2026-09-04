@@ -2,6 +2,7 @@ package com.joaocuculo.letterbooks.controllers;
 
 import com.joaocuculo.letterbooks.config.JWTUserData;
 import com.joaocuculo.letterbooks.dto.request.BookSearchRequestDTO;
+import com.joaocuculo.letterbooks.dto.response.BookCardResponseDTO;
 import com.joaocuculo.letterbooks.dto.response.BookResponseDTO;
 import com.joaocuculo.letterbooks.dto.response.BookshelfResponseDTO;
 import com.joaocuculo.letterbooks.dto.response.DiscoverResponseDTO;
@@ -33,10 +34,12 @@ public class BookController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Page<BookResponseDTO>> search(
+    public ResponseEntity<Page<BookCardResponseDTO>> search(
             @Valid @ModelAttribute BookSearchRequestDTO searchRequestDTO,
-            @PageableDefault(page = 0, size = 10) Pageable pageable) {
-        Page<BookResponseDTO> searchResult = bookService.search(searchRequestDTO, pageable);
+            @PageableDefault(page = 0, size = 10) Pageable pageable,
+            @AuthenticationPrincipal JWTUserData user) {
+        Long userId = user != null ? user.userId() : null;
+        Page<BookCardResponseDTO> searchResult = bookService.search(searchRequestDTO, pageable, userId);
         return ResponseEntity.ok(searchResult);
     }
 
