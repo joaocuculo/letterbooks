@@ -30,6 +30,14 @@ public class GoogleBooksClient {
     }
 
     public GoogleBooksSearchResponseDTO search(String q, Integer maxResults, Integer startIndex) {
+
+        log.info(
+                "Chamando Google Books API: q={}, maxResults={}, startIndex={}",
+                q,
+                maxResults,
+                startIndex
+        );
+
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/volumes")
@@ -51,6 +59,12 @@ public class GoogleBooksClient {
     }
 
     public GoogleBooksResponseDTO findByGoogleBooksId(String googleBooksId) {
+
+        log.info(
+                "Chamando Google Books API para volume: {}",
+                googleBooksId
+        );
+
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/volumes/{id}")

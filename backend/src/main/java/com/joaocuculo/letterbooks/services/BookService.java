@@ -1,6 +1,5 @@
 package com.joaocuculo.letterbooks.services;
 
-import com.joaocuculo.letterbooks.client.GoogleBooksClient;
 import com.joaocuculo.letterbooks.dto.external.GoogleBooksResponseDTO;
 import com.joaocuculo.letterbooks.dto.external.GoogleBooksSearchResponseDTO;
 import com.joaocuculo.letterbooks.dto.request.BookSearchRequestDTO;
@@ -41,14 +40,14 @@ public class BookService {
     private final BookRepository bookRepository;
     private final AuthorService authorService;
     private final CategoryService categoryService;
-    private final GoogleBooksClient googleBooksClient;
+    private final GoogleBooksService googleBooksService;
     private final UserBookRepository userBookRepository;
 
-    public BookService(BookRepository bookRepository, GoogleBooksClient googleBooksClient, AuthorService authorService, CategoryService categoryService, UserBookRepository userBookRepository) {
+    public BookService(BookRepository bookRepository, GoogleBooksService googleBooksService, AuthorService authorService, CategoryService categoryService, UserBookRepository userBookRepository) {
         this.bookRepository = bookRepository;
         this.authorService = authorService;
         this.categoryService = categoryService;
-        this.googleBooksClient = googleBooksClient;
+        this.googleBooksService = googleBooksService;
         this.userBookRepository = userBookRepository;
     }
 
@@ -58,7 +57,7 @@ public class BookService {
                 .map(BookMapper::toResponseDTO)
                 .orElseGet(() ->
                         BookMapper.toResponseDTO(
-                                googleBooksClient.findByGoogleBooksId(googleBooksId)
+                                googleBooksService.findByGoogleBooksId(googleBooksId)
                         )
                 );
     }
@@ -69,7 +68,7 @@ public class BookService {
         if (query.isBlank()) throw new BusinessException("É preciso informar ao menos um parãmetro de busca.");
 
         int startIndex = (int) pageable.getOffset();
-        GoogleBooksSearchResponseDTO googleResponse = googleBooksClient.search(query, pageable.getPageSize(), startIndex);
+        GoogleBooksSearchResponseDTO googleResponse = googleBooksService.search(query, pageable.getPageSize(), startIndex);
 
         if (googleResponse == null || googleResponse.items() == null) {
             log.warn("Google Books indisponível. Executando busca local.");
@@ -140,7 +139,7 @@ public class BookService {
     }
 
     private Book createFromGoogleBooks(String googleBooksId) {
-        GoogleBooksResponseDTO googleBook = googleBooksClient.findByGoogleBooksId(googleBooksId);
+        GoogleBooksResponseDTO googleBook = googleBooksService.findByGoogleBooksId(googleBooksId);
         
         Set<Author> authors = authorService.resolveAuthors(googleBook.volumeInfo().authors());
         Set<Category> categories = categoryService.resolveCategories(googleBook.volumeInfo().categories());

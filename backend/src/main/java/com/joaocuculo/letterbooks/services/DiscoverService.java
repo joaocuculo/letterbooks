@@ -1,6 +1,5 @@
 package com.joaocuculo.letterbooks.services;
 
-import com.joaocuculo.letterbooks.client.GoogleBooksClient;
 import com.joaocuculo.letterbooks.dto.external.GoogleBooksResponseDTO;
 import com.joaocuculo.letterbooks.dto.external.GoogleBooksSearchResponseDTO;
 import com.joaocuculo.letterbooks.dto.response.BookCardResponseDTO;
@@ -22,7 +21,7 @@ import java.util.stream.Collectors;
 public class DiscoverService {
 
     private static final Logger log = LoggerFactory.getLogger(DiscoverService.class);
-    private final GoogleBooksClient googleBooksClient;
+    private final GoogleBooksService googleBooksService;
     private final UserBookRepository userBookRepository;
     private static final List<SectionDefinition> SECTIONS = List.of(
             new SectionDefinition("fiction", "Ficção", "subject:fiction"),
@@ -30,8 +29,8 @@ public class DiscoverService {
             new SectionDefinition("biographies", "Biografias", "subject:biographies")
     );
 
-    public DiscoverService(GoogleBooksClient googleBooksClient, UserBookRepository userBookRepository) {
-        this.googleBooksClient = googleBooksClient;
+    public DiscoverService(GoogleBooksService googleBooksService, UserBookRepository userBookRepository) {
+        this.googleBooksService = googleBooksService;
         this.userBookRepository = userBookRepository;
     }
 
@@ -45,7 +44,7 @@ public class DiscoverService {
 
     private Optional<DiscoverSectionDTO> loadSection(SectionDefinition definition, Long userId) {
         try {
-            GoogleBooksSearchResponseDTO response = googleBooksClient.search(definition.query(), 10, 0);
+            GoogleBooksSearchResponseDTO response = googleBooksService.search(definition.query(), 10, 0);
             if (response == null || response.items() == null) {
                 log.warn("Não foi possível carregar a seção: {}", definition.key());
                 return Optional.empty();
