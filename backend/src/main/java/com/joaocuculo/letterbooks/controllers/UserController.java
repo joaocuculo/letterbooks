@@ -60,4 +60,10 @@ public class UserController {
         service.delete(id, authUser);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping(value = "/me")
+    public ResponseEntity<UserResponseDTO> findMe(@AuthenticationPrincipal JWTUserData authUser) {
+        UserResponseDTO user = service.findById(authUser.userId());
+        return ResponseEntity.ok().body(user);
+    }
 }

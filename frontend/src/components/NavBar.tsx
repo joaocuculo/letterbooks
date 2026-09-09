@@ -54,6 +54,8 @@ function NavBar() {
                                 </div>
                             </details>
 
+                            <NavLink to="/profile">Meu perfil</NavLink>
+
                             <button type="button" onClick={handleSignOut} className='cursor-pointer'>Sair</button>
                         </>
                     ) : (
