@@ -12,6 +12,7 @@ interface BookRelationshipControlsProps {
     errorMessage: string | null;
     onFavoriteToggle: () => void;
     onStatusChange: (status: UserBookStatus) => void;
+    onRemove: () => void;
 }
 
 function BookRelationshipControls({
@@ -22,6 +23,7 @@ function BookRelationshipControls({
     errorMessage,
     onFavoriteToggle,
     onStatusChange,
+    onRemove,
 }: BookRelationshipControlsProps) {
     if (isAuthenticated && isLoading) {
         return (
@@ -68,6 +70,12 @@ function BookRelationshipControls({
                     </option>
                 ))}
             </select>
+
+            {userBook && (
+                <button type="button" onClick={onRemove} disabled={isSaving}>
+                    {isSaving ? 'Processando...' : 'Remover da biblioteca'}
+                </button>
+            )}
         </section>
     );
 }

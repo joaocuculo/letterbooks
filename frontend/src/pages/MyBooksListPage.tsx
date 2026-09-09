@@ -14,6 +14,7 @@ import {
     userBookStatusLabels,
     userBookStatusOptions,
 } from '../utils/userBookStatus';
+import { useRemoveUserBook } from '../hooks/useRemoveUserBook';
 
 type FilterValue = UserBookStatus | 'ALL' | 'FAVORITES';
 
@@ -39,6 +40,41 @@ function MyBooksListPage() {
         useState<PageResponse<UserBookResponse> | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const {
+        removingUserBookId,
+        removeErrorMessage,
+        removeFromLibrary,
+    } = useRemoveUserBook({
+        onRemoved: (removedUserBook) => {
+            setResult((previous) => {
+                if (!previous) {
+                    return previous;
+                }
+
+                const totalElements = Math.max(
+                    0,
+                    previous.page.totalElements - 1
+                );
+
+                return {
+                    content: previous.content.filter(
+                        (userBook) => userBook.id !== removedUserBook.id
+                    ),
+                    page: {
+                        ...previous.page,
+                        totalElements,
+                        totalPages: Math.ceil(
+                            totalElements / previous.page.size
+                        ),
+                    },
+                };
+            });
+
+            if (result?.content.length === 1 && page > 0) {
+                changePage(page - 1);
+            }
+        },
+    });
 
     useEffect(() => {
         const abortController = new AbortController();
@@ -120,6 +156,12 @@ function MyBooksListPage() {
             </Link>
             <h1 className="mb-4">{title}</h1>
 
+            {removeErrorMessage && (
+                <p className="mb-4" role="alert">
+                    {removeErrorMessage}
+                </p>
+            )}
+
             <div className="mb-6 flex items-center gap-2">
                 <label htmlFor="my-books-filter">Filtrar livros</label>
                 <select
@@ -151,6 +193,8 @@ function MyBooksListPage() {
                         <UserBookCard
                             key={userBook.id}
                             userBook={userBook}
+                            isRemoving={removingUserBookId === userBook.id}
+                            onRemove={(book) => void removeFromLibrary(book)}
                         />
                     ))}
                 </div>

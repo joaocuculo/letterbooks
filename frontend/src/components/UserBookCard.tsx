@@ -4,9 +4,15 @@ import { userBookStatusLabels } from '../utils/userBookStatus';
 
 interface UserBookCardProps {
     userBook: UserBookResponse;
+    isRemoving?: boolean;
+    onRemove?: (userBook: UserBookResponse) => void;
 }
 
-function UserBookCard({ userBook }: UserBookCardProps) {
+function UserBookCard({
+    userBook,
+    isRemoving = false,
+    onRemove,
+}: UserBookCardProps) {
     const { book } = userBook;
 
     return (
@@ -35,6 +41,16 @@ function UserBookCard({ userBook }: UserBookCardProps) {
             {userBook.isFavorite && <p>Favorito</p>}
             {userBook.currentPage !== null && (
                 <p>Página atual: {userBook.currentPage}</p>
+            )}
+
+            {onRemove && (
+                <button
+                    type="button"
+                    onClick={() => onRemove(userBook)}
+                    disabled={isRemoving}
+                >
+                    {isRemoving ? 'Removendo...' : 'Remover da biblioteca'}
+                </button>
             )}
         </article>
     );

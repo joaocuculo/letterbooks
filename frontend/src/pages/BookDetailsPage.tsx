@@ -26,6 +26,7 @@ import { useAuth } from '../hooks/useAuth';
 import BookRelationshipControls from '../components/BookRelationshipControls';
 import RatingForm from '../components/RatingForm';
 import RatingsList from '../components/RatingsList';
+import { useRemoveUserBook } from '../hooks/useRemoveUserBook';
 
 function BookDetailsPage() {
     const { googleBooksId } = useParams<{ googleBooksId: string }>();
@@ -53,6 +54,13 @@ function BookDetailsPage() {
     const [ratingErrorMessage, setRatingErrorMessage] = useState<
         string | null
     >(null);
+    const {
+        removingUserBookId,
+        removeErrorMessage,
+        removeFromLibrary,
+    } = useRemoveUserBook({
+        onRemoved: () => setUserBook(null),
+    });
 
     useEffect(() => {
         if (!googleBooksId) {
@@ -337,10 +345,20 @@ function BookDetailsPage() {
                             userBook={displayedUserBook}
                             isAuthenticated={isAuthenticated}
                             isLoading={isUserDataLoading}
-                            isSaving={isUserBookSaving}
-                            errorMessage={userBookErrorMessage}
+                            isSaving={
+                                isUserBookSaving ||
+                                removingUserBookId !== null
+                            }
+                            errorMessage={
+                                userBookErrorMessage ?? removeErrorMessage
+                            }
                             onFavoriteToggle={handleFavoriteToggle}
                             onStatusChange={handleStatusChange}
+                            onRemove={() => {
+                                if (userBook) {
+                                    void removeFromLibrary(userBook);
+                                }
+                            }}
                         />
                     )}
 

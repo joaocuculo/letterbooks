@@ -6,9 +6,17 @@ interface MyBooksSectionProps {
     title: string;
     books: UserBookResponse[];
     viewMoreTo: string;
+    removingUserBookId: number | null;
+    onRemove: (userBook: UserBookResponse) => void;
 }
 
-function MyBooksSection({ title, books, viewMoreTo }: MyBooksSectionProps) {
+function MyBooksSection({
+    title,
+    books,
+    viewMoreTo,
+    removingUserBookId,
+    onRemove,
+}: MyBooksSectionProps) {
     return (
         <section className="mb-10">
             <h2 className="mb-3">{title}</h2>
@@ -21,6 +29,8 @@ function MyBooksSection({ title, books, viewMoreTo }: MyBooksSectionProps) {
                         <UserBookCard
                             key={userBook.id}
                             userBook={userBook}
+                            isRemoving={removingUserBookId === userBook.id}
+                            onRemove={onRemove}
                         />
                     ))}
                 </div>

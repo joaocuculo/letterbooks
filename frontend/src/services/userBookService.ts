@@ -52,6 +52,10 @@ export async function update(
     return response.data;
 }
 
+export async function remove(userBookId: number): Promise<void> {
+    await api.delete(`/user-books/${userBookId}`);
+}
+
 export async function createOrUpdate(
     googleBooksId: string,
     userBookId: number | null,
