@@ -2,16 +2,19 @@ package com.joaocuculo.letterbooks.services;
 
 import com.joaocuculo.letterbooks.dto.response.AuthorResponseDTO;
 import com.joaocuculo.letterbooks.entities.Author;
+import com.joaocuculo.letterbooks.entities.AuthorAlias;
 import com.joaocuculo.letterbooks.exceptions.BusinessException;
 import com.joaocuculo.letterbooks.exceptions.ResourceNotFoundException;
+import com.joaocuculo.letterbooks.repositories.AuthorAliasRepository;
 import com.joaocuculo.letterbooks.repositories.AuthorRepository;
 import com.joaocuculo.letterbooks.repositories.BookRepository;
+import com.joaocuculo.utils.NameNormalizer;
+
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.text.Normalizer;
 import java.util.*;
 
 @Service
@@ -19,10 +22,14 @@ public class AuthorService {
 
     private final AuthorRepository authorRepository;
     private final BookRepository bookRepository;
+    private final AuthorAliasRepository authorAliasRepository;
+    private final AuthorAliasService authorAliasService;
 
-    public AuthorService(AuthorRepository authorRepository, BookRepository bookRepository) {
+    public AuthorService(AuthorRepository authorRepository, BookRepository bookRepository, AuthorAliasRepository authorAliasRepository, AuthorAliasService authorAliasService) {
         this.authorRepository = authorRepository;
         this.bookRepository = bookRepository;
+        this.authorAliasRepository = authorAliasRepository;
+        this.authorAliasService = authorAliasService;
     }
 
     public Page<AuthorResponseDTO> findAll(Pageable pageable) {
@@ -48,7 +55,7 @@ public class AuthorService {
             }
 
             String displayName = normalizeDisplayName(rawAuthor);
-            String normalizedName = normalizeKey(displayName);
+            String normalizedName = NameNormalizer.normalize(displayName);
 
             Author author = findOrCreateAuthor(normalizedName, displayName);
 
@@ -70,6 +77,7 @@ public class AuthorService {
         Author source = authorRepository.findById(sourceAuthorId)
                 .orElseThrow(() -> new ResourceNotFoundException("Autor com id:" + sourceAuthorId + " não encontrado."));
 
+        authorAliasService.createFromMerge(source, target);
         bookRepository.removeAuthorRelationConflicts(target.getId(), source.getId());
         bookRepository.transferAuthorRelations(target.getId(), source.getId());
 
@@ -78,16 +86,9 @@ public class AuthorService {
 
     private Author findOrCreateAuthor(String normalizedName, String name) {
         return authorRepository.findByNormalizedName(normalizedName)
+                .or(() -> authorAliasRepository.findByNormalizedName(normalizedName)
+                        .map(AuthorAlias::getAuthor))
                 .orElseGet(() -> authorRepository.save(new Author(name, normalizedName)));
-    }
-
-    private String normalizeKey(String rawName) {
-        return Normalizer.normalize(rawName, Normalizer.Form.NFD) // separa os acentos das letras
-                .replaceAll("\\p{M}", "") // remove os acentos
-                .replaceAll("[^a-zA-Z0-9\\s]", "") // remove os caracteres especiais
-                .replaceAll("\\s+", " ")
-                .trim()
-                .toLowerCase();
     }
 
     private String normalizeDisplayName(String rawDisplayName) {
