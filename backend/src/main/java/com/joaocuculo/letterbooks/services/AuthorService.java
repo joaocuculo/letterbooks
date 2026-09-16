@@ -2,6 +2,7 @@ package com.joaocuculo.letterbooks.services;
 
 import com.joaocuculo.letterbooks.dto.response.AuthorResponseDTO;
 import com.joaocuculo.letterbooks.entities.Author;
+import com.joaocuculo.letterbooks.exceptions.BusinessException;
 import com.joaocuculo.letterbooks.exceptions.ResourceNotFoundException;
 import com.joaocuculo.letterbooks.repositories.AuthorRepository;
 import com.joaocuculo.letterbooks.repositories.BookRepository;
@@ -61,7 +62,7 @@ public class AuthorService {
     public void mergeAuthors(Long targetAuthorId, Long sourceAuthorId) {
         
         if (targetAuthorId.equals(sourceAuthorId)) {
-            throw new IllegalArgumentException("O autor de destino e origem devem ser diferentes.");
+            throw new BusinessException("O autor de destino e origem devem ser diferentes.");
         }
         
         Author target = authorRepository.findById(targetAuthorId)

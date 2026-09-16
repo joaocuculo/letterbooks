@@ -1,14 +1,12 @@
 package com.joaocuculo.letterbooks.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
-import java.io.Serializable;
-import java.util.*;
+import java.util.Objects;
 
 @Entity
-@Table(name = "authors")
-public class Author implements Serializable {
+@Table(name = "author_alias")
+public class AuthorAlias {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,20 +18,17 @@ public class Author implements Serializable {
     @Column(nullable = false, unique = true)
     private String normalizedName;
 
-    @JsonIgnore
-    @ManyToMany(mappedBy = "authors")
-    private Set<Book> books = new HashSet<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id", nullable = false)
+    private Author author;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "author")
-    private List<AuthorAlias> aliases = new ArrayList<>();
-
-    public Author() {
+    public AuthorAlias() {
     }
 
-    public Author(String name, String normalizedName) {
+    public AuthorAlias(String name, String normalizedName, Author author) {
         this.name = name;
         this.normalizedName = normalizedName;
+        this.author = author;
     }
 
     public Long getId() {
@@ -56,27 +51,23 @@ public class Author implements Serializable {
         this.normalizedName = normalizedName;
     }
 
-    public Set<Book> getBooks() {
-        return books;
+    public Author getAuthor() {
+        return author;
     }
 
-    public List<AuthorAlias> getAliases() {
-        return aliases;
-    }
-
-    public void setAliases(List<AuthorAlias> aliases) {
-        this.aliases = aliases;
+    public void setAuthor(Author author) {
+        this.author = author;
     }
 
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        Author author = (Author) o;
-        return Objects.equals(getId(), author.getId());
+        AuthorAlias that = (AuthorAlias) o;
+        return Objects.equals(id, that.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(getId());
+        return Objects.hashCode(id);
     }
 }
