@@ -10,5 +10,5 @@ import java.util.Optional;
 @Repository
 public interface AuthorAliasRepository extends JpaRepository<AuthorAlias, Long> {
     Optional<AuthorAlias> findByNormalizedName(String normalizedName);
-    Optional<List<AuthorAlias>> findByAuthorId(Long authorId);
+    List<AuthorAlias> findByAuthorId(Long authorId);
 }

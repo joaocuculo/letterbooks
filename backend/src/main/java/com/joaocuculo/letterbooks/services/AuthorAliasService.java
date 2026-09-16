@@ -23,14 +23,13 @@ public class AuthorAliasService {
     }
 
     public List<AuthorAlias> findByAuthorId(Long authorId) {
-        return authorAliasRepository.findByAuthorId(authorId)
-                .orElseThrow(() -> new ResourceNotFoundException("Nenhum alias encontrado para o autor " + authorId));
+        return authorAliasRepository.findByAuthorId(authorId);
     }
 
     public AuthorAlias create(String alias, Long authorId) {
         Author author = authorRepository.findById(authorId)
             .orElseThrow(() -> new ResourceNotFoundException("Autor não encontrado."));
-            
+
         return authorAliasRepository.save(
             new AuthorAlias(
                 alias,
