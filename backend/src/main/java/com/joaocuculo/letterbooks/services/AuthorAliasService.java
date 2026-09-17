@@ -30,10 +30,19 @@ public class AuthorAliasService {
         Author author = authorRepository.findById(authorId)
             .orElseThrow(() -> new ResourceNotFoundException("Autor não encontrado."));
 
+        String normalizedAlias = NameNormalizer.normalize(alias);
+
+        if (authorRepository.findByNormalizedName(normalizedAlias).isPresent()) {
+            
+        }
+        if (authorAliasRepository.findByNormalizedName(normalizedAlias).isPresent()) {
+            
+        }
+
         return authorAliasRepository.save(
             new AuthorAlias(
                 alias,
-                NameNormalizer.normalize(alias),
+                normalizedAlias,
                 author
             )
         );
@@ -47,5 +56,9 @@ public class AuthorAliasService {
                 target
             )
         );
+    }
+    
+    public void transferAliases(Author source, Author target) {
+        authorAliasRepository.transferAliases(source.getId(), target.getId());
     }
 }

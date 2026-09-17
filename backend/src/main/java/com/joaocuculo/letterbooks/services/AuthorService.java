@@ -77,9 +77,10 @@ public class AuthorService {
         Author source = authorRepository.findById(sourceAuthorId)
                 .orElseThrow(() -> new ResourceNotFoundException("Autor com id:" + sourceAuthorId + " não encontrado."));
 
-        authorAliasService.createFromMerge(source, target);
-        bookRepository.removeAuthorRelationConflicts(target.getId(), source.getId());
-        bookRepository.transferAuthorRelations(target.getId(), source.getId());
+        authorAliasService.createFromMerge(source, target); // cria alias
+        authorAliasService.transferAliases(source, target); // transfere alias para author
+        bookRepository.removeAuthorRelationConflicts(target.getId(), source.getId()); // remove possiveis livros que possam possuir o author que será o novo dono
+        bookRepository.transferAuthorRelations(target.getId(), source.getId()); // transfere livros para author
 
         authorRepository.delete(source);
     }
