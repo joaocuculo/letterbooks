@@ -8,7 +8,7 @@ import com.joaocuculo.letterbooks.exceptions.ResourceNotFoundException;
 import com.joaocuculo.letterbooks.repositories.AuthorAliasRepository;
 import com.joaocuculo.letterbooks.repositories.AuthorRepository;
 import com.joaocuculo.letterbooks.repositories.BookRepository;
-import com.joaocuculo.utils.NameNormalizer;
+import com.joaocuculo.letterbooks.utils.NameNormalizer;
 
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;

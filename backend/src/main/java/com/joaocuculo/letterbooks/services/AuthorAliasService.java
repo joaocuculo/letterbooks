@@ -1,6 +1,7 @@
 package com.joaocuculo.letterbooks.services;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -9,7 +10,7 @@ import com.joaocuculo.letterbooks.entities.AuthorAlias;
 import com.joaocuculo.letterbooks.exceptions.ResourceNotFoundException;
 import com.joaocuculo.letterbooks.repositories.AuthorAliasRepository;
 import com.joaocuculo.letterbooks.repositories.AuthorRepository;
-import com.joaocuculo.utils.NameNormalizer;
+import com.joaocuculo.letterbooks.utils.NameNormalizer;
 
 @Service 
 public class AuthorAliasService {
@@ -31,9 +32,14 @@ public class AuthorAliasService {
             .orElseThrow(() -> new ResourceNotFoundException("Autor não encontrado."));
 
         String normalizedAlias = NameNormalizer.normalize(alias);
+        Optional<Author> authorOptional = authorRepository.findByNormalizedName(normalizedAlias);
+        Optional<AuthorAlias> aliasOptional = authorAliasRepository.findByNormalizedName(normalizedAlias);
 
-        if (authorRepository.findByNormalizedName(normalizedAlias).isPresent()) {
-            
+        if (authorOptional.isPresent()) {
+            Author authorExistent = authorOptional.get();
+            if (authorExistent.getId().equals(authorId)) {
+                return authorAliasRepository.findByNormalizedNameAndAuthor(normalizedAlias, authorExistent);
+            }
         }
         if (authorAliasRepository.findByNormalizedName(normalizedAlias).isPresent()) {
             

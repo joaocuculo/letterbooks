@@ -1,4 +1,4 @@
-package com.joaocuculo.utils;
+package com.joaocuculo.letterbooks.utils;
 
 import java.text.Normalizer;
 import java.util.Locale;
