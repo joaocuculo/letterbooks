@@ -17,23 +17,19 @@ public class Author implements Serializable {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false, unique = true)
-    private String normalizedName;
-
     @JsonIgnore
     @ManyToMany(mappedBy = "authors")
     private Set<Book> books = new HashSet<>();
 
     @JsonIgnore
     @OneToMany(mappedBy = "author")
-    private List<AuthorAlias> aliases = new ArrayList<>();
+    private List<AuthorName> authorNames = new ArrayList<>();
 
     public Author() {
     }
 
-    public Author(String name, String normalizedName) {
+    public Author(String name) {
         this.name = name;
-        this.normalizedName = normalizedName;
     }
 
     public Long getId() {
@@ -48,24 +44,16 @@ public class Author implements Serializable {
         this.name = name;
     }
 
-    public String getNormalizedName() {
-        return normalizedName;
-    }
-
-    public void setNormalizedName(String normalizedName) {
-        this.normalizedName = normalizedName;
-    }
-
     public Set<Book> getBooks() {
         return books;
     }
 
-    public List<AuthorAlias> getAliases() {
-        return aliases;
+    public List<AuthorName> getAuthorNames() {
+        return authorNames;
     }
 
-    public void setAliases(List<AuthorAlias> aliases) {
-        this.aliases = aliases;
+    public void setAuthorNames(List<AuthorName> authorNames) {
+        this.authorNames = authorNames;
     }
 
     @Override

@@ -2,10 +2,10 @@ package com.joaocuculo.letterbooks.services;
 
 import com.joaocuculo.letterbooks.dto.response.AuthorResponseDTO;
 import com.joaocuculo.letterbooks.entities.Author;
-import com.joaocuculo.letterbooks.entities.AuthorAlias;
+import com.joaocuculo.letterbooks.entities.AuthorName;
 import com.joaocuculo.letterbooks.exceptions.BusinessException;
 import com.joaocuculo.letterbooks.exceptions.ResourceNotFoundException;
-import com.joaocuculo.letterbooks.repositories.AuthorAliasRepository;
+import com.joaocuculo.letterbooks.repositories.AuthorNameRepository;
 import com.joaocuculo.letterbooks.repositories.AuthorRepository;
 import com.joaocuculo.letterbooks.repositories.BookRepository;
 import com.joaocuculo.letterbooks.utils.NameNormalizer;
@@ -22,14 +22,14 @@ public class AuthorService {
 
     private final AuthorRepository authorRepository;
     private final BookRepository bookRepository;
-    private final AuthorAliasRepository authorAliasRepository;
-    private final AuthorAliasService authorAliasService;
+    private final AuthorNameRepository authorNameRepository;
+    private final AuthorNameService authorNameService;
 
-    public AuthorService(AuthorRepository authorRepository, BookRepository bookRepository, AuthorAliasRepository authorAliasRepository, AuthorAliasService authorAliasService) {
+    public AuthorService(AuthorRepository authorRepository, BookRepository bookRepository, AuthorNameRepository authorNameRepository, AuthorNameService authorNameService) {
         this.authorRepository = authorRepository;
         this.bookRepository = bookRepository;
-        this.authorAliasRepository = authorAliasRepository;
-        this.authorAliasService = authorAliasService;
+        this.authorNameRepository = authorNameRepository;
+        this.authorNameService = authorNameService;
     }
 
     public Page<AuthorResponseDTO> findAll(Pageable pageable) {
@@ -77,8 +77,8 @@ public class AuthorService {
         Author source = authorRepository.findById(sourceAuthorId)
                 .orElseThrow(() -> new ResourceNotFoundException("Autor com id:" + sourceAuthorId + " não encontrado."));
 
-        authorAliasService.createFromMerge(source, target); // cria alias
-        authorAliasService.transferAliases(source, target); // transfere alias para author
+        authorNameService.createFromMerge(source, target); // cria alias
+        authorNameService.transferAliases(source, target); // transfere alias para author
         bookRepository.removeAuthorRelationConflicts(target.getId(), source.getId()); // remove possiveis livros que possam possuir o author que será o novo dono
         bookRepository.transferAuthorRelations(target.getId(), source.getId()); // transfere livros para author
 
@@ -87,8 +87,8 @@ public class AuthorService {
 
     private Author findOrCreateAuthor(String normalizedName, String name) {
         return authorRepository.findByNormalizedName(normalizedName)
-                .or(() -> authorAliasRepository.findByNormalizedName(normalizedName)
-                        .map(AuthorAlias::getAuthor))
+                .or(() -> authorNameRepository.findByNormalizedName(normalizedName)
+                        .map(AuthorName::getAuthor))
                 .orElseGet(() -> authorRepository.save(new Author(name, normalizedName)));
     }
 

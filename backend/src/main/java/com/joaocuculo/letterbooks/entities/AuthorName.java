@@ -5,8 +5,8 @@ import jakarta.persistence.*;
 import java.util.Objects;
 
 @Entity
-@Table(name = "author_alias")
-public class AuthorAlias {
+@Table(name = "author_name")
+public class AuthorName {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,10 +22,10 @@ public class AuthorAlias {
     @JoinColumn(name = "author_id", nullable = false)
     private Author author;
 
-    public AuthorAlias() {
+    public AuthorName() {
     }
 
-    public AuthorAlias(String name, String normalizedName, Author author) {
+    public AuthorName(String name, String normalizedName, Author author) {
         this.name = name;
         this.normalizedName = normalizedName;
         this.author = author;
@@ -62,7 +62,7 @@ public class AuthorAlias {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        AuthorAlias that = (AuthorAlias) o;
+        AuthorName that = (AuthorName) o;
         return Objects.equals(id, that.id);
     }
 

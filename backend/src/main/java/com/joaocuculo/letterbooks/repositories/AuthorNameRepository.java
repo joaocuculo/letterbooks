@@ -1,6 +1,6 @@
 package com.joaocuculo.letterbooks.repositories;
 
-import com.joaocuculo.letterbooks.entities.AuthorAlias;
+import com.joaocuculo.letterbooks.entities.AuthorName;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -11,9 +11,9 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface AuthorAliasRepository extends JpaRepository<AuthorAlias, Long> {
-    Optional<AuthorAlias> findByNormalizedName(String normalizedName);
-    List<AuthorAlias> findByAuthorId(Long authorId);
+public interface AuthorNameRepository extends JpaRepository<AuthorName, Long> {
+    Optional<AuthorName> findByNormalizedName(String normalizedName);
+    List<AuthorName> findByAuthorId(Long authorId);
 
     @Modifying 
     @Query(value = """

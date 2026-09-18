@@ -6,47 +6,47 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.joaocuculo.letterbooks.entities.Author;
-import com.joaocuculo.letterbooks.entities.AuthorAlias;
+import com.joaocuculo.letterbooks.entities.AuthorName;
 import com.joaocuculo.letterbooks.exceptions.ResourceNotFoundException;
-import com.joaocuculo.letterbooks.repositories.AuthorAliasRepository;
+import com.joaocuculo.letterbooks.repositories.AuthorNameRepository;
 import com.joaocuculo.letterbooks.repositories.AuthorRepository;
 import com.joaocuculo.letterbooks.utils.NameNormalizer;
 
 @Service 
-public class AuthorAliasService {
+public class AuthorNameService {
     
-    private final AuthorAliasRepository authorAliasRepository;
+    private final AuthorNameRepository authorNameRepository;
     private final AuthorRepository authorRepository;
 
-    public AuthorAliasService(AuthorAliasRepository authorAliasRepository, AuthorRepository authorRepository) {
-        this.authorAliasRepository = authorAliasRepository;
+    public AuthorNameService(AuthorNameRepository authorNameRepository, AuthorRepository authorRepository) {
+        this.authorNameRepository = authorNameRepository;
         this.authorRepository = authorRepository;
     }
 
-    public List<AuthorAlias> findByAuthorId(Long authorId) {
-        return authorAliasRepository.findByAuthorId(authorId);
+    public List<AuthorName> findByAuthorId(Long authorId) {
+        return authorNameRepository.findByAuthorId(authorId);
     }
 
-    public AuthorAlias create(String alias, Long authorId) {
+    public AuthorName create(String alias, Long authorId) {
         Author author = authorRepository.findById(authorId)
             .orElseThrow(() -> new ResourceNotFoundException("Autor não encontrado."));
 
         String normalizedAlias = NameNormalizer.normalize(alias);
         Optional<Author> authorOptional = authorRepository.findByNormalizedName(normalizedAlias);
-        Optional<AuthorAlias> aliasOptional = authorAliasRepository.findByNormalizedName(normalizedAlias);
+        Optional<AuthorName> aliasOptional = authorNameRepository.findByNormalizedName(normalizedAlias);
 
         if (authorOptional.isPresent()) {
             Author authorExistent = authorOptional.get();
             if (authorExistent.getId().equals(authorId)) {
-                return authorAliasRepository.findByNormalizedNameAndAuthor(normalizedAlias, authorExistent);
+                return authorNameRepository.findByNormalizedNameAndAuthor(normalizedAlias, authorExistent);
             }
         }
-        if (authorAliasRepository.findByNormalizedName(normalizedAlias).isPresent()) {
+        if (authorNameRepository.findByNormalizedName(normalizedAlias).isPresent()) {
             
         }
 
-        return authorAliasRepository.save(
-            new AuthorAlias(
+        return authorNameRepository.save(
+            new AuthorName(
                 alias,
                 normalizedAlias,
                 author
@@ -54,9 +54,9 @@ public class AuthorAliasService {
         );
     }
 
-    public AuthorAlias createFromMerge(Author source, Author target) {
-        return authorAliasRepository.save(
-            new AuthorAlias(
+    public AuthorName createFromMerge(Author source, Author target) {
+        return authorNameRepository.save(
+            new AuthorName(
                 source.getName(),
                 source.getNormalizedName(),
                 target
@@ -65,6 +65,6 @@ public class AuthorAliasService {
     }
     
     public void transferAliases(Author source, Author target) {
-        authorAliasRepository.transferAliases(source.getId(), target.getId());
+        authorNameRepository.transferAliases(source.getId(), target.getId());
     }
 }
