@@ -27,44 +27,15 @@ public class AuthorNameService {
         return authorNameRepository.findByAuthorId(authorId);
     }
 
-    public AuthorName create(String alias, Long authorId) {
-        Author author = authorRepository.findById(authorId)
-            .orElseThrow(() -> new ResourceNotFoundException("Autor não encontrado."));
-
-        String normalizedAlias = NameNormalizer.normalize(alias);
-        Optional<Author> authorOptional = authorRepository.findByNormalizedName(normalizedAlias);
-        Optional<AuthorName> aliasOptional = authorNameRepository.findByNormalizedName(normalizedAlias);
-
-        if (authorOptional.isPresent()) {
-            Author authorExistent = authorOptional.get();
-            if (authorExistent.getId().equals(authorId)) {
-                return authorNameRepository.findByNormalizedNameAndAuthor(normalizedAlias, authorExistent);
-            }
-        }
-        if (authorNameRepository.findByNormalizedName(normalizedAlias).isPresent()) {
-            
-        }
-
-        return authorNameRepository.save(
-            new AuthorName(
-                alias,
-                normalizedAlias,
+    public AuthorName create(String name, String normalizedName, Author author) {
+        return authorNameRepository.save(new AuthorName(
+                name,
+                normalizedName,
                 author
-            )
-        );
+        ));
     }
 
-    public AuthorName createFromMerge(Author source, Author target) {
-        return authorNameRepository.save(
-            new AuthorName(
-                source.getName(),
-                source.getNormalizedName(),
-                target
-            )
-        );
-    }
-    
-    public void transferAliases(Author source, Author target) {
-        authorNameRepository.transferAliases(source.getId(), target.getId());
+    public void createFromMerge(Author source, Author target) {
+        authorNameRepository.transferAuthorNames(source.getId(), target.getId());
     }
 }

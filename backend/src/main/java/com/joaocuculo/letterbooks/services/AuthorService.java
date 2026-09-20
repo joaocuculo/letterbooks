@@ -37,8 +37,7 @@ public class AuthorService {
         return authors.map(
                 author -> new AuthorResponseDTO(
                         author.getId(),
-                        author.getName(),
-                        author.getNormalizedName()
+                        author.getName()
                 )
         );
     }
@@ -67,7 +66,6 @@ public class AuthorService {
 
     @Transactional
     public void mergeAuthors(Long targetAuthorId, Long sourceAuthorId) {
-        
         if (targetAuthorId.equals(sourceAuthorId)) {
             throw new BusinessException("O autor de destino e origem devem ser diferentes.");
         }
@@ -85,11 +83,15 @@ public class AuthorService {
         authorRepository.delete(source);
     }
 
+    @Transactional
     private Author findOrCreateAuthor(String normalizedName, String name) {
-        return authorRepository.findByNormalizedName(normalizedName)
-                .or(() -> authorNameRepository.findByNormalizedName(normalizedName)
-                        .map(AuthorName::getAuthor))
-                .orElseGet(() -> authorRepository.save(new Author(name, normalizedName)));
+        return authorNameRepository.findByNormalizedName(normalizedName)
+                .map(AuthorName::getAuthor)
+                .orElseGet(() ->  {
+                    Author author = authorRepository.save(new Author(name));
+                    authorNameService.create(name, normalizedName, author);
+                    return author;
+                });
     }
 
     private String normalizeDisplayName(String rawDisplayName) {

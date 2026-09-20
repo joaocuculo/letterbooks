@@ -17,11 +17,11 @@ public interface AuthorNameRepository extends JpaRepository<AuthorName, Long> {
 
     @Modifying 
     @Query(value = """
-        UPDATE author_alias
+        UPDATE author_name
         SET author_id = :targetAuthorId
         WHERE author_id = :sourceAuthorId
         """, nativeQuery = true)
-    void transferAliases(
+    void transferAuthorNames(
         @Param("sourceAuthorId") Long sourceAuthorId, 
         @Param("targetAuthorId") Long targetAuthorId
     );
