@@ -42,6 +42,7 @@ public class AuthorService {
         );
     }
 
+    @Transactional
     public Set<Author> resolveAuthors(List<String> rawAuthors) {
         if (rawAuthors == null || rawAuthors.isEmpty()) {
             return Set.of();
@@ -75,15 +76,13 @@ public class AuthorService {
         Author source = authorRepository.findById(sourceAuthorId)
                 .orElseThrow(() -> new ResourceNotFoundException("Autor com id:" + sourceAuthorId + " não encontrado."));
 
-        authorNameService.createFromMerge(source, target); // cria alias
-        authorNameService.transferAliases(source, target); // transfere alias para author
+        authorNameService.transferAuthorNames(source, target); // transfere os author names
         bookRepository.removeAuthorRelationConflicts(target.getId(), source.getId()); // remove possiveis livros que possam possuir o author que será o novo dono
         bookRepository.transferAuthorRelations(target.getId(), source.getId()); // transfere livros para author
 
         authorRepository.delete(source);
     }
 
-    @Transactional
     private Author findOrCreateAuthor(String normalizedName, String name) {
         return authorNameRepository.findByNormalizedName(normalizedName)
                 .map(AuthorName::getAuthor)
