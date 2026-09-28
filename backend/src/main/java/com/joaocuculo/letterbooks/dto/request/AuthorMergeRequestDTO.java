@@ -2,7 +2,7 @@ package com.joaocuculo.letterbooks.dto.request;
 
 import jakarta.validation.constraints.NotNull;
 
-public record AuthorMergeRequest(
+public record AuthorMergeRequestDTO(
         @NotNull 
         Long targetAuthorId,
         @NotNull 

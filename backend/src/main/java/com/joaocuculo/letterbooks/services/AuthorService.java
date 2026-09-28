@@ -34,11 +34,22 @@ public class AuthorService {
 
     public Page<AuthorResponseDTO> findAll(Pageable pageable) {
         Page<Author> authors = authorRepository.findAll(pageable);
-        return authors.map(
-                author -> new AuthorResponseDTO(
-                        author.getId(),
-                        author.getName()
-                )
+        return authors.map(author -> {
+                AuthorName authorName = getPrimaryAuthorName(author);
+
+                return new AuthorResponseDTO(
+                    author.getId(),
+                    authorName.getName()
+                );
+        });
+    }
+
+    public AuthorResponseDTO findById(Long id) {
+        Author author = getById(id);
+        AuthorName authorName = getPrimaryAuthorName(author);
+        return new AuthorResponseDTO(
+            author.getId(),
+            authorName.getName()
         );
     }
 
@@ -71,10 +82,8 @@ public class AuthorService {
             throw new BusinessException("O autor de destino e origem devem ser diferentes.");
         }
         
-        Author target = authorRepository.findById(targetAuthorId)
-                .orElseThrow(() -> new ResourceNotFoundException("Autor com id:" + targetAuthorId + " não encontrado."));
-        Author source = authorRepository.findById(sourceAuthorId)
-                .orElseThrow(() -> new ResourceNotFoundException("Autor com id:" + sourceAuthorId + " não encontrado."));
+        Author target = getById(targetAuthorId);
+        Author source = getById(sourceAuthorId);
 
         authorNameService.transferAuthorNames(source, target); // transfere os author names
         bookRepository.removeAuthorRelationConflicts(target.getId(), source.getId()); // remove possiveis livros que possam possuir o author que será o novo dono
@@ -106,5 +115,19 @@ public class AuthorService {
             return String.join(" ", reversedDisplayName);
         }
         return normalizedDisplayName;
+    }
+
+    private Author getById(Long id) {
+        return authorRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Autor com id:" + id + " não encontrado."));
+    }
+
+    private AuthorName getPrimaryAuthorName(Author author) {
+        return author.getAuthorNames().stream()
+                .filter(AuthorName::isPrimary)
+                .findFirst()
+                .orElseThrow(() -> new BusinessException(
+                        "Autor " + author.getId() + " não possui nome definido."
+                ));
     }
 }

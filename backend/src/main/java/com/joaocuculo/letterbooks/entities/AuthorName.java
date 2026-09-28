@@ -18,6 +18,9 @@ public class AuthorName {
     @Column(nullable = false, unique = true)
     private String normalizedName;
 
+    @Column(nullable = false)
+    private boolean primary;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id", nullable = false)
     private Author author;
@@ -25,9 +28,10 @@ public class AuthorName {
     public AuthorName() {
     }
 
-    public AuthorName(String name, String normalizedName, Author author) {
+    public AuthorName(String name, String normalizedName, boolean primary, Author author) {
         this.name = name;
         this.normalizedName = normalizedName;
+        this.primary = primary;
         this.author = author;
     }
 
@@ -49,6 +53,14 @@ public class AuthorName {
 
     public void setNormalizedName(String normalizedName) {
         this.normalizedName = normalizedName;
+    }
+
+    public boolean isPrimary() {
+        return primary;
+    }
+
+    public void setPrimary(boolean primary) {
+        this.primary = primary;
     }
 
     public Author getAuthor() {

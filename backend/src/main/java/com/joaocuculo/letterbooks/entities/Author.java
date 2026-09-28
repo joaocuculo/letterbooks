@@ -14,9 +14,6 @@ public class Author implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String name;
-
     @JsonIgnore
     @ManyToMany(mappedBy = "authors")
     private Set<Book> books = new HashSet<>();
@@ -28,20 +25,8 @@ public class Author implements Serializable {
     public Author() {
     }
 
-    public Author(String name) {
-        this.name = name;
-    }
-
     public Long getId() {
         return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public Set<Book> getBooks() {
