@@ -1,5 +1,6 @@
 package com.joaocuculo.letterbooks.services;
 
+import com.joaocuculo.letterbooks.dto.request.AuthorRequestDTO;
 import com.joaocuculo.letterbooks.dto.response.AuthorResponseDTO;
 import com.joaocuculo.letterbooks.entities.Author;
 import com.joaocuculo.letterbooks.entities.AuthorName;
@@ -54,6 +55,33 @@ public class AuthorService {
     }
 
     @Transactional
+    public AuthorResponseDTO create(AuthorRequestDTO request) {
+        String normalizedNameRequest = NameNormalizer.normalize(request.name());
+        Optional<AuthorName> authorNameOptional = authorNameRepository.findByNormalizedName(normalizedNameRequest);
+        if (authorNameOptional.isPresent()) {
+            throw new BusinessException("O nome cadastrado corresponde a " + authorNameOptional.get().getName() + " no sistema.");
+        }
+        Author author = authorRepository.save(new Author());
+        authorNameRepository.save(new AuthorName(request.name(), normalizedNameRequest, true, author));
+        return new AuthorResponseDTO(
+                author.getId(),
+                getPrimaryAuthorName(author).getName()
+        );
+    }
+
+    @Transactional
+    public Author create(String name) {
+        String normalizedNameRequest = NameNormalizer.normalize(name);
+        Optional<AuthorName> authorNameOptional = authorNameRepository.findByNormalizedName(normalizedNameRequest);
+        if (authorNameOptional.isPresent()) {
+            throw new BusinessException("O nome cadastrado corresponde a " + authorNameOptional.get().getName() + " no sistema.");
+        }
+        Author author = authorRepository.save(new Author());
+        authorNameRepository.save(new AuthorName(name, normalizedNameRequest, true, author));
+        return author;
+    }
+
+    @Transactional
     public Set<Author> resolveAuthors(List<String> rawAuthors) {
         if (rawAuthors == null || rawAuthors.isEmpty()) {
             return Set.of();
@@ -95,11 +123,7 @@ public class AuthorService {
     private Author findOrCreateAuthor(String normalizedName, String name) {
         return authorNameRepository.findByNormalizedName(normalizedName)
                 .map(AuthorName::getAuthor)
-                .orElseGet(() ->  {
-                    Author author = authorRepository.save(new Author(name));
-                    authorNameService.create(name, normalizedName, author);
-                    return author;
-                });
+                .orElseGet(() ->  create(name));
     }
 
     private String normalizeDisplayName(String rawDisplayName) {

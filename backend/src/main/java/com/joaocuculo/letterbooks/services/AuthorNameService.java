@@ -22,10 +22,11 @@ public class AuthorNameService {
         return authorNameRepository.findByAuthorId(authorId);
     }
 
-    public AuthorName create(String name, String normalizedName, Author author) {
+    public AuthorName create(String name, String normalizedName, boolean primary, Author author) {
         return authorNameRepository.save(new AuthorName(
                 name,
                 NameNormalizer.normalize(normalizedName),
+                primary,
                 author
         ));
     }
