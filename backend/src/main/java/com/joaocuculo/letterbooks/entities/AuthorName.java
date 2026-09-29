@@ -18,7 +18,7 @@ public class AuthorName {
     @Column(nullable = false, unique = true)
     private String normalizedName;
 
-    @Column(nullable = false)
+    @Column(name = "is_primary", nullable = false)
     private boolean primary;
 
     @ManyToOne(fetch = FetchType.LAZY)

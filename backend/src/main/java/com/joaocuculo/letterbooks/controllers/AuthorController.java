@@ -1,6 +1,6 @@
 package com.joaocuculo.letterbooks.controllers;
 
-import com.joaocuculo.letterbooks.dto.request.AuthorMergeRequest;
+import com.joaocuculo.letterbooks.dto.request.AuthorMergeRequestDTO;
 import com.joaocuculo.letterbooks.dto.response.AuthorResponseDTO;
 import com.joaocuculo.letterbooks.services.AuthorService;
 
@@ -36,7 +36,7 @@ public class AuthorController {
 
     @PostMapping("/merge")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> merge(@Valid @RequestBody AuthorMergeRequest request) {
+    public ResponseEntity<Void> merge(@Valid @RequestBody AuthorMergeRequestDTO request) {
         authorService.mergeAuthors(request.targetAuthorId(), request.sourceAuthorId());
         return ResponseEntity.noContent().build();
     }

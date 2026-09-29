@@ -61,7 +61,9 @@ public class BookMapper {
                 book.getGoogleBooksId(),
                 book.getTitle(),
                 book.getSubtitle(),
-                book.getAuthors().stream().map(Author::getName).toList(),
+                book.getAuthors().stream()
+                        .map(Author::getPrimaryName)
+                        .toList(),
                 book.getPublisher(),
                 book.getPublishedDate(),
                 book.getCategories().stream().map(Category::getName).toList(),
@@ -90,7 +92,7 @@ public class BookMapper {
                 book.getGoogleBooksId(),
                 book.getTitle(),
                 book.getAuthors().stream()
-                        .map(Author::getName)
+                        .map(Author::getPrimaryName)
                         .toList(),
                 book.getPublisher(),
                 book.getPublishedDate(),

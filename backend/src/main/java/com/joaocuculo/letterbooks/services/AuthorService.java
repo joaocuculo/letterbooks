@@ -24,61 +24,53 @@ public class AuthorService {
     private final AuthorRepository authorRepository;
     private final BookRepository bookRepository;
     private final AuthorNameRepository authorNameRepository;
-    private final AuthorNameService authorNameService;
 
-    public AuthorService(AuthorRepository authorRepository, BookRepository bookRepository, AuthorNameRepository authorNameRepository, AuthorNameService authorNameService) {
+    public AuthorService(AuthorRepository authorRepository, BookRepository bookRepository, AuthorNameRepository authorNameRepository) {
         this.authorRepository = authorRepository;
         this.bookRepository = bookRepository;
         this.authorNameRepository = authorNameRepository;
-        this.authorNameService = authorNameService;
     }
 
+    @Transactional
     public Page<AuthorResponseDTO> findAll(Pageable pageable) {
         Page<Author> authors = authorRepository.findAll(pageable);
-        return authors.map(author -> {
-                AuthorName authorName = getPrimaryAuthorName(author);
-
-                return new AuthorResponseDTO(
+        return authors.map(author -> new AuthorResponseDTO(
                     author.getId(),
-                    authorName.getName()
-                );
-        });
+                    author.getPrimaryName()
+                )
+        );
     }
 
+    @Transactional
     public AuthorResponseDTO findById(Long id) {
         Author author = getById(id);
-        AuthorName authorName = getPrimaryAuthorName(author);
         return new AuthorResponseDTO(
             author.getId(),
-            authorName.getName()
+            author.getPrimaryName()
         );
     }
 
     @Transactional
     public AuthorResponseDTO create(AuthorRequestDTO request) {
-        String normalizedNameRequest = NameNormalizer.normalize(request.name());
-        Optional<AuthorName> authorNameOptional = authorNameRepository.findByNormalizedName(normalizedNameRequest);
-        if (authorNameOptional.isPresent()) {
-            throw new BusinessException("O nome cadastrado corresponde a " + authorNameOptional.get().getName() + " no sistema.");
+        if (request == null) {
+            throw new BusinessException("Os dados do autor devem ser informados.");
         }
-        Author author = authorRepository.save(new Author());
-        authorNameRepository.save(new AuthorName(request.name(), normalizedNameRequest, true, author));
-        return new AuthorResponseDTO(
-                author.getId(),
-                getPrimaryAuthorName(author).getName()
-        );
-    }
 
-    @Transactional
-    public Author create(String name) {
-        String normalizedNameRequest = NameNormalizer.normalize(name);
-        Optional<AuthorName> authorNameOptional = authorNameRepository.findByNormalizedName(normalizedNameRequest);
-        if (authorNameOptional.isPresent()) {
-            throw new BusinessException("O nome cadastrado corresponde a " + authorNameOptional.get().getName() + " no sistema.");
-        }
-        Author author = authorRepository.save(new Author());
-        authorNameRepository.save(new AuthorName(name, normalizedNameRequest, true, author));
-        return author;
+        String displayName = normalizeDisplayName(request.name());
+        String normalizedName = NameNormalizer.normalize(displayName);
+
+        authorNameRepository.findByNormalizedName(normalizedName)
+                .ifPresent(existingName -> {
+                    throw new BusinessException(
+                            "O nome cadastrado corresponde a " + existingName.getName() + " no sistema."
+                    );
+                });
+
+        Author newAuthor = createNewAuthor(displayName, normalizedName);
+        return new AuthorResponseDTO(
+                newAuthor.getId(),
+                newAuthor.getPrimaryName()
+        );
     }
 
     @Transactional
@@ -106,16 +98,22 @@ public class AuthorService {
 
     @Transactional
     public void mergeAuthors(Long targetAuthorId, Long sourceAuthorId) {
-        if (targetAuthorId.equals(sourceAuthorId)) {
+        if (targetAuthorId == null || sourceAuthorId == null) {
+            throw new BusinessException("Os autores de origem e destino devem ser informados.");
+        }
+
+        if (Objects.equals(targetAuthorId, sourceAuthorId)) {
             throw new BusinessException("O autor de destino e origem devem ser diferentes.");
         }
-        
+
         Author target = getById(targetAuthorId);
         Author source = getById(sourceAuthorId);
 
-        authorNameService.transferAuthorNames(source, target); // transfere os author names
-        bookRepository.removeAuthorRelationConflicts(target.getId(), source.getId()); // remove possiveis livros que possam possuir o author que será o novo dono
-        bookRepository.transferAuthorRelations(target.getId(), source.getId()); // transfere livros para author
+        target.absorbNamesFrom(source);
+        authorRepository.save(target);
+
+        bookRepository.removeAuthorRelationConflicts(target.getId(), source.getId());
+        bookRepository.transferAuthorRelations(target.getId(), source.getId());
 
         authorRepository.delete(source);
     }
@@ -123,10 +121,20 @@ public class AuthorService {
     private Author findOrCreateAuthor(String normalizedName, String name) {
         return authorNameRepository.findByNormalizedName(normalizedName)
                 .map(AuthorName::getAuthor)
-                .orElseGet(() ->  create(name));
+                .orElseGet(() -> createNewAuthor(name, normalizedName));
+    }
+
+    private Author createNewAuthor(String name, String normalizedName) {
+        Author author = new Author();
+        author.addPrimaryName(name, normalizedName);
+        return authorRepository.save(author);
     }
 
     private String normalizeDisplayName(String rawDisplayName) {
+        if (rawDisplayName == null || rawDisplayName.isBlank()) {
+            throw new BusinessException("Nome do autor deve ser informado.");
+        }
+
         String normalizedDisplayName = rawDisplayName.trim();
         if (normalizedDisplayName.contains(",")) {
             List<String> cleanDisplayName = Arrays.stream(normalizedDisplayName.split(","))
@@ -144,14 +152,5 @@ public class AuthorService {
     private Author getById(Long id) {
         return authorRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Autor com id:" + id + " não encontrado."));
-    }
-
-    private AuthorName getPrimaryAuthorName(Author author) {
-        return author.getAuthorNames().stream()
-                .filter(AuthorName::isPrimary)
-                .findFirst()
-                .orElseThrow(() -> new BusinessException(
-                        "Autor " + author.getId() + " não possui nome definido."
-                ));
     }
 }
