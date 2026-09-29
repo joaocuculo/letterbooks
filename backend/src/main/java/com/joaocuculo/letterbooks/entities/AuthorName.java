@@ -25,10 +25,10 @@ public class AuthorName {
     @JoinColumn(name = "author_id", nullable = false)
     private Author author;
 
-    public AuthorName() {
+    protected AuthorName() {
     }
 
-    public AuthorName(String name, String normalizedName, boolean primary, Author author) {
+    AuthorName(String name, String normalizedName, boolean primary, Author author) {
         this.name = name;
         this.normalizedName = normalizedName;
         this.primary = primary;
@@ -43,43 +43,39 @@ public class AuthorName {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getNormalizedName() {
         return normalizedName;
-    }
-
-    public void setNormalizedName(String normalizedName) {
-        this.normalizedName = normalizedName;
     }
 
     public boolean isPrimary() {
         return primary;
     }
 
-    public void setPrimary(boolean primary) {
-        this.primary = primary;
+    void markAsPrimary() {
+        this.primary = true;
+    }
+
+    void markAsAlternative() {
+        this.primary = false;
     }
 
     public Author getAuthor() {
         return author;
     }
 
-    public void setAuthor(Author author) {
+    void changeAuthor(Author author) {
         this.author = author;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        AuthorName that = (AuthorName) o;
-        return Objects.equals(id, that.id);
+        if (this == o) return true;
+        if (!(o instanceof AuthorName that)) return false;
+        return id != null && Objects.equals(id, that.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return AuthorName.class.hashCode();
     }
 }

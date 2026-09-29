@@ -31,7 +31,7 @@ public class Author implements Serializable {
     public Author() {
     }
 
-    public void addPrimaryName(String name, String normalizedName) {
+    public AuthorName addPrimaryName(String name, String normalizedName) {
         validateName(name, normalizedName);
 
         boolean hasPrimary = authorNames.stream()
@@ -42,31 +42,36 @@ public class Author implements Serializable {
         }
 
         ensureNameDoesNotExist(normalizedName);
-        authorNames.add(new AuthorName(name, normalizedName, true, this));
+        AuthorName authorName = new AuthorName(name, normalizedName, true, this);
+        authorNames.add(authorName);
+        return authorName;
     }
 
-    public void addAlternativeName(String name, String normalizedName) {
+    public AuthorName addAlternativeName(String name, String normalizedName) {
         validateName(name, normalizedName);
         getPrimaryAuthorName();
         ensureNameDoesNotExist(normalizedName);
 
-        authorNames.add(new AuthorName(name, normalizedName, false, this));
+        AuthorName authorName = new AuthorName(name, normalizedName, false, this);
+        authorNames.add(authorName);
+        return authorName;
     }
 
     public String getPrimaryName() {
         return getPrimaryAuthorName().getName();
     }
 
-    public void changePrimaryName(Long authorNameId) {
+    public AuthorName changePrimaryName(Long authorNameId) {
         AuthorName newPrimaryName = findNameById(authorNameId);
         AuthorName currentPrimaryName = getPrimaryAuthorName();
 
         if (newPrimaryName == currentPrimaryName) {
-            return;
+            return newPrimaryName;
         }
 
-        currentPrimaryName.setPrimary(false);
-        newPrimaryName.setPrimary(true);
+        currentPrimaryName.markAsAlternative();
+        newPrimaryName.markAsPrimary();
+        return newPrimaryName;
     }
 
     public AuthorName removeName(Long authorNameId) {
@@ -103,8 +108,8 @@ public class Author implements Serializable {
         }
 
         for (AuthorName sourceName : namesToTransfer) {
-            sourceName.setPrimary(false);
-            sourceName.setAuthor(this);
+            sourceName.markAsAlternative();
+            sourceName.changeAuthor(this);
             authorNames.add(sourceName);
         }
 
@@ -128,6 +133,10 @@ public class Author implements Serializable {
     }
 
     private AuthorName findNameById(Long authorNameId) {
+        if (authorNameId == null) {
+            throw new BusinessException("O nome do autor deve ser informado.");
+        }
+
         return authorNames.stream()
                 .filter(authorName -> Objects.equals(authorName.getId(), authorNameId))
                 .findFirst()
