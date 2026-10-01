@@ -1,6 +1,8 @@
 package com.joaocuculo.letterbooks.controllers;
 
 import com.joaocuculo.letterbooks.config.JWTUserData;
+import com.joaocuculo.letterbooks.dto.request.PasswordChangeRequestDTO;
+import com.joaocuculo.letterbooks.dto.request.UserProfileUpdateDTO;
 import com.joaocuculo.letterbooks.dto.request.UserRequestDTO;
 import com.joaocuculo.letterbooks.dto.request.UserStatusUpdateDTO;
 import com.joaocuculo.letterbooks.dto.response.UserResponseDTO;
@@ -65,5 +67,21 @@ public class UserController {
     public ResponseEntity<UserResponseDTO> findMe(@AuthenticationPrincipal JWTUserData authUser) {
         UserResponseDTO user = service.findById(authUser.userId());
         return ResponseEntity.ok().body(user);
+    }
+
+    @PatchMapping(value = "/me")
+    public ResponseEntity<UserResponseDTO> updateMe(
+            @RequestBody @Valid UserProfileUpdateDTO request,
+            @AuthenticationPrincipal JWTUserData authUser) {
+        UserResponseDTO user = service.updateProfile(authUser.userId(), request);
+        return ResponseEntity.ok().body(user);
+    }
+
+    @PatchMapping(value = "/me/password")
+    public ResponseEntity<Void> changePassword(
+            @RequestBody @Valid PasswordChangeRequestDTO request,
+            @AuthenticationPrincipal JWTUserData authUser) {
+        service.changePassword(authUser.userId(), request);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -1,6 +1,8 @@
 package com.joaocuculo.letterbooks.services;
 
 import com.joaocuculo.letterbooks.config.JWTUserData;
+import com.joaocuculo.letterbooks.dto.request.PasswordChangeRequestDTO;
+import com.joaocuculo.letterbooks.dto.request.UserProfileUpdateDTO;
 import com.joaocuculo.letterbooks.dto.request.UserRequestDTO;
 import com.joaocuculo.letterbooks.dto.request.UserStatusUpdateDTO;
 import com.joaocuculo.letterbooks.dto.response.RegisterResponseDTO;
@@ -104,5 +106,43 @@ public class UserService {
         user.setStatus(dto.status());
         repository.save(user);
         return UserMapper.toResponseDTO(user);
+    }
+
+    public UserResponseDTO updateProfile(Long userId, UserProfileUpdateDTO dto) {
+        User user = getByIdOrThrow(userId);
+        String name = dto.name().trim();
+        String email = dto.email().trim();
+
+        if (!user.getEmail().equals(email)) {
+            if (dto.currentPassword() == null || dto.currentPassword().isBlank()) {
+                throw new BusinessException("Informe sua senha atual para alterar o e-mail.");
+            }
+            if (!passwordEncoder.matches(dto.currentPassword(), user.getPassword())) {
+                throw new BusinessException("Senha atual incorreta.");
+            }
+            if (repository.existsByEmail(email)) {
+                throw new BusinessException("Este e-mail já está cadastrado.");
+            }
+        }
+
+        user.setName(name);
+        user.setEmail(email);
+        repository.save(user);
+
+        return UserMapper.toResponseDTO(user);
+    }
+
+    public void changePassword(Long userId, PasswordChangeRequestDTO dto) {
+        User user = getByIdOrThrow(userId);
+
+        if (!passwordEncoder.matches(dto.currentPassword(), user.getPassword())) {
+            throw new BusinessException("Senha atual incorreta.");
+        }
+        if (passwordEncoder.matches(dto.newPassword(), user.getPassword())) {
+            throw new BusinessException("A nova senha deve ser diferente da senha atual.");
+        }
+
+        user.setPassword(passwordEncoder.encode(dto.newPassword()));
+        repository.save(user);
     }
 }

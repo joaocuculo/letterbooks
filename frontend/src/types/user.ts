@@ -10,6 +10,17 @@ export interface UserResponse {
     createdAt: string;
 }
 
+export interface UserProfileUpdate {
+    name: string;
+    email: string;
+    currentPassword: string | null;
+}
+
+export interface PasswordChangeRequest {
+    currentPassword: string;
+    newPassword: string;
+}
+
 export interface UserSummary {
     id: number;
     name: string;
