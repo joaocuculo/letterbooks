@@ -34,13 +34,21 @@ function LoginPage() {
     const [formErrors, setFormErrors] = useState<LoginFormErrors>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
-    const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    const location = useLocation();
+    const locationState = location.state as {
+        from?: unknown;
+        successMessage?: unknown;
+    } | null;
+    const [successMessage, setSuccessMessage] = useState<string | null>(
+        typeof locationState?.successMessage === 'string'
+            ? locationState.successMessage
+            : null
+    );
 
     const { signIn } = useAuth();
     const navigate = useNavigate();
-    const location = useLocation();
 
-    const requestedPath = (location.state as { from?: unknown } | null)?.from;
+    const requestedPath = locationState?.from;
     const destination =
         typeof requestedPath === 'string' &&
         requestedPath.startsWith('/') &&
@@ -146,6 +154,8 @@ function LoginPage() {
                         {formErrors.password && (
                             <p id="password-error">{formErrors.password}</p>
                         )}
+
+                        <Link to="/forgot-password">Esqueci minha senha</Link>
                     </div>
 
                     {errorMessage && (

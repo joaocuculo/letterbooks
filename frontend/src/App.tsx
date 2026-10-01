@@ -10,6 +10,8 @@ import ProfilePage from './pages/ProfilePage';
 import MyBooksPage from './pages/MyBooksPage';
 import MyBooksListPage from './pages/MyBooksListPage';
 import SearchPage from './pages/SearchPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 
 function App() {
     return (
@@ -18,6 +20,8 @@ function App() {
                 <Route index element={<HomePage />} />
                 <Route path="login" element={<LoginPage />} />
                 <Route path="register" element={<RegisterPage />} />
+                <Route path="forgot-password" element={<ForgotPasswordPage />} />
+                <Route path="reset-password" element={<ResetPasswordPage />} />
                 <Route path="search" element={<SearchPage />} />
                 <Route
                     path="books/:googleBooksId"

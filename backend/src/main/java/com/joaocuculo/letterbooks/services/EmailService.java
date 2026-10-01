@@ -7,6 +7,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.HtmlUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -38,8 +39,8 @@ public class EmailService {
             String resetLink = frontendUrl + "/reset-password?token=" + token;
             String template = loadTemplate("email-password-reset.html");
             String html = template
-                    .replace("{{userName}}", userName)
-                    .replace("{{resetLink}}", resetLink);
+                    .replace("{{userName}}", HtmlUtils.htmlEscape(userName))
+                    .replace("{{resetLink}}", HtmlUtils.htmlEscape(resetLink));
 
             helper.setText(html, true);
 

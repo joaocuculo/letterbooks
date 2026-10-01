@@ -31,6 +31,9 @@ public class User implements UserDetails, Serializable {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
+    private int tokenVersion = 0;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UserRole role;
@@ -134,6 +137,14 @@ public class User implements UserDetails, Serializable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public int getTokenVersion() {
+        return tokenVersion;
+    }
+
+    public void incrementTokenVersion() {
+        tokenVersion++;
     }
 
     public UserRole getRole() {

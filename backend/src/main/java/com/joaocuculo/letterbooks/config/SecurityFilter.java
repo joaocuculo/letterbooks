@@ -41,7 +41,8 @@ public class SecurityFilter extends OncePerRequestFilter {
                     User loadedUser = (User) authorizationService.loadUserById(userData.userId());
 
                     // Validar se usuário está habilitado (não inativo)
-                    if (!loadedUser.isEnabled()) {
+                    if (!loadedUser.isEnabled()
+                            || userData.tokenVersion() != loadedUser.getTokenVersion()) {
                         // Usuário inativo - não autenticar
                         SecurityContextHolder.clearContext();
                         filterChain.doFilter(request, response);
@@ -52,7 +53,8 @@ public class SecurityFilter extends OncePerRequestFilter {
                     JWTUserData updatedUserData = new JWTUserData(
                             loadedUser.getId(),
                             loadedUser.getEmail(),
-                            loadedUser.getRole()
+                            loadedUser.getRole(),
+                            loadedUser.getTokenVersion()
                     );
 
                     // Criar autenticação com authorities do usuário carregado (reflete role ATUAL)

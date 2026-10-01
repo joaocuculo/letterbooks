@@ -27,6 +27,7 @@ public class TokenConfig {
                     .withSubject(user.getId().toString())
                     .withClaim("userEmail", user.getEmail())
                     .withClaim("userRole", user.getRole().name())
+                    .withClaim("tokenVersion", user.getTokenVersion())
                     .withExpiresAt(Instant.now().plusSeconds(60 * 60 * 2)) // 2 horas
                     .withIssuedAt(Instant.now())
                     .sign(algorithm);
@@ -42,10 +43,12 @@ public class TokenConfig {
                     .withIssuer("letterbooks")
                     .build()
                     .verify(token);
+            Integer tokenVersion = decode.getClaim("tokenVersion").asInt();
             return Optional.of(new JWTUserData(
                     Long.parseLong(decode.getSubject()),
                     decode.getClaim("userEmail").asString(),
-                    decode.getClaim("userRole").as(UserRole.class)
+                    decode.getClaim("userRole").as(UserRole.class),
+                    tokenVersion == null ? 0 : tokenVersion
             ));
         } catch (JWTVerificationException e) {
             return Optional.empty();

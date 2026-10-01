@@ -5,6 +5,7 @@ import com.joaocuculo.letterbooks.entities.enums.UserRole;
 public record JWTUserData(
         Long userId,
         String email,
-        UserRole role
+        UserRole role,
+        int tokenVersion
 ) {
 }

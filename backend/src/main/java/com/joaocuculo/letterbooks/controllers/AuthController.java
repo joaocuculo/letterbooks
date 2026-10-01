@@ -59,7 +59,9 @@ public class AuthController {
     @PostMapping(value = "/forgot-password")
     public ResponseEntity<MessageResponseDTO> requestReset(@RequestBody @Valid ForgotPasswordRequestDTO request) {
         passwordResetService.requestReset(request);
-        return ResponseEntity.ok().body(new MessageResponseDTO("E-mail de recuperação enviado."));
+        return ResponseEntity.ok().body(new MessageResponseDTO(
+                "Se este e-mail estiver associado a uma conta, você receberá em instantes as instruções para redefinir sua senha."
+        ));
     }
 
     @PostMapping(value = "/reset-password")
