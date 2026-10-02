@@ -57,7 +57,12 @@ public class BookSpecifications {
             if (subject == null || subject.isBlank()) {
                 return null;
             }
-            return cb.like(cb.lower(root.join("categories", JoinType.LEFT).get("name")), "%" + subject.toLowerCase() + "%");
+            return cb.like(
+                    cb.lower(root.join("categories", JoinType.LEFT)
+                            .join("categoryNames", JoinType.LEFT)
+                            .get("name")),
+                    "%" + subject.toLowerCase() + "%"
+            );
         };
     }
 

@@ -66,7 +66,7 @@ public class BookMapper {
                         .toList(),
                 book.getPublisher(),
                 book.getPublishedDate(),
-                book.getCategories().stream().map(Category::getName).toList(),
+                book.getCategories().stream().map(Category::getPrimaryName).toList(),
                 book.getDescription(),
                 book.getPageCount(),
                 book.getLanguage(),

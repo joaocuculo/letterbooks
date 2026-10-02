@@ -19,7 +19,7 @@ public final class NameNormalizer {
                 .toLowerCase(Locale.ROOT);
 
         if (normalizedName.isBlank()) {
-            throw new BusinessException("Nome do autor deve possuir caracteres válidos.");
+            throw new BusinessException("Nome deve possuir caracteres válidos.");
         }
 
         return normalizedName;
