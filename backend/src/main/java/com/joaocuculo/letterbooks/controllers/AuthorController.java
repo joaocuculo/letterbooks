@@ -2,6 +2,7 @@ package com.joaocuculo.letterbooks.controllers;
 
 import com.joaocuculo.letterbooks.dto.request.AuthorMergeRequestDTO;
 import com.joaocuculo.letterbooks.dto.request.AuthorNameRequestDTO;
+import com.joaocuculo.letterbooks.dto.request.AuthorRequestDTO;
 import com.joaocuculo.letterbooks.dto.response.AuthorNameResponseDTO;
 import com.joaocuculo.letterbooks.dto.response.AuthorResponseDTO;
 import com.joaocuculo.letterbooks.services.AuthorNameService;
@@ -43,6 +44,19 @@ public class AuthorController {
             @PageableDefault(size = 20) Pageable pageable) {
         Page<AuthorResponseDTO> page = authorService.findAll(pageable);
         return ResponseEntity.ok().body(page);
+    }
+
+    @GetMapping("/{authorId}")
+    public ResponseEntity<AuthorResponseDTO> findById(@PathVariable Long authorId) {
+        AuthorResponseDTO author = authorService.findById(authorId);
+        return ResponseEntity.ok().body(author);
+    }
+
+    @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<AuthorResponseDTO> create(@Valid @RequestBody AuthorRequestDTO request) {
+        AuthorResponseDTO author = authorService.create(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(author);
     }
 
     @PostMapping("/merge")

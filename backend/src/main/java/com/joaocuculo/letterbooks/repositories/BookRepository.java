@@ -40,4 +40,31 @@ public interface BookRepository extends JpaRepository<Book, Long>, JpaSpecificat
         @Param("targetAuthorId") Long targetAuthorId, 
         @Param("sourceAuthorId") Long sourceAuthorId
     );
+
+    @Modifying
+    @Query(value = """
+        DELETE FROM book_category
+        WHERE category_id = :sourceCategoryId
+          AND EXISTS (
+              SELECT 1
+              FROM book_category bc_target
+              WHERE bc_target.book_id = book_category.book_id
+                AND bc_target.category_id = :targetCategoryId
+            )
+        """, nativeQuery = true)
+    void removeCategoryRelationConflicts(
+        @Param("targetCategoryId") Long targetCategoryId,
+        @Param("sourceCategoryId") Long sourceCategoryId
+    );
+
+    @Modifying
+    @Query(value = """
+        UPDATE book_category
+        SET category_id = :targetCategoryId
+        WHERE category_id = :sourceCategoryId
+        """, nativeQuery = true)
+    void transferCategoryRelations(
+        @Param("targetCategoryId") Long targetCategoryId,
+        @Param("sourceCategoryId") Long sourceCategoryId
+    );
 }
