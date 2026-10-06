@@ -12,6 +12,11 @@ import MyBooksListPage from './pages/MyBooksListPage';
 import SearchPage from './pages/SearchPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
+import AdminRoute from './components/AdminRoute';
+import AuthorsAdminPage from './pages/AuthorsAdminPage';
+import AuthorAdminDetailsPage from './pages/AuthorAdminDetailsPage';
+import CategoriesAdminPage from './pages/CategoriesAdminPage';
+import CategoryAdminDetailsPage from './pages/CategoryAdminDetailsPage';
 
 function App() {
     return (
@@ -34,6 +39,18 @@ function App() {
                         path="my-books/list"
                         element={<MyBooksListPage />}
                     />
+                    <Route element={<AdminRoute />}>
+                        <Route path="admin/authors" element={<AuthorsAdminPage />} />
+                        <Route
+                            path="admin/authors/:authorId"
+                            element={<AuthorAdminDetailsPage />}
+                        />
+                        <Route path="admin/categories" element={<CategoriesAdminPage />} />
+                        <Route
+                            path="admin/categories/:categoryId"
+                            element={<CategoryAdminDetailsPage />}
+                        />
+                    </Route>
                 </Route>
                 <Route path="*" element={<NotFoundPage />} />
             </Route>

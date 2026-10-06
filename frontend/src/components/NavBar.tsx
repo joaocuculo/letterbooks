@@ -2,7 +2,7 @@ import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
 function NavBar() {
-    const { isAuthenticated, signOut } = useAuth();
+    const { isAuthenticated, user, signOut } = useAuth();
     const navigate = useNavigate();
 
     function handleSignOut() {
@@ -55,6 +55,22 @@ function NavBar() {
                             </details>
 
                             <NavLink to="/profile">Meu perfil</NavLink>
+
+                            {user?.role === 'ADMIN' && (
+                                <details>
+                                    <summary className="cursor-pointer">
+                                        Administração
+                                    </summary>
+                                    <div className="flex flex-col gap-1 p-2">
+                                        <NavLink to="/admin/authors">
+                                            Autores
+                                        </NavLink>
+                                        <NavLink to="/admin/categories">
+                                            Categorias
+                                        </NavLink>
+                                    </div>
+                                </details>
+                            )}
 
                             <button type="button" onClick={handleSignOut} className='cursor-pointer'>Sair</button>
                         </>
