@@ -70,9 +70,13 @@ public class BookService {
         int startIndex = (int) pageable.getOffset();
         GoogleBooksSearchResponseDTO googleResponse = googleBooksService.search(query, pageable.getPageSize(), startIndex);
 
-        if (googleResponse == null || googleResponse.items() == null) {
+        if (googleResponse == null) {
             log.warn("Google Books indisponível. Executando busca local.");
             return searchLocal(searchRequestDTO, pageable, userId);
+        }
+
+        if (googleResponse.items() == null || googleResponse.items().isEmpty()) {
+            return Page.empty(pageable);
         }
 
         List<GoogleBooksResponseDTO> items= googleResponse.items();

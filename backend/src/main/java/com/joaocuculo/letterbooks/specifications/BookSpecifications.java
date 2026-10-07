@@ -39,7 +39,12 @@ public class BookSpecifications {
             if (author == null || author.isBlank()) {
                 return null;
             }
-            return cb.like(cb.lower(root.join("authors", JoinType.LEFT).get("name")), "%" + author.toLowerCase() + "%");
+            return cb.like(
+                    cb.lower(root.join("authors", JoinType.LEFT)
+                            .join("authorNames", JoinType.LEFT)
+                            .get("name")),
+                    "%" + author.toLowerCase() + "%"
+            );
         };
     }
 
@@ -86,7 +91,9 @@ public class BookSpecifications {
                     cb.like(cb.lower(root.get("title")), pattern),
                     cb.like(cb.lower(root.get("subtitle")), pattern),
                     cb.like(cb.lower(root.get("description")), pattern),
-                    cb.like(cb.lower(root.join("authors", JoinType.LEFT).get("name")), pattern)
+                    cb.like(cb.lower(root.join("authors", JoinType.LEFT)
+                            .join("authorNames", JoinType.LEFT)
+                            .get("name")), pattern)
             );
         };
     }

@@ -45,8 +45,13 @@ public class DiscoverService {
     private Optional<DiscoverSectionDTO> loadSection(SectionDefinition definition, Long userId) {
         try {
             GoogleBooksSearchResponseDTO response = googleBooksService.search(definition.query(), 10, 0);
-            if (response == null || response.items() == null) {
+            if (response == null) {
                 log.warn("Não foi possível carregar a seção: {}", definition.key());
+                return Optional.empty();
+            }
+
+            if (response.items() == null || response.items().isEmpty()) {
+                log.debug("Nenhum livro encontrado para a seção: {}", definition.key());
                 return Optional.empty();
             }
 

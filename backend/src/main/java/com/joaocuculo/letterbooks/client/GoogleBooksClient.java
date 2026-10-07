@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
+import reactor.core.Exceptions;
 import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 
@@ -41,13 +43,39 @@ public class GoogleBooksClient {
                         .build())
                 .retrieve()
                 .bodyToMono(GoogleBooksSearchResponseDTO.class)
-                .timeout(Duration.ofSeconds(2))
                 .retryWhen(
                         Retry.backoff(2, Duration.ofMillis(500))
                                 .filter(ex -> ex instanceof WebClientRequestException)
                 )
-                .onErrorResume(ex -> Mono.empty())
+                // Limita o tempo total da busca, incluindo as tentativas de conexão.
+                .timeout(Duration.ofSeconds(5))
+                .onErrorResume(ex -> {
+                    logSearchError(ex);
+                    return Mono.empty();
+                })
                 .block();
+    }
+
+    private void logSearchError(Throwable exception) {
+        Throwable cause = Exceptions.isRetryExhausted(exception) ? exception.getCause() : exception;
+
+        if (cause instanceof WebClientResponseException responseException) {
+            String responseBody = responseException.getResponseBodyAsString();
+            if (apiKey != null && !apiKey.isBlank()) {
+                responseBody = responseBody.replace(apiKey, "[CHAVE OMITIDA]");
+            }
+            responseBody = responseBody.replaceAll("[\\r\\n]+", " ");
+            log.warn("Erro ao pesquisar no Google Books. HTTP {}. Resposta: {}",
+                    responseException.getStatusCode().value(),
+                    responseBody.substring(0, Math.min(responseBody.length(), 1000)));
+        } else if (cause instanceof TimeoutException) {
+            log.warn("Tempo de resposta da busca no Google Books excedeu 5 segundos.");
+        } else if (cause instanceof WebClientRequestException) {
+            log.warn("Não foi possível conectar ao Google Books durante a busca.");
+        } else {
+            // Não registra a exceção completa, pois ela pode conter a URL com a chave da API.
+            log.warn("Erro ao processar a busca no Google Books. Tipo: {}", cause.getClass().getSimpleName());
+        }
     }
 
     public GoogleBooksResponseDTO findByGoogleBooksId(String googleBooksId) {

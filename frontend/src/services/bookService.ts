@@ -5,7 +5,9 @@ import type { PageResponse } from '../types/page';
 import { api } from './api';
 
 export async function discover(): Promise<DiscoverResponse> {
-    const response = await api.get<DiscoverResponse>('books/discover');
+    const response = await api.get<DiscoverResponse>('books/discover', {
+        timeout: 20_000, // Aguarda as três buscas sequenciais do backend.
+    });
     return response.data;
 }
 
