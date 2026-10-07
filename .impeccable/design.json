@@ -1,0 +1,376 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-07T21:13:58Z",
+  "title": "Design System: LetterBooks — Home Diagonal",
+  "extensions": {
+    "colorMeta": {
+      "accent": {
+        "role": "primary",
+        "displayName": "Preto fixo",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(38% 0 0)",
+          "oklch(49% 0 0)",
+          "oklch(61% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "white": {
+        "role": "neutral",
+        "displayName": "Branco",
+        "tonalRamp": [
+          "oklch(15% 0.00000 89.88)",
+          "oklch(26% 0.00000 89.88)",
+          "oklch(38% 0.00000 89.88)",
+          "oklch(49% 0.00000 89.88)",
+          "oklch(61% 0.00000 89.88)",
+          "oklch(72% 0.00000 89.88)",
+          "oklch(84% 0.00000 89.88)",
+          "oklch(95% 0.00000 89.88)"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Tinta principal",
+        "tonalRamp": [
+          "oklch(15% 0.00441 196.88)",
+          "oklch(26% 0.00441 196.88)",
+          "oklch(38% 0.00441 196.88)",
+          "oklch(49% 0.00441 196.88)",
+          "oklch(61% 0.00441 196.88)",
+          "oklch(72% 0.00441 196.88)",
+          "oklch(84% 0.00441 196.88)",
+          "oklch(95% 0.00441 196.88)"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Cinza secundário",
+        "tonalRamp": [
+          "oklch(15% 0.00623 196.96)",
+          "oklch(26% 0.00623 196.96)",
+          "oklch(38% 0.00623 196.96)",
+          "oklch(49% 0.00623 196.96)",
+          "oklch(61% 0.00623 196.96)",
+          "oklch(72% 0.00623 196.96)",
+          "oklch(84% 0.00623 196.96)",
+          "oklch(95% 0.00623 196.96)"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Superfície da biblioteca",
+        "tonalRamp": [
+          "oklch(15% 0.00169 145.56)",
+          "oklch(26% 0.00169 145.56)",
+          "oklch(38% 0.00169 145.56)",
+          "oklch(49% 0.00169 145.56)",
+          "oklch(61% 0.00169 145.56)",
+          "oklch(72% 0.00169 145.56)",
+          "oklch(84% 0.00169 145.56)",
+          "oklch(95% 0.00169 145.56)"
+        ]
+      },
+      "accent-soft": {
+        "role": "neutral",
+        "displayName": "Fundo suave",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(38% 0 0)",
+          "oklch(49% 0 0)",
+          "oklch(61% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "review-fallback": {
+        "role": "neutral",
+        "displayName": "Avaliação — contingência",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(38% 0 0)",
+          "oklch(49% 0 0)",
+          "oklch(61% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "review-glass": {
+        "role": "neutral",
+        "displayName": "Avaliação — vidro do hero",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(38% 0 0)",
+          "oklch(49% 0 0)",
+          "oklch(61% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "review-border": {
+        "role": "neutral",
+        "displayName": "Borda da avaliação",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(38% 0 0)",
+          "oklch(49% 0 0)",
+          "oklch(61% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "review-layer-front": {
+        "role": "neutral",
+        "displayName": "Camada frontal da pilha",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(38% 0 0)",
+          "oklch(49% 0 0)",
+          "oklch(61% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "review-layer-back": {
+        "role": "neutral",
+        "displayName": "Camada posterior da pilha",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(38% 0 0)",
+          "oklch(49% 0 0)",
+          "oklch(61% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Título principal base",
+        "purpose": "Título principal da Home Diagonal."
+      },
+      "headline": {
+        "displayName": "Título de seção",
+        "purpose": "Possibilidades e encerramento."
+      },
+      "title": {
+        "displayName": "Título de recurso",
+        "purpose": "Biblioteca, avaliações e estantes."
+      },
+      "body": {
+        "displayName": "Corpo principal",
+        "purpose": "Descrição do hero."
+      },
+      "label": {
+        "displayName": "Ação principal",
+        "purpose": "Botões da Home."
+      }
+    },
+    "shadows": [
+      {
+        "value": "2px 7px 14px #18232224",
+        "purpose": "Capas locais.",
+        "name": "cover"
+      },
+      {
+        "value": "0 7px 28px #20232312",
+        "purpose": "Cartões de avaliação.",
+        "name": "review"
+      },
+      {
+        "value": "0 12px 30px #20232320",
+        "purpose": "Menu autenticado.",
+        "name": "account-menu"
+      },
+      {
+        "value": "0 5px 14px #20232320",
+        "purpose": "Hover da ação principal.",
+        "name": "button-hover"
+      }
+    ],
+    "motion": [
+      {
+        "value": "box-shadow 0.2s ease",
+        "purpose": "Transição da sombra do botão.",
+        "name": "button-hover"
+      },
+      {
+        "value": "book-conveyor 144s linear infinite",
+        "purpose": "Seis trilhos exclusivos; cada um tem dois grupos de 12 capas (seis obras repetidas duas vezes); translateY(-50%); colunas pares em reverse. Metade da velocidade linear da versão anterior.",
+        "name": "book-conveyor"
+      },
+      {
+        "value": "animation-play-state: paused",
+        "purpose": "Pausa manual, hero fora da viewport ou documento oculto.",
+        "name": "pause"
+      },
+      {
+        "value": "@media (prefers-reduced-motion: reduce)",
+        "purpose": "Desativa animações, transições e rolagem suave; runtime acompanha preferência e oculta o controle.",
+        "name": "reduced-motion"
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "compact-desktop",
+        "value": "1100px"
+      },
+      {
+        "name": "single-column",
+        "value": "760px"
+      }
+    ],
+    "scope": "Somente Home Diagonal. /explore mantém a descoberta anterior. Galeria reservada para login/cadastro em trabalho futuro; páginas de autenticação não alteradas.",
+    "status": "Diagonal aprovada com preto, branco e cinza fixos. Comparação, Foco e seletor de cores removidos da Home.",
+    "tonalRampNote": "Rampas sintetizadas somente para inspeção no painel; não são tokens implementados. Rampas neutras de transparências mostram a família tonal, sem simular a composição alfa. As cores normativas permanecem no frontmatter de DESIGN.md.",
+    "dynamicColors": {
+      "note": "O destaque é sempre #000000; não há cores por modelo ou contraste calculado em runtime.",
+      "accentSoft": "color-mix(in srgb, var(--accent) 9%, white)"
+    },
+    "provenance": "Capas locais de edições em português e inglês, títulos apresentados em português; preservar sidecars de origem/ISBN dos assets. Reviews são exemplos rotulados. Seis ISBNs fornecidos pelo usuário estão no catálogo; 26 imagens locais foram acrescentadas neste refinamento.",
+    "sourceFiles": [
+      "frontend/src/styles/home.css",
+      "frontend/src/pages/HomePage.tsx",
+      "frontend/src/data/homeBooks.ts",
+      "PRODUCT.md",
+      ".impeccable/home-brief.md"
+    ],
+    "materials": [
+      {
+        "value": "blur(14px)",
+        "purpose": "backdrop-filter e -webkit-backdrop-filter somente no cartão do hero dentro de @supports; fundo #ffffffc7 e contingência #ffffffed.",
+        "name": "hero-review-glass"
+      },
+      {
+        "value": "rotate(3deg), rotate(5deg)",
+        "purpose": "Camadas #ffffff80 e #e4e6e680.",
+        "name": "review-stack"
+      },
+      {
+        "value": "mask-composite: intersect",
+        "purpose": "Desktop combina fades superior/inferior com faixa horizontal contínua por toda a altura: linear-gradient(to right, black 40%, #0008 50%, #0001 62%, transparent 74%). Sem pseudoelemento branco ao redor da introdução. Mobile mantém máscara vertical única e mask-composite: add.",
+        "name": "hero-masks"
+      }
+    ],
+    "heroCatalog": {
+      "uniqueWorks": 36,
+      "columns": 6,
+      "uniqueWorksPerColumn": 6,
+      "groupsPerColumn": 2,
+      "coversPerGroup": 12,
+      "withinGroupRepetitions": 2,
+      "exclusiveAcrossColumns": true,
+      "userProvidedIsbns": [
+        "9788582852477",
+        "9786555320213",
+        "9788573263350",
+        "9788544002193",
+        "9786555320350",
+        "9786580210008"
+      ]
+    },
+    "heroGeometry": {
+      "desktopLeft": "calc(-720px + var(--hero-bleed))",
+      "tabletLeft": "-790px",
+      "mobileLeft": "-646px",
+      "bleed": "max(0px, calc((100vw - 1600px) / 2))",
+      "desktopFieldWidth": "calc(85% + var(--hero-bleed))",
+      "purpose": "Preencher o triângulo inferior esquerdo e estender capas até a borda da viewport."
+    }
+  },
+  "components": [
+    {
+      "name": "Ação principal",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Ação principal preta com texto branco; paleta fixa da Home Diagonal.",
+      "html": "<a class=\"ds-primary\" href=\"#\">Comece sua estante <svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" aria-hidden=\"true\"><path d=\"M4 12h15m-6-6 6 6-6 6\"/></svg></a>",
+      "css": ".ds-primary{display:inline-flex;align-items:center;justify-content:center;gap:20px;padding:17px 24px;border-radius:999px;background:var(--accent,#000000);color:var(--on-accent,#fff);font:750 13px Manrope,sans-serif;text-decoration:none;transition:box-shadow 0.2s ease}.ds-primary:hover{box-shadow:0 5px 14px #20232320}.ds-primary:focus-visible{outline:3px solid var(--ink,#202323);outline-offset:5px}@media(prefers-reduced-motion:reduce){.ds-primary{transition:none}}"
+    },
+    {
+      "name": "Link de ação",
+      "kind": "button",
+      "description": "Ação secundária em texto com seta.",
+      "html": "<a class=\"ds-link\" href=\"#\">Explorar livros <svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" aria-hidden=\"true\"><path d=\"M4 12h15m-6-6 6 6-6 6\"/></svg></a>",
+      "css": ".ds-link{display:inline-flex;align-items:center;gap:12px;color:var(--ink,#202323);font:700 13px Manrope,sans-serif;text-decoration:none}.ds-link:hover{text-decoration:underline;text-underline-offset:6px}.ds-link:focus-visible{outline:3px solid var(--ink,#202323);outline-offset:5px}"
+    },
+    {
+      "name": "Navegação da Home",
+      "kind": "nav",
+      "description": "Navegação desktop; no celular Explorar e Pesquisar ocupam a segunda linha do cabeçalho. Entrar permanece visível.",
+      "html": "<nav class=\"ds-nav\" aria-label=\"Navegação principal\"><a href=\"#\">Explorar</a><a href=\"#\">Pesquisar</a><a class=\"ds-extra\" href=\"#\">Como funciona</a></nav>",
+      "css": ".ds-nav{display:flex;align-items:center;gap:28px;font:650 13px Manrope,sans-serif}.ds-nav a{padding:12px 0;min-height:44px;color:var(--ink,#202323);text-decoration:none}.ds-nav a:hover{text-decoration:underline;text-underline-offset:6px}.ds-nav a:focus-visible{outline:3px solid var(--ink,#202323);outline-offset:5px}@media(max-width:760px){.ds-extra{display:none}.ds-nav{font-size:11px;gap:24px;width:100%}}"
+    },
+    {
+      "name": "Avaliação ilustrativa — vidro do hero",
+      "kind": "card",
+      "refersTo": "review-card-hero-glass",
+      "description": "Vidro aplicado somente no hero, com contingência sem blur; demonstração, nunca depoimento real.",
+      "html": "<div class=\"ds-review-wrap\"><article class=\"ds-review\"><div class=\"ds-person\"><span class=\"ds-avatar\">CL</span><div><strong>Clara</strong><span>sobre Crime e castigo</span></div><b class=\"ds-score\"><svg viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.9-6.2-3.3-6.2 3.3L7 14.2l-5-4.9 6.9-1z\"/></svg>5.0</b></div><blockquote>“Tem livros que terminam na última página. Este continua com a gente por muito tempo.”</blockquote></article><small class=\"ds-caption\">Avaliações ilustrativas</small></div>",
+      "css": ".ds-review-wrap{max-width:430px;color:var(--ink,#202323);font-family:Manrope,sans-serif}.ds-review{background:#ffffffed;border:1px solid #d5d8d7;padding:21px 23px;border-radius:16px;box-shadow:0 7px 28px #20232312;min-height:155px}.ds-person{display:flex;align-items:center;gap:10px}.ds-avatar{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--accent-soft,color-mix(in srgb,#000000 9%,white));font-size:10px;font-weight:800}.ds-person strong{display:block;font-size:11px}.ds-person div>span{display:block;margin-top:2px;font-size:10px;color:var(--muted,#606565)}.ds-score{margin-left:auto;display:flex;align-items:center;gap:5px;font-weight:750;white-space:nowrap;color:var(--accent-ink,#000000);font-size:12px}.ds-review blockquote{font-size:12px;line-height:1.8;margin:16px 0 0}.ds-caption{display:block;margin-top:8px;font-size:9px;color:var(--muted,#606565)}@supports((backdrop-filter:blur(14px)) or (-webkit-backdrop-filter:blur(14px))){.ds-review{background:#ffffffc7;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}}"
+    },
+    {
+      "name": "Exemplo de estante",
+      "kind": "chip",
+      "description": "Exemplo estático; interface do recurso ainda pendente.",
+      "html": "<span class=\"ds-shelf\">Para ler nas férias</span>",
+      "css": ".ds-shelf{display:inline-block;padding:18px 24px;border-radius:12px;background:var(--accent-soft,color-mix(in srgb,#000000 9%,white));color:var(--ink,#202323);font:650 12px Manrope,sans-serif}"
+    },
+    {
+      "name": "Ação principal — cabeçalho",
+      "kind": "button",
+      "refersTo": "button-primary-small",
+      "description": "Cápsula compacta do cabeçalho; área mínima de 44px no celular.",
+      "html": "<a class=\"ds-small\" href=\"#\">Criar conta <svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" aria-hidden=\"true\"><path d=\"M4 12h15m-6-6 6 6-6 6\"/></svg></a>",
+      "css": ".ds-small{display:inline-flex;align-items:center;justify-content:center;gap:14px;padding:12px 19px;border-radius:999px;background:#000;color:#fff;font:750 13px Manrope,sans-serif;text-decoration:none;transition:box-shadow 0.2s ease}.ds-small:hover{box-shadow:0 5px 14px #20232320}.ds-small:focus-visible{outline:3px solid #202323;outline-offset:5px}@media(max-width:760px){.ds-small{min-height:44px;padding:10px 13px;font-size:10px}.ds-small svg{display:none}}@media(prefers-reduced-motion:reduce){.ds-small{transition:none}}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Um lugar para cada leitura — Diagonal",
+    "overview": "Este documento registra a Home Diagonal aprovada pelo usuário, extraída de `frontend/src/styles/home.css`, `frontend/src/pages/HomePage.tsx` e `frontend/src/data/homeBooks.ts`. A interface usa preto, branco e cinza fixos, Manrope local, títulos densos e capas reais como matéria visual principal. As capas preservam as cores das edições; não constituem cores de destaque da interface.\n\nO conteúdo em português apresenta organização e avaliação de livros com demonstrações identificadas. O sistema está restrito à Home: outras páginas preservam o estilo anterior; `/explore` contém a antiga Home de descoberta. Galeria fica reservada para um futuro trabalho em login/cadastro; essas páginas não foram alteradas. A comparação entre modelos e o seletor de cores foram encerrados.",
+    "keyCharacteristics": [
+      "Home Diagonal aprovada, com interface em preto, branco e cinza fixos.",
+      "Capas protagonistas em seis colunas diagonais exclusivas, com movimento contínuo lento e controlável.",
+      "Fade contínuo em toda a altura do hero desktop e avaliação em vidro translúcido.",
+      "Avaliações ilustrativas e prévias explicitamente identificadas.",
+      "Sistema aplicado somente à Home."
+    ],
+    "rules": [
+      {
+        "section": "colors",
+        "body": "Preservar preto, branco e cinza na interface da Home; as cores das capas pertencem aos assets.",
+        "name": "The Fixed Palette Rule"
+      }
+    ],
+    "dos": [
+      "**Do** preservar a Home Diagonal aprovada e a paleta fixa de preto, branco e cinza.",
+      "**Do** manter foco visível, pausa manual, pausa fora da viewport e respeito a movimento reduzido.",
+      "**Do** preservar o fade contínuo do hero desktop e o vidro com contingência sem desfoque.",
+      "**Do** identificar avaliações ilustrativas e recursos cuja interface está pendente.",
+      "**Do** preservar assets locais e seus registros de origem.",
+      "**Do** limitar este sistema à Home enquanto a migração das outras páginas não for solicitada."
+    ],
+    "donts": [
+      "**Don't** reintroduzir comparação de modelos ou seletor de cores na Home.",
+      "**Don't** aplicar Galeria a login/cadastro sem um trabalho específico nessas páginas.",
+      "**Don't** apresentar exemplos como depoimentos reais, métricas ou funcionalidades prontas.",
+      "**Don't** substituir capas reais por imagens geradas sem uma decisão explícita.",
+      "**Don't** estender o estilo automaticamente às páginas que mantêm o sistema anterior."
+    ]
+  }
+}

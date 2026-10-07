@@ -9,3 +9,6 @@ Thumbs.db
 
 # Skill de design local
 /.agents/skills/impeccable/
+
+# Capturas locais de verificação visual
+/.impeccable/review/

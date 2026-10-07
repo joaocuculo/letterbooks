@@ -1,8 +1,12 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import NavBar from '../components/NavBar';
 import Footer from '../components/Footer';
 
 function AppLayout() {
+    const { pathname } = useLocation();
+    if (pathname === '/') {
+        return <Outlet />;
+    }
     return (
         <div className="flex min-h-screen flex-col bg-slate-100 text-slate-900">
             <NavBar />

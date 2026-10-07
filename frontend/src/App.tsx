@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router-dom';
 import AppLayout from './layouts/AppLayout';
 import HomePage from './pages/HomePage';
+import DiscoverPage from './pages/DiscoverPage';
 import BookDetailsPage from './pages/BookDetailsPage';
 import LoginPage from './pages/LoginPage';
 import NotFoundPage from './pages/NotFoundPage';
@@ -25,9 +26,13 @@ function App() {
                 <Route index element={<HomePage />} />
                 <Route path="login" element={<LoginPage />} />
                 <Route path="register" element={<RegisterPage />} />
-                <Route path="forgot-password" element={<ForgotPasswordPage />} />
+                <Route
+                    path="forgot-password"
+                    element={<ForgotPasswordPage />}
+                />
                 <Route path="reset-password" element={<ResetPasswordPage />} />
                 <Route path="search" element={<SearchPage />} />
+                <Route path="explore" element={<DiscoverPage />} />
                 <Route
                     path="books/:googleBooksId"
                     element={<BookDetailsPage />}
@@ -35,17 +40,20 @@ function App() {
                 <Route element={<ProtectedRoute />}>
                     <Route path="profile" element={<ProfilePage />} />
                     <Route path="my-books" element={<MyBooksPage />} />
-                    <Route
-                        path="my-books/list"
-                        element={<MyBooksListPage />}
-                    />
+                    <Route path="my-books/list" element={<MyBooksListPage />} />
                     <Route element={<AdminRoute />}>
-                        <Route path="admin/authors" element={<AuthorsAdminPage />} />
+                        <Route
+                            path="admin/authors"
+                            element={<AuthorsAdminPage />}
+                        />
                         <Route
                             path="admin/authors/:authorId"
                             element={<AuthorAdminDetailsPage />}
                         />
-                        <Route path="admin/categories" element={<CategoriesAdminPage />} />
+                        <Route
+                            path="admin/categories"
+                            element={<CategoriesAdminPage />}
+                        />
                         <Route
                             path="admin/categories/:categoryId"
                             element={<CategoryAdminDetailsPage />}

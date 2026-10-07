@@ -1,0 +1,838 @@
+@font-face {
+    font-family: Manrope;
+    src: url('/fonts/Manrope.ttf') format('truetype');
+    font-weight: 200 800;
+    font-display: swap;
+}
+
+.landing {
+    --accent: #000000;
+    --on-accent: #ffffff;
+    --accent-ink: #000000;
+    --ink: #202323;
+    --muted: #606565;
+    --surface: #f5f6f5;
+    --accent-soft: color-mix(in srgb, var(--accent) 9%, white);
+    background: white;
+    color: var(--ink);
+    font-family: Manrope, sans-serif;
+    overflow: clip;
+}
+.landing *,
+.landing *::before,
+.landing *::after {
+    box-sizing: border-box;
+}
+.landing ::selection {
+    background: var(--accent);
+    color: var(--on-accent);
+}
+.landing :focus-visible {
+    outline: 3px solid var(--ink);
+    outline-offset: 5px;
+}
+.landing a {
+    text-decoration: none;
+}
+.landing button {
+    font: inherit;
+}
+.landing em {
+    font-style: normal;
+    color: var(--accent-ink);
+}
+.landing-header {
+    max-width: 1440px;
+    margin: auto;
+    height: 68px;
+    padding: 0 5.5%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    position: relative;
+    z-index: 5;
+}
+.landing-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    white-space: nowrap;
+}
+.brand-dot {
+    color: var(--accent);
+    margin-left: -7px;
+}
+.landing-nav,
+.landing-account {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    font-size: 13px;
+    font-weight: 650;
+}
+.landing-nav a,
+.landing-account > a:not(.landing-button) {
+    padding: 12px 0;
+    min-height: 44px;
+}
+.landing-nav a:hover,
+.landing-text-link:hover {
+    text-decoration: underline;
+    text-underline-offset: 6px;
+}
+.landing-button {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    padding: 17px 24px;
+    border-radius: 999px;
+    background: var(--accent);
+    color: var(--on-accent);
+    font-size: 13px;
+    font-weight: 750;
+    transition: box-shadow 0.2s ease;
+    white-space: nowrap;
+}
+.landing-button:hover {
+    box-shadow: 0 5px 14px #20232320;
+}
+.landing-button-small {
+    padding: 12px 19px;
+    gap: 14px;
+}
+.landing-text-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    font-weight: 700;
+}
+.landing-user-menu {
+    position: relative;
+}
+.landing-user-menu summary {
+    cursor: pointer;
+    padding: 12px 0;
+    min-height: 44px;
+}
+.landing-user-menu > div {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    width: 160px;
+    display: grid;
+    gap: 8px;
+    padding: 18px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 12px 30px #20232320;
+}
+.landing-skip {
+    position: absolute;
+    left: 20px;
+    top: -80px;
+    padding: 15px;
+    background: white;
+    z-index: 20;
+}
+.landing-skip:focus {
+    top: 10px;
+}
+.landing-hero {
+    --hero-bleed: max(0px, calc((100vw - 1600px) / 2));
+    position: relative;
+    isolation: isolate;
+    max-width: 1600px;
+    margin: auto;
+    min-height: 730px;
+}
+.hero-copy {
+    position: relative;
+    z-index: 2;
+}
+.hero-copy h1 {
+    font-size: clamp(40px, 4.5vw, 68px);
+    font-weight: 750;
+    line-height: 1.08;
+    letter-spacing: -0.04em;
+    text-wrap: balance;
+    margin: 0;
+}
+.hero-intro > p {
+    font-size: 15px;
+    color: var(--muted);
+    max-width: 390px;
+    line-height: 1.85;
+    margin: 25px 0 28px;
+}
+.hero-copy .review-controls {
+    background: #fffffff0;
+    border-radius: 12px;
+    padding: 0 8px;
+}
+.hero-actions {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+.landing-cover {
+    position: relative;
+    aspect-ratio: 2 / 3;
+    border-radius: 5px 9px 9px 5px;
+    overflow: hidden;
+    background: #244b48;
+    box-shadow: 2px 7px 14px #18232224;
+}
+.landing-cover::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        90deg,
+        #0003,
+        transparent 4%,
+        #fff2 5%,
+        transparent 8%
+    );
+    pointer-events: none;
+}
+.landing-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.cover-tone-1 {
+    background: #c26541;
+}
+.cover-tone-2 {
+    background: #d0b65a;
+}
+.cover-tone-3 {
+    background: #26395c;
+}
+.cover-fallback {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    justify-content: center;
+    padding: 14px;
+    font-family: Georgia, serif;
+    font-size: 22px;
+    color: white;
+    text-align: center;
+}
+.cover-fallback small {
+    font:
+        11px Manrope,
+        sans-serif;
+    margin-top: 20px;
+}
+.landing-diagonal .hero-copy {
+    margin-left: 54%;
+    padding: 110px 5% 80px 0;
+}
+.landing-diagonal .hero-books {
+    position: absolute;
+    width: calc(85% + var(--hero-bleed));
+    height: 100%;
+    left: calc(-1 * var(--hero-bleed));
+    top: 0;
+    overflow: hidden;
+    pointer-events: none;
+    mask-image:
+        linear-gradient(
+            to bottom,
+            transparent,
+            black 80px,
+            black calc(100% - 120px),
+            transparent
+        ),
+          linear-gradient(to right, black 40%, #0008 50%, #0001 62%, transparent 74%);
+    mask-composite: intersect;
+}
+.diagonal-grid {
+    position: absolute;
+    display: flex;
+    gap: 25px;
+    transform: rotate(-32deg);
+    transform-origin: top left;
+    top: -380px;
+    left: calc(-720px + var(--hero-bleed));
+}
+.diagonal-column {
+    width: 155px;
+    flex-shrink: 0;
+}
+.diagonal-column:nth-child(even) {
+    margin-top: 120px;
+}
+.diagonal-track {
+    /* 12 capas por grupo: 144s mantém metade da velocidade da antiga sequência de 8/48s. */
+    animation: book-conveyor 144s linear infinite;
+}
+.diagonal-column:nth-child(even) .diagonal-track {
+    animation-direction: reverse;
+}
+.diagonal-group {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    padding-bottom: 25px;
+}
+@keyframes book-conveyor {
+    to {
+        transform: translateY(-50%);
+    }
+}
+.motion-paused .diagonal-track {
+    animation-play-state: paused;
+}
+.motion-toggle {
+    position: absolute;
+    bottom: 30px;
+    left: 5.5%;
+    z-index: 4;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 10px 14px;
+    border: 0;
+    border-radius: 999px;
+    background: #fffffff2;
+    color: var(--ink);
+    font-size: 11px !important;
+    cursor: pointer;
+}
+.motion-toggle:hover {
+    background: #eeeeee;
+}
+.landing-diagonal .landing-hero::after {
+    content: '';
+    position: absolute;
+    inset: auto 0 0;
+    height: 120px;
+    background: linear-gradient(transparent, white);
+    z-index: 3;
+    pointer-events: none;
+}
+.review-area {
+    max-width: 430px;
+}
+.hero-copy > .review-area {
+    margin-top: 45px;
+}
+.review-stack {
+    position: relative;
+    padding: 0 12px 14px 0;
+    isolation: isolate;
+}
+.review-stack::before,
+.review-stack::after {
+    content: '';
+    position: absolute;
+    inset: 9px 4px 5px 9px;
+    background: #ffffff80;
+    border-radius: 16px;
+    transform: rotate(3deg);
+    z-index: -1;
+}
+.review-stack::after {
+    inset: 15px 0 0 18px;
+    background: #e4e6e680;
+    transform: rotate(5deg);
+    z-index: -2;
+}
+.review-card {
+    background: #ffffffed;
+      border: 1px solid #d5d8d7;
+    padding: 21px 23px;
+    border-radius: 16px;
+    box-shadow: 0 7px 28px #20232312;
+    min-height: 155px;
+}
+@supports (
+    (backdrop-filter: blur(14px)) or (-webkit-backdrop-filter: blur(14px))
+) {
+    .hero-copy .review-card {
+        background: #ffffffc7;
+        -webkit-backdrop-filter: blur(14px);
+        backdrop-filter: blur(14px);
+    }
+}
+.review-person {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.review-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: var(--accent-soft);
+    color: var(--ink);
+    font-size: 10px;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+.review-person > div {
+    min-width: 0;
+}
+.review-person strong {
+    font-size: 11px;
+    display: block;
+}
+.review-person > div > span {
+    font-size: 10px;
+    color: var(--muted);
+    display: block;
+    margin-top: 2px;
+}
+.review-score {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    font-weight: 750;
+    white-space: nowrap;
+    color: var(--accent-ink);
+}
+.review-card blockquote {
+    font-size: 12px;
+    line-height: 1.8;
+    margin: 16px 0 0;
+}
+.review-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 8px;
+}
+.review-controls small {
+    font-size: 9px;
+    color: var(--muted);
+}
+.review-controls > div {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 9px;
+    font-variant-numeric: tabular-nums;
+}
+.review-controls button {
+    border: none;
+    border-radius: 50%;
+    padding: 8px;
+    display: grid;
+    place-items: center;
+    min-width: 40px;
+    min-height: 40px;
+}
+.review-controls button:hover {
+    background: var(--accent-soft);
+}
+.landing-possibilities {
+    max-width: 1160px;
+    margin: auto;
+    padding: 80px 40px 0;
+    scroll-margin-top: 35px;
+}
+.possibilities-heading {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 40px;
+    margin-bottom: 80px;
+}
+.possibilities-heading h2,
+.landing-closing h2 {
+    font-size: clamp(38px, 4vw, 56px);
+    letter-spacing: -0.04em;
+    line-height: 1.12;
+    font-weight: 750;
+    margin: 0;
+}
+.possibilities-heading > p {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.8;
+    margin: 0 0 5px;
+}
+.possibility-library {
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: 90px;
+    align-items: center;
+}
+.possibility-copy h3,
+.landing-shelves h3 {
+    font-size: clamp(28px, 3vw, 38px);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.035em;
+    margin: 0 0 20px;
+}
+.possibility-copy p,
+.landing-shelves p {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.9;
+    max-width: 350px;
+    margin: 0 0 25px;
+}
+.library-preview {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 28px;
+}
+.library-preview-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+.library-preview-heading strong {
+    font-size: 14px;
+}
+.library-preview-heading span {
+    font-size: 9px;
+    color: var(--muted);
+}
+.library-status {
+    display: flex;
+    gap: 20px;
+    font-size: 10px;
+    color: var(--muted);
+    margin: 24px 0;
+}
+.library-status span {
+    padding-bottom: 8px;
+}
+.library-status .selected {
+    color: var(--ink);
+    border-bottom: 2px solid var(--accent);
+    font-weight: 750;
+}
+.library-books {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 17px;
+}
+.library-books strong {
+    display: block;
+    font-size: 10px;
+    margin-top: 12px;
+}
+.library-books small {
+    display: block;
+    color: var(--muted);
+    font-size: 9px;
+    margin-top: 3px;
+}
+.possibility-reviews {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 90px;
+    align-items: center;
+    margin: 110px 0;
+}
+.possibility-reviews .possibility-copy {
+    order: 2;
+}
+.possibility-reviews > .review-area {
+    width: 100%;
+}
+.possibility-reviews .review-card {
+    padding: 30px;
+}
+.possibility-reviews .review-card blockquote {
+    font-size: 16px;
+}
+.landing-shelves {
+    padding: 60px 0 80px;
+    border-top: 1px solid #e9ebe9;
+    text-align: center;
+}
+.landing-shelves p {
+    max-width: 470px;
+    margin: 0 auto 28px;
+}
+.shelf-examples {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+.shelf-examples span {
+    border-radius: 12px;
+    padding: 18px 24px;
+    background: var(--accent-soft);
+    font-size: 12px;
+    font-weight: 650;
+}
+.landing-shelves > small {
+    display: block;
+    color: var(--muted);
+    margin-top: 22px;
+    font-size: 10px;
+}
+.landing-closing {
+    text-align: center;
+    background: var(--accent-soft);
+    padding: 90px 24px;
+}
+.landing-closing .landing-button {
+    margin-top: 32px;
+}
+.landing-footer {
+    max-width: 1440px;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 25px;
+    padding: 45px 5.5%;
+}
+.landing-footer > span {
+    font-size: 11px;
+    color: var(--muted);
+}
+.landing-footer > a:last-child {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 11px;
+}
+@media (max-width: 1100px) {
+    .landing-header {
+        padding: 0 4%;
+        gap: 16px;
+    }
+    .landing-nav {
+        gap: 18px;
+    }
+    .landing-account {
+        gap: 16px;
+    }
+    .hero-actions {
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+    .landing-diagonal .hero-copy {
+        margin-left: 52%;
+        padding-top: 75px;
+    }
+    .diagonal-grid {
+        left: -790px;
+    }
+    .landing-hero {
+        min-height: 700px;
+    }
+    .possibility-library,
+    .possibility-reviews {
+        gap: 50px;
+    }
+}
+@media (max-width: 760px) {
+    .landing-header {
+        height: auto;
+        min-height: 88px;
+        padding: 0 18px;
+        flex-wrap: wrap;
+        gap: 0 12px;
+    }
+    .landing-brand {
+        font-size: 16px;
+    }
+    .landing-brand > svg {
+        width: 23px;
+    }
+    .landing-nav {
+        margin-left: 0;
+        order: 3;
+        width: 100%;
+        gap: 24px;
+    }
+    .landing-about-link {
+        display: none;
+    }
+    .landing-account {
+        font-size: 11px;
+        gap: 8px;
+    }
+    .landing-nav {
+        font-size: 11px;
+    }
+    .landing-button-small {
+        font-size: 10px;
+        padding: 10px 13px;
+    }
+    .landing-button-small svg {
+        display: none;
+    }
+    .landing-account .landing-button-small {
+        min-height: 44px;
+        padding: 10px 13px;
+        font-size: 10px;
+    }
+    .landing-hero {
+        min-height: 0;
+    }
+    .hero-copy h1 {
+        font-size: clamp(38px, 8vw, 60px);
+    }
+    .hero-intro > p {
+        font-size: 13px;
+        line-height: 1.8;
+        margin: 20px 0 24px;
+        max-width: 360px;
+    }
+    .hero-actions {
+        gap: 18px;
+    }
+    .landing-button {
+        padding: 15px 19px;
+        font-size: 12px;
+    }
+    .landing-text-link {
+        font-size: 11px;
+    }
+    .landing-diagonal .hero-copy {
+        margin: 0;
+        padding: 32px 26px 300px;
+    }
+    .landing-diagonal .hero-copy > .review-area {
+        margin-top: 30px;
+        max-width: 350px;
+    }
+    .landing-diagonal .hero-books {
+        width: 100%;
+        height: 490px;
+        top: auto;
+        bottom: 0;
+        mask-image: linear-gradient(
+            to bottom,
+            transparent,
+            black 25%,
+            black 70%,
+            transparent
+        );
+        mask-composite: add;
+    }
+    .diagonal-grid {
+        top: -340px;
+        left: -646px;
+        gap: 18px;
+    }
+    .diagonal-column {
+        width: 125px;
+    }
+    .diagonal-group {
+        gap: 18px;
+        padding-bottom: 18px;
+    }
+    .motion-toggle {
+        bottom: 15px;
+        left: 26px;
+    }
+    .landing-possibilities {
+        padding: 55px 26px 0;
+    }
+    .possibilities-heading {
+        display: block;
+        margin-bottom: 45px;
+    }
+    .possibilities-heading h2 {
+        font-size: 39px;
+    }
+    .possibilities-heading p {
+        margin-top: 24px;
+        font-size: 12px;
+    }
+    .possibility-library,
+    .possibility-reviews {
+        grid-template-columns: 1fr;
+        gap: 35px;
+    }
+    .possibility-copy h3 {
+        font-size: 31px;
+    }
+    .possibility-copy p {
+        font-size: 12px;
+    }
+    .library-preview {
+        padding: 22px;
+    }
+    .library-preview-heading span {
+        font-size: 8px;
+    }
+    .library-books {
+        gap: 14px;
+    }
+    .library-books strong {
+        font-size: 9px;
+    }
+    .library-books small {
+        font-size: 8px;
+    }
+    .possibility-reviews {
+        margin: 70px 0;
+    }
+    .possibility-reviews .possibility-copy {
+        order: 0;
+    }
+    .possibility-reviews > .review-area {
+        margin: auto;
+    }
+    .landing-shelves {
+        padding: 45px 0;
+    }
+    .landing-shelves h3 {
+        font-size: 28px;
+    }
+    .shelf-examples {
+        gap: 9px;
+    }
+    .shelf-examples span {
+        padding: 13px 16px;
+        font-size: 10px;
+    }
+    .landing-closing {
+        padding: 65px 24px;
+    }
+    .landing-closing h2 {
+        font-size: 35px;
+    }
+    .landing-footer {
+        padding: 35px 26px;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+    .landing-footer > a:last-child {
+        width: 100%;
+    }
+    .review-person > div > span {
+        font-size: 9px;
+    }
+    .review-card {
+        padding: 19px;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .landing *,
+    .landing *::before,
+    .landing *::after {
+        animation: none !important;
+        transition: none !important;
+        scroll-behavior: auto !important;
+    }
+}
