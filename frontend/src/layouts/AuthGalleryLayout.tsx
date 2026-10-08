@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { ArrowLeft, BookOpen } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import '../styles/login.css';
 import '../styles/recovery.css';
@@ -39,31 +40,11 @@ function AuthGalleryLayout({
                     to="/"
                     aria-label="LetterBooks, início"
                 >
-                    <svg
-                        width="27"
-                        height="27"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="1.6"
-                        aria-hidden="true"
-                    >
-                        <path d="M12 5c-3-2-6-2-10-1v16c4-1 7-1 10 1 3-2 6-2 10-1V4c-4-1-7-1-10 1Zm0 0v16" />
-                    </svg>
+                    <BookOpen size={27} strokeWidth={1.6} aria-hidden="true" />
                     <span>LetterBooks.</span>
                 </Link>
                 <Link className="login-back" to="/">
-                    <svg
-                        width="18"
-                        height="18"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="1.7"
-                        aria-hidden="true"
-                    >
-                        <path d="M20 12H4m6-6-6 6 6 6" />
-                    </svg>
+                    <ArrowLeft size={18} strokeWidth={1.7} aria-hidden="true" />
                     Voltar ao início
                 </Link>
             </header>

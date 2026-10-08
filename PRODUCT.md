@@ -22,8 +22,16 @@ Google Books fornece descoberta e busca. Livros só são persistidos após uma i
 
 ## Brand Commitments
 
-Nome LetterBooks. Conteúdo em português. O usuário pediu páginas claras e modernas, capas protagonistas, referências de Pinterest, Apple, Notion e Stripe. A Home Diagonal foi aprovada com interface em preto, branco e cinza fixos, preservando as cores das capas. A comparação entre modelos e o seletor de cores foram encerrados. Login e Cadastro Galeria estendem essa identidade com formulários simples e cinco capas locais estáticas no mesmo layout compartilhado; recuperação de senha usa formulário central e capas em escada; a redefinição de senha compartilha essa composição. O cadastro exige confirmação de senha e informa cinco requisitos: 8 a 72 unidades UTF-16, maiúscula e minúscula Unicode, número ASCII e pontuação/símbolo Unicode; frontend e backend também aplicam limite de 72 bytes UTF-8 do BCrypt. A confirmação não é armazenada. O cadastro mantém integração e confirmação de sucesso na própria tela.
+Nome LetterBooks. Conteúdo em português. O usuário pediu páginas claras e modernas, capas protagonistas, referências de Pinterest, Apple, Notion e Stripe. A Home Diagonal foi aprovada com interface em preto, branco e cinza fixos, preservando as cores das capas. A comparação entre modelos e o seletor de cores foram encerrados. Login e Cadastro Galeria estendem essa identidade com formulários simples e cinco capas locais estáticas no mesmo layout compartilhado; recuperação de senha usa formulário central e capas em escada; a redefinição de senha compartilha essa composição. O cadastro exige confirmação de senha e informa cinco requisitos: 8 a 72 unidades UTF-16, maiúscula e minúscula Unicode, número ASCII e pontuação/símbolo Unicode; frontend e backend também aplicam limite de 72 bytes UTF-8 do BCrypt. A confirmação não é armazenada. O cadastro retorna JWT, autentica pelo signIn existente e redireciona para a Home.
 
 ## Evidence on Hand
 
 Esboço do usuário: capas diagonais à esquerda, texto à direita e avaliações sobrepostas abaixo do texto, com gradiente para o restante da página. As avaliações da Home são exemplos explicitamente ilustrativos, não depoimentos reais. As capas locais representam edições em inglês com títulos apresentados em português. Não há métricas, preços ou prova social confirmados.
+
+## Pendências de acesso
+
+- Reformular o HTML do e-mail de recuperação após definição da logo, alinhando a identidade visual ao site. Template atual: backend/src/main/resources/templates/email-password-reset.html. Manter placeholders e instruções de expiração ao reformular.
+
+## Cadastro autenticado
+
+POST /auth/register retorna 201 com id, name, email e token JWT. UserService preserva validações e BCrypt e retorna o usuário criado internamente; AuthController usa TokenConfig, o mesmo do login, e expõe somente RegisterResponseDTO. Frontend usa signIn e redireciona para / com replace, sem nova chamada ao login. Redesign do e-mail permanece pendente.

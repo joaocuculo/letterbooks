@@ -51,9 +51,16 @@ public class AuthController {
 
     @PostMapping(value = "/register")
     public ResponseEntity<RegisterResponseDTO> register(@RequestBody @Valid RegisterRequestDTO request) {
-        RegisterResponseDTO user = userService.register(request);
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(user.id()).toUri();
-        return ResponseEntity.created(uri).body(user);
+        User user = userService.register(request);
+        String token = tokenConfig.generateToken(user);
+        RegisterResponseDTO response = new RegisterResponseDTO(
+                user.getId(),
+                user.getName(),
+                user.getEmail(),
+                token
+        );
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(user.getId()).toUri();
+        return ResponseEntity.created(uri).body(response);
     }
 
     @PostMapping(value = "/forgot-password")

@@ -5,6 +5,7 @@ import { login } from '../services/authService';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import AuthGalleryLayout from '../layouts/AuthGalleryLayout';
+import PasswordInput from '../components/PasswordInput';
 
 interface LoginFormErrors {
     email?: string;
@@ -149,9 +150,9 @@ function LoginPage() {
                     <div className="login-field">
                         <label htmlFor="password">Senha</label>
 
-                        <input
+                        <PasswordInput
+                            visibilityLabel="senha"
                             className="w-full"
-                            type="password"
                             id="password"
                             name="password"
                             autoComplete="current-password"

@@ -66,6 +66,7 @@ public class PasswordResetService {
 
     @Transactional(dontRollbackOn = InvalidTokenException.class)
     public void resetPassword(ResetPasswordRequestDTO dto) {
+        validatePasswordLength(dto.newPassword());
         PasswordReset passwordReset = passwordResetRepository.findByTokenHash(hashToken(dto.token()))
                 .orElseThrow(this::invalidResetToken);
 
@@ -85,6 +86,13 @@ public class PasswordResetService {
         userRepository.save(user);
 
         passwordResetRepository.deleteByUser(user);
+    }
+
+    private void validatePasswordLength(String password) {
+        // BCrypt aceita no máximo 72 bytes, incluindo senhas com caracteres Unicode.
+        if (password.getBytes(StandardCharsets.UTF_8).length > 72) {
+            throw new BusinessException("Senha muito longa. Use uma senha mais curta.");
+        }
     }
 
     private String hashToken(String token) {

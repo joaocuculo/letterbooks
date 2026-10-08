@@ -14,3 +14,6 @@ Capturas em .impeccable/review/recovery-desktop.jpg e recovery-mobile.jpg. Campo
 
 Verificado em desktop 1280x720 e celular 320x568, sem rolagem horizontal ou interna. Capturas reset-desktop.jpg e reset-mobile-errors.jpg. Harness simulado confirmou divergência, envio por Enter, loading com todos os controles desabilitados, payload, sucesso com destino login e token expirado. Nenhuma senha real foi alterada. Revisão visual aprovada.
 
+
+Atualização: força da senha do reset alinhada ao cadastro no DTO (Size e Pattern), com proteção de tamanho UTF-8 antes do BCrypt no serviço. Frontend reutiliza getPasswordError, substituindo mínimo anterior de seis caracteres. Lucide React aplicado a todos os ícones manuais da interface; olho presente no login. Verificados navegador e teclado, desktop e mobile. Build/lint e 38 testes backend passaram, incluindo 16 novos casos de reset. Revisão visual aprovada; capturas login-lucide.jpg, login-lucide-mobile.jpg e home-lucide.jpg em .impeccable/review/.
+

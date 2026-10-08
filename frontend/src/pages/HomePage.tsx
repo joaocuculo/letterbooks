@@ -1,4 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
+import {
+    ArrowLeft,
+    ArrowRight,
+    BookOpen,
+    Pause,
+    Play,
+    Star,
+} from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import '../styles/home.css';
@@ -71,20 +79,8 @@ const reviews = [
 ];
 
 function Arrow({ back = false }: { back?: boolean }) {
-    return (
-        <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.7"
-            aria-hidden="true"
-            style={back ? { transform: 'rotate(180deg)' } : undefined}
-        >
-            <path d="M4 12h15m-6-6 6 6-6 6" />
-        </svg>
-    );
+    const Icon = back ? ArrowLeft : ArrowRight;
+    return <Icon size={20} strokeWidth={1.7} aria-hidden="true" />;
 }
 
 function Cover({
@@ -138,15 +134,11 @@ function ReviewStack() {
                             className="review-score"
                             aria-label={`${review.score} de 5 estrelas`}
                         >
-                            <svg
-                                viewBox="0 0 24 24"
-                                width="16"
-                                height="16"
+                            <Star
+                                size={16}
                                 fill="currentColor"
                                 aria-hidden="true"
-                            >
-                                <path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.9-6.2-3.3-6.2 3.3L7 14.2l-5-4.9 6.9-1z" />
-                            </svg>
+                            />
                             {review.score}.0
                         </span>
                     </div>
@@ -232,17 +224,7 @@ function HomePage() {
                     className="landing-brand"
                     aria-label="LetterBooks, início"
                 >
-                    <svg
-                        width="28"
-                        height="28"
-                        viewBox="0 0 28 28"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="1.7"
-                        aria-hidden="true"
-                    >
-                        <path d="M14 23V7M14 7C10 4 6 4 3 5v16c4-1 7 0 11 2 4-2 7-3 11-2V5c-3-1-7-1-11 2Z" />
-                    </svg>
+                    <BookOpen size={28} strokeWidth={1.7} aria-hidden="true" />
                     LetterBooks<span className="brand-dot">.</span>
                 </Link>
                 <nav aria-label="Navegação principal" className="landing-nav">
@@ -369,21 +351,19 @@ function HomePage() {
                             onClick={() => setPaused(!paused)}
                             aria-pressed={paused}
                         >
-                            <svg
-                                width="14"
-                                height="14"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="1.7"
-                                aria-hidden="true"
-                            >
-                                {paused ? (
-                                    <path d="m8 5 11 7-11 7Z" />
-                                ) : (
-                                    <path d="M8 5v14M16 5v14" />
-                                )}
-                            </svg>
+                            {paused ? (
+                                <Play
+                                    size={14}
+                                    strokeWidth={1.7}
+                                    aria-hidden="true"
+                                />
+                            ) : (
+                                <Pause
+                                    size={14}
+                                    strokeWidth={1.7}
+                                    aria-hidden="true"
+                                />
+                            )}
                             {paused ? 'Retomar movimento' : 'Pausar movimento'}
                         </button>
                     )}

@@ -65,7 +65,7 @@ class UserRegistrationTests {
     }
 
     @Test
-    void savesOnlyEncodedPasswordAndReturnsPublicData() {
+    void savesOnlyEncodedPasswordAndReturnsCreatedUser() {
         when(encoder.encode("Leitura1!")).thenReturn("encoded-password");
         var result = service.register(new RegisterRequestDTO("Leitor", "leitor@example.com", "Leitura1!", "Leitura1!"));
         var savedUser = ArgumentCaptor.forClass(User.class);
@@ -73,7 +73,7 @@ class UserRegistrationTests {
         assertEquals("encoded-password", savedUser.getValue().getPassword());
         assertEquals(UserRole.USER, savedUser.getValue().getRole());
         assertEquals(UserStatus.ACTIVE, savedUser.getValue().getStatus());
-        assertEquals("leitor@example.com", result.email());
+        assertEquals("leitor@example.com", result.getEmail());
     }
 
     @Test

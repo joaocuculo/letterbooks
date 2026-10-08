@@ -1,37 +1,17 @@
 import { useState, type SubmitEvent } from 'react';
 import { getApiErrorMessage } from '../utils/getApiErrorMessage.';
 import { register } from '../services/authService';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import AuthGalleryLayout from '../layouts/AuthGalleryLayout';
 import PasswordInput from '../components/PasswordInput';
+import { getPasswordError } from '../utils/getPasswordError';
+import { useAuth } from '../hooks/useAuth';
 
 interface RegisterFormErrors {
     name?: string;
     email?: string;
     password?: string;
     confirmPassword?: string;
-}
-
-function getPasswordError(password: string): string | undefined {
-    if (!password) return 'Informe sua senha.';
-    if (password.length < 8 || password.length > 72) {
-        return 'A senha deve ter de 8 a 72 caracteres.';
-    }
-    if (!/\p{Lu}/u.test(password)) {
-        return 'Inclua pelo menos uma letra maiúscula.';
-    }
-    if (!/\p{Ll}/u.test(password)) {
-        return 'Inclua pelo menos uma letra minúscula.';
-    }
-    if (!/[0-9]/.test(password)) {
-        return 'Inclua pelo menos um número.';
-    }
-    if (!/[\p{P}\p{S}]/u.test(password)) {
-        return 'Inclua pelo menos um caractere especial (ex.: !, @, #).';
-    }
-    if (new TextEncoder().encode(password).length > 72) {
-        return 'Senha muito longa. Use uma senha mais curta.';
-    }
 }
 
 function validateRegisterForm(
@@ -65,6 +45,8 @@ function validateRegisterForm(
 }
 
 function RegisterPage() {
+    const { signIn } = useAuth();
+    const navigate = useNavigate();
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -73,7 +55,6 @@ function RegisterPage() {
     const [formErrors, setFormErrors] = useState<RegisterFormErrors>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
-    const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const passwordError = password
         ? getPasswordError(password)
         : formErrors.password;
@@ -91,7 +72,6 @@ function RegisterPage() {
         if (Object.keys(validationErrors).length > 0) {
             setFormErrors(validationErrors);
             setErrorMessage(null);
-            setSuccessMessage(null);
             return;
         }
 
@@ -99,9 +79,8 @@ function RegisterPage() {
             setIsSubmitting(true);
             setFormErrors({});
             setErrorMessage(null);
-            setSuccessMessage(null);
 
-            await register({
+            const { token } = await register({
                 name: name.trim(),
                 email: email.trim(),
                 password,
@@ -111,7 +90,8 @@ function RegisterPage() {
             setPassword('');
             setConfirmPassword('');
 
-            setSuccessMessage('Cadastrado com sucesso!');
+            signIn(token);
+            navigate('/', { replace: true });
         } catch (error) {
             setErrorMessage(getApiErrorMessage(error, 'Falha no cadastro.'));
         } finally {
@@ -268,12 +248,6 @@ function RegisterPage() {
                     {errorMessage && (
                         <p className="login-message" role="alert">
                             {errorMessage}
-                        </p>
-                    )}
-
-                    {successMessage && (
-                        <p className="login-message" role="status">
-                            {successMessage}
                         </p>
                     )}
 

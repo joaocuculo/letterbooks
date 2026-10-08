@@ -6,7 +6,6 @@ import com.joaocuculo.letterbooks.dto.request.RegisterRequestDTO;
 import com.joaocuculo.letterbooks.dto.request.UserProfileUpdateDTO;
 import com.joaocuculo.letterbooks.dto.request.UserRequestDTO;
 import com.joaocuculo.letterbooks.dto.request.UserStatusUpdateDTO;
-import com.joaocuculo.letterbooks.dto.response.RegisterResponseDTO;
 import com.joaocuculo.letterbooks.dto.response.UserResponseDTO;
 import com.joaocuculo.letterbooks.entities.User;
 import com.joaocuculo.letterbooks.entities.enums.UserRole;
@@ -50,7 +49,7 @@ public class UserService {
         return repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado."));
     }
 
-    public RegisterResponseDTO register(RegisterRequestDTO dto) {
+    public User register(RegisterRequestDTO dto) {
         validatePasswords(dto.password(), dto.confirmPassword());
         validateEmailAvailable(dto.email());
 
@@ -64,11 +63,7 @@ public class UserService {
 
         repository.save(user);
 
-        return new RegisterResponseDTO(
-                user.getId(),
-                user.getName(),
-                user.getEmail()
-        );
+        return user;
     }
 
     public void delete(Long id, JWTUserData authUser) {

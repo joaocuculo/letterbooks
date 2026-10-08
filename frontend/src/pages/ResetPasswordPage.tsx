@@ -4,6 +4,7 @@ import { resetPassword } from '../services/authService';
 import { getApiErrorMessage } from '../utils/getApiErrorMessage.';
 import AuthGalleryLayout from '../layouts/AuthGalleryLayout';
 import PasswordInput from '../components/PasswordInput';
+import { getPasswordError } from '../utils/getPasswordError';
 
 interface ResetPasswordFormErrors {
     newPassword?: string;
@@ -16,11 +17,10 @@ function validatePassword(
 ): ResetPasswordFormErrors {
     const errors: ResetPasswordFormErrors = {};
 
-    if (!newPassword) {
-        errors.newPassword = 'Informe a nova senha.';
-    } else if (newPassword.length < 6) {
-        errors.newPassword = 'A nova senha deve conter no mínimo 6 caracteres.';
-    }
+    const passwordError = newPassword
+        ? getPasswordError(newPassword)
+        : 'Informe a nova senha.';
+    if (passwordError) errors.newPassword = passwordError;
 
     if (!passwordConfirmation) {
         errors.passwordConfirmation = 'Confirme a nova senha.';
@@ -42,6 +42,9 @@ function ResetPasswordPage() {
     const [formErrors, setFormErrors] = useState<ResetPasswordFormErrors>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const passwordError = newPassword
+        ? getPasswordError(newPassword)
+        : formErrors.newPassword;
 
     async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -146,18 +149,16 @@ function ResetPasswordPage() {
                                     newPassword: undefined,
                                 }));
                             }}
-                            aria-invalid={Boolean(formErrors.newPassword)}
+                            aria-invalid={Boolean(passwordError)}
                             aria-describedby={
-                                formErrors.newPassword
-                                    ? 'new-password-error'
-                                    : undefined
+                                passwordError ? 'new-password-error' : undefined
                             }
                             disabled={isSubmitting}
                         />
 
-                        {formErrors.newPassword && (
+                        {passwordError && (
                             <p id="new-password-error" role="alert">
-                                {formErrors.newPassword}
+                                {passwordError}
                             </p>
                         )}
                     </div>

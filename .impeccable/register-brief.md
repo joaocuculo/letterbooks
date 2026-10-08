@@ -36,3 +36,7 @@ Lista e estilos antigos removidos. Um único helper valida tanto a digitação q
 
 Visibilidade de senha: controle independente nos dois campos, acessível por teclado e clique. Verificação no navegador confirmou alternância independente password/text e retorno para password, sem envio do formulário. Revisão visual mobile aprovada; captura register-password-eyes-mobile.jpg em .impeccable/review/.
 
+
+## Entrada automática após cadastro
+
+A resposta de cadastro agora inclui token. Frontend usa signIn existente e navega para / com replace; sucesso deixou de permanecer no formulário. Erros continuam mantendo o usuário no cadastro. Backend gera JWT com TokenConfig existente, após criação do usuário, sem login adicional. 40 testes backend passaram, incluindo assinatura/claims/expiração e ausência de token em falha; build e lint passaram. Harness register-jwt-check.html verificou token recebido por signIn, uma requisição de cadastro sem login adicional, Home autenticada e erro de e-mail duplicado sem autenticação. AuthContext e API simulados, sem criação de conta real. Captura register-jwt-home.jpg em .impeccable/review/. Revisão visual aprovada.
