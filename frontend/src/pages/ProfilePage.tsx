@@ -1,10 +1,12 @@
+import type { ReactNode } from 'react';
+import SiteHeader from '../components/SiteHeader';
+import PasswordInput from '../components/PasswordInput';
+import { useAuth } from '../hooks/useAuth';
+import { getPasswordError } from '../utils/getPasswordError';
+import '../styles/profile.css';
 import axios from 'axios';
 import { useEffect, useState, type SubmitEvent } from 'react';
-import {
-    changePassword,
-    findMe,
-    updateMe,
-} from '../services/userService';
+import { changePassword, findMe, updateMe } from '../services/userService';
 import type { UserResponse, UserRole, UserStatus } from '../types/user';
 import { getApiErrorMessage } from '../utils/getApiErrorMessage.';
 
@@ -55,7 +57,8 @@ function validateProfileForm(
         errors.email = 'Informe um e-mail válido.';
     }
     if (emailChanged && !currentPassword) {
-        errors.currentPassword = 'Informe sua senha atual para alterar o e-mail.';
+        errors.currentPassword =
+            'Informe sua senha atual para alterar o e-mail.';
     }
 
     return errors;
@@ -73,40 +76,70 @@ function validatePasswordForm(
     }
     if (!newPassword) {
         errors.newPassword = 'Informe a nova senha.';
-    } else if (newPassword.length < 6) {
-        errors.newPassword = 'A nova senha deve conter no mínimo 6 caracteres.';
+    } else if (getPasswordError(newPassword)) {
+        errors.newPassword = getPasswordError(newPassword);
     } else if (newPassword === currentPassword) {
         errors.newPassword = 'A nova senha deve ser diferente da senha atual.';
     }
     if (!passwordConfirmation) {
         errors.passwordConfirmation = 'Confirme a nova senha.';
     } else if (passwordConfirmation !== newPassword) {
-        errors.passwordConfirmation = 'A confirmação deve ser igual à nova senha.';
+        errors.passwordConfirmation =
+            'A confirmação deve ser igual à nova senha.';
     }
 
     return errors;
 }
 
+function ProfileShell({ children }: { children: ReactNode }) {
+    return (
+        <div className="landing profile-page">
+            <a className="landing-skip" href="#profile-content">
+                Pular para o conteúdo
+            </a>
+            <SiteHeader />
+            <main id="profile-content" className="profile-content">
+                <h1>Meu perfil</h1>
+                {children}
+            </main>
+        </div>
+    );
+}
+
 function ProfilePage() {
+    const { refreshUser } = useAuth();
+    const [loadAttempt, setLoadAttempt] = useState(0);
     const [user, setUser] = useState<UserResponse | null>(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [loadErrorMessage, setLoadErrorMessage] = useState<string | null>(null);
+    const [loadErrorMessage, setLoadErrorMessage] = useState<string | null>(
+        null
+    );
 
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [profileCurrentPassword, setProfileCurrentPassword] = useState('');
-    const [profileFormErrors, setProfileFormErrors] = useState<ProfileFormErrors>({});
+    const [profileFormErrors, setProfileFormErrors] =
+        useState<ProfileFormErrors>({});
     const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
-    const [profileErrorMessage, setProfileErrorMessage] = useState<string | null>(null);
-    const [profileSuccessMessage, setProfileSuccessMessage] = useState<string | null>(null);
+    const [profileErrorMessage, setProfileErrorMessage] = useState<
+        string | null
+    >(null);
+    const [profileSuccessMessage, setProfileSuccessMessage] = useState<
+        string | null
+    >(null);
 
     const [passwordCurrentPassword, setPasswordCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [passwordConfirmation, setPasswordConfirmation] = useState('');
-    const [passwordFormErrors, setPasswordFormErrors] = useState<PasswordFormErrors>({});
+    const [passwordFormErrors, setPasswordFormErrors] =
+        useState<PasswordFormErrors>({});
     const [isChangingPassword, setIsChangingPassword] = useState(false);
-    const [passwordErrorMessage, setPasswordErrorMessage] = useState<string | null>(null);
-    const [passwordSuccessMessage, setPasswordSuccessMessage] = useState<string | null>(null);
+    const [passwordErrorMessage, setPasswordErrorMessage] = useState<
+        string | null
+    >(null);
+    const [passwordSuccessMessage, setPasswordSuccessMessage] = useState<
+        string | null
+    >(null);
 
     useEffect(() => {
         const abortController = new AbortController();
@@ -140,7 +173,7 @@ function ProfilePage() {
         void loadProfile();
 
         return () => abortController.abort();
-    }, []);
+    }, [loadAttempt]);
 
     async function handleProfileSubmit(event: SubmitEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -175,19 +208,21 @@ function ProfilePage() {
             const updatedUser = await updateMe({
                 name: normalizedName,
                 email: normalizedEmail,
-                currentPassword: emailChanged
-                    ? profileCurrentPassword
-                    : null,
+                currentPassword: emailChanged ? profileCurrentPassword : null,
             });
 
             setUser(updatedUser);
+            refreshUser();
             setName(updatedUser.name);
             setEmail(updatedUser.email);
             setProfileCurrentPassword('');
             setProfileSuccessMessage('Dados atualizados com sucesso.');
         } catch (error) {
             setProfileErrorMessage(
-                getApiErrorMessage(error, 'Não foi possível atualizar seus dados.')
+                getApiErrorMessage(
+                    error,
+                    'Não foi possível atualizar seus dados.'
+                )
             );
         } finally {
             setIsUpdatingProfile(false);
@@ -236,244 +271,360 @@ function ProfilePage() {
 
     if (isLoading) {
         return (
-            <p className="mx-auto max-w-7xl px-4 py-6">
-                Carregando seu perfil...
-            </p>
+            <ProfileShell>
+                <p role="status" className="profile-loading">
+                    Carregando seu perfil...
+                </p>
+            </ProfileShell>
         );
     }
-
     if (loadErrorMessage || !user) {
         return (
-            <main className="mx-auto max-w-7xl px-4 py-6">
-                <h1 className="mb-6">Meu perfil</h1>
-                <p role="alert">
-                    {loadErrorMessage ?? 'Não foi possível carregar seu perfil.'}
-                </p>
-            </main>
+            <ProfileShell>
+                <div className="profile-load-error">
+                    <p className="login-message" role="alert">
+                        {loadErrorMessage ??
+                            'Não foi possível carregar seu perfil.'}
+                    </p>
+                    <button
+                        className="login-submit"
+                        onClick={() => setLoadAttempt((value) => value + 1)}
+                    >
+                        Tentar novamente
+                    </button>
+                </div>
+            </ProfileShell>
         );
     }
 
     const emailChanged = email.trim() !== user.email;
+    const initials =
+        user.name
+            .trim()
+            .split(/\s+/)
+            .filter(Boolean)
+            .slice(0, 2)
+            .map((part) => part[0])
+            .join('')
+            .toLocaleUpperCase('pt-BR') || 'LB';
+    const newPasswordError = newPassword
+        ? (getPasswordError(newPassword) ?? passwordFormErrors.newPassword)
+        : passwordFormErrors.newPassword;
 
     return (
-        <main className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6">
-            <h1>Meu perfil</h1>
-
-            <section className="max-w-2xl rounded-md border p-4">
-                <h2 className="mb-4">Informações da conta</h2>
-
-                <dl className="grid gap-4 sm:grid-cols-2">
-                    <div>
-                        <dt>Nome</dt>
-                        <dd>{user.name}</dd>
+        <ProfileShell>
+            <div className="profile-grid">
+                <aside
+                    className="profile-summary"
+                    aria-labelledby="profile-summary-name"
+                >
+                    <div className="profile-avatar" aria-hidden="true">
+                        {initials}
                     </div>
+                    <h2 id="profile-summary-name">{user.name}</h2>
+                    <p className="profile-summary-email">{user.email}</p>
+                    <dl>
+                        <div>
+                            <dt>Tipo de conta</dt>
+                            <dd>{roleLabels[user.role]}</dd>
+                        </div>
+                        <div>
+                            <dt>Situação</dt>
+                            <dd>{statusLabels[user.status]}</dd>
+                        </div>
+                        <div>
+                            <dt>Membro desde</dt>
+                            <dd>{formatRegistrationDate(user.createdAt)}</dd>
+                        </div>
+                    </dl>
+                </aside>
+                <div className="profile-forms">
+                    <section className="profile-section">
+                        <h2 className="profile-section-title">
+                            Dados pessoais
+                        </h2>
 
-                    <div>
-                        <dt>E-mail</dt>
-                        <dd>{user.email}</dd>
-                    </div>
+                        <form
+                            className="login-form"
+                            aria-busy={isUpdatingProfile}
+                            onSubmit={handleProfileSubmit}
+                            noValidate
+                        >
+                            <div className="login-field">
+                                <label htmlFor="profile-name">Nome</label>
+                                <input
+                                    className="w-full"
+                                    id="profile-name"
+                                    name="name"
+                                    type="text"
+                                    autoComplete="name"
+                                    value={name}
+                                    onChange={(event) => {
+                                        setName(event.target.value);
+                                        setProfileFormErrors((current) => ({
+                                            ...current,
+                                            name: undefined,
+                                        }));
+                                    }}
+                                    aria-invalid={Boolean(
+                                        profileFormErrors.name
+                                    )}
+                                    aria-describedby={
+                                        profileFormErrors.name
+                                            ? 'profile-name-error'
+                                            : undefined
+                                    }
+                                    disabled={isUpdatingProfile}
+                                />
+                                {profileFormErrors.name && (
+                                    <p role="alert" id="profile-name-error">
+                                        {profileFormErrors.name}
+                                    </p>
+                                )}
+                            </div>
 
-                    <div>
-                        <dt>Tipo de conta</dt>
-                        <dd>{roleLabels[user.role]}</dd>
-                    </div>
+                            <div className="login-field">
+                                <label htmlFor="profile-email">E-mail</label>
+                                <input
+                                    className="w-full"
+                                    id="profile-email"
+                                    name="email"
+                                    type="email"
+                                    autoComplete="email"
+                                    value={email}
+                                    onChange={(event) => {
+                                        setEmail(event.target.value);
+                                        setProfileFormErrors((current) => ({
+                                            ...current,
+                                            email: undefined,
+                                        }));
+                                    }}
+                                    aria-invalid={Boolean(
+                                        profileFormErrors.email
+                                    )}
+                                    aria-describedby={
+                                        profileFormErrors.email
+                                            ? 'profile-email-error'
+                                            : undefined
+                                    }
+                                    disabled={isUpdatingProfile}
+                                />
+                                {profileFormErrors.email && (
+                                    <p role="alert" id="profile-email-error">
+                                        {profileFormErrors.email}
+                                    </p>
+                                )}
+                            </div>
 
-                    <div>
-                        <dt>Situação</dt>
-                        <dd>{statusLabels[user.status]}</dd>
-                    </div>
+                            {emailChanged && (
+                                <div className="login-field">
+                                    <label htmlFor="profile-current-password">
+                                        Senha atual para confirmar o novo e-mail
+                                    </label>
+                                    <PasswordInput
+                                        className="w-full"
+                                        id="profile-current-password"
+                                        name="currentPassword"
+                                        visibilityLabel="senha atual para confirmar o novo e-mail"
+                                        autoComplete="current-password"
+                                        value={profileCurrentPassword}
+                                        onChange={(event) => {
+                                            setProfileCurrentPassword(
+                                                event.target.value
+                                            );
+                                            setProfileFormErrors((current) => ({
+                                                ...current,
+                                                currentPassword: undefined,
+                                            }));
+                                        }}
+                                        aria-invalid={Boolean(
+                                            profileFormErrors.currentPassword
+                                        )}
+                                        aria-describedby={
+                                            profileFormErrors.currentPassword
+                                                ? 'profile-current-password-error'
+                                                : undefined
+                                        }
+                                        disabled={isUpdatingProfile}
+                                    />
+                                    {profileFormErrors.currentPassword && (
+                                        <p
+                                            role="alert"
+                                            id="profile-current-password-error"
+                                        >
+                                            {profileFormErrors.currentPassword}
+                                        </p>
+                                    )}
+                                </div>
+                            )}
 
-                    <div>
-                        <dt>Membro desde</dt>
-                        <dd>{formatRegistrationDate(user.createdAt)}</dd>
-                    </div>
-                </dl>
-            </section>
-
-            <section className="max-w-2xl rounded-md border p-4">
-                <h2 className="mb-4">Alterar dados</h2>
-
-                <form className="flex flex-col gap-4" onSubmit={handleProfileSubmit} noValidate>
-                    <div className="flex flex-col gap-1">
-                        <label htmlFor="profile-name">Nome</label>
-                        <input
-                            className="w-full"
-                            id="profile-name"
-                            name="name"
-                            type="text"
-                            autoComplete="name"
-                            value={name}
-                            onChange={(event) => {
-                                setName(event.target.value);
-                                setProfileFormErrors((current) => ({
-                                    ...current,
-                                    name: undefined,
-                                }));
-                            }}
-                            aria-invalid={Boolean(profileFormErrors.name)}
-                            aria-describedby={profileFormErrors.name ? 'profile-name-error' : undefined}
-                            disabled={isUpdatingProfile}
-                        />
-                        {profileFormErrors.name && (
-                            <p id="profile-name-error">{profileFormErrors.name}</p>
-                        )}
-                    </div>
-
-                    <div className="flex flex-col gap-1">
-                        <label htmlFor="profile-email">E-mail</label>
-                        <input
-                            className="w-full"
-                            id="profile-email"
-                            name="email"
-                            type="email"
-                            autoComplete="email"
-                            value={email}
-                            onChange={(event) => {
-                                setEmail(event.target.value);
-                                setProfileFormErrors((current) => ({
-                                    ...current,
-                                    email: undefined,
-                                }));
-                            }}
-                            aria-invalid={Boolean(profileFormErrors.email)}
-                            aria-describedby={profileFormErrors.email ? 'profile-email-error' : undefined}
-                            disabled={isUpdatingProfile}
-                        />
-                        {profileFormErrors.email && (
-                            <p id="profile-email-error">{profileFormErrors.email}</p>
-                        )}
-                    </div>
-
-                    {emailChanged && (
-                        <div className="flex flex-col gap-1">
-                            <label htmlFor="profile-current-password">
-                                Senha atual para confirmar o novo e-mail
-                            </label>
-                            <input
-                                className="w-full"
-                                id="profile-current-password"
-                                name="currentPassword"
-                                type="password"
-                                autoComplete="current-password"
-                                value={profileCurrentPassword}
-                                onChange={(event) => {
-                                    setProfileCurrentPassword(event.target.value);
-                                    setProfileFormErrors((current) => ({
-                                        ...current,
-                                        currentPassword: undefined,
-                                    }));
-                                }}
-                                aria-invalid={Boolean(profileFormErrors.currentPassword)}
-                                aria-describedby={profileFormErrors.currentPassword ? 'profile-current-password-error' : undefined}
-                                disabled={isUpdatingProfile}
-                            />
-                            {profileFormErrors.currentPassword && (
-                                <p id="profile-current-password-error">
-                                    {profileFormErrors.currentPassword}
+                            {profileErrorMessage && (
+                                <p className="login-message" role="alert">
+                                    {profileErrorMessage}
                                 </p>
                             )}
-                        </div>
-                    )}
+                            {profileSuccessMessage && (
+                                <p className="login-message" role="status">
+                                    {profileSuccessMessage}
+                                </p>
+                            )}
 
-                    {profileErrorMessage && <p role="alert">{profileErrorMessage}</p>}
-                    {profileSuccessMessage && <p role="status">{profileSuccessMessage}</p>}
+                            <button
+                                className="login-submit profile-submit"
+                                type="submit"
+                                disabled={isUpdatingProfile}
+                            >
+                                {isUpdatingProfile
+                                    ? 'Salvando...'
+                                    : 'Salvar alterações'}
+                            </button>
+                        </form>
+                    </section>
 
-                    <button className="self-start" type="submit" disabled={isUpdatingProfile}>
-                        {isUpdatingProfile ? 'Salvando...' : 'Salvar alterações'}
-                    </button>
-                </form>
-            </section>
+                    <section className="profile-section">
+                        <h2 className="profile-section-title">Alterar senha</h2>
 
-            <section className="max-w-2xl rounded-md border p-4">
-                <h2 className="mb-4">Alterar senha</h2>
+                        <form
+                            className="login-form"
+                            aria-busy={isChangingPassword}
+                            onSubmit={handlePasswordSubmit}
+                            noValidate
+                        >
+                            <div className="login-field">
+                                <label htmlFor="password-current">
+                                    Senha atual
+                                </label>
+                                <PasswordInput
+                                    className="w-full"
+                                    id="password-current"
+                                    name="currentPassword"
+                                    visibilityLabel="senha atual"
+                                    autoComplete="current-password"
+                                    value={passwordCurrentPassword}
+                                    onChange={(event) => {
+                                        setPasswordCurrentPassword(
+                                            event.target.value
+                                        );
+                                        setPasswordFormErrors((current) => ({
+                                            ...current,
+                                            currentPassword: undefined,
+                                        }));
+                                    }}
+                                    aria-invalid={Boolean(
+                                        passwordFormErrors.currentPassword
+                                    )}
+                                    aria-describedby={
+                                        passwordFormErrors.currentPassword
+                                            ? 'password-current-error'
+                                            : undefined
+                                    }
+                                    disabled={isChangingPassword}
+                                />
+                                {passwordFormErrors.currentPassword && (
+                                    <p role="alert" id="password-current-error">
+                                        {passwordFormErrors.currentPassword}
+                                    </p>
+                                )}
+                            </div>
 
-                <form className="flex flex-col gap-4" onSubmit={handlePasswordSubmit} noValidate>
-                    <div className="flex flex-col gap-1">
-                        <label htmlFor="password-current">Senha atual</label>
-                        <input
-                            className="w-full"
-                            id="password-current"
-                            name="currentPassword"
-                            type="password"
-                            autoComplete="current-password"
-                            value={passwordCurrentPassword}
-                            onChange={(event) => {
-                                setPasswordCurrentPassword(event.target.value);
-                                setPasswordFormErrors((current) => ({
-                                    ...current,
-                                    currentPassword: undefined,
-                                }));
-                            }}
-                            aria-invalid={Boolean(passwordFormErrors.currentPassword)}
-                            aria-describedby={passwordFormErrors.currentPassword ? 'password-current-error' : undefined}
-                            disabled={isChangingPassword}
-                        />
-                        {passwordFormErrors.currentPassword && (
-                            <p id="password-current-error">{passwordFormErrors.currentPassword}</p>
-                        )}
-                    </div>
+                            <div className="login-field">
+                                <label htmlFor="password-new">Nova senha</label>
+                                <PasswordInput
+                                    className="w-full"
+                                    id="password-new"
+                                    name="newPassword"
+                                    visibilityLabel="nova senha"
+                                    autoComplete="new-password"
+                                    value={newPassword}
+                                    onChange={(event) => {
+                                        setNewPassword(event.target.value);
+                                        setPasswordFormErrors((current) => ({
+                                            ...current,
+                                            newPassword: undefined,
+                                        }));
+                                    }}
+                                    aria-invalid={Boolean(newPasswordError)}
+                                    aria-describedby={
+                                        newPasswordError
+                                            ? 'password-new-error'
+                                            : undefined
+                                    }
+                                    disabled={isChangingPassword}
+                                />
+                                {newPasswordError && (
+                                    <p role="alert" id="password-new-error">
+                                        {newPasswordError}
+                                    </p>
+                                )}
+                            </div>
 
-                    <div className="flex flex-col gap-1">
-                        <label htmlFor="password-new">Nova senha</label>
-                        <input
-                            className="w-full"
-                            id="password-new"
-                            name="newPassword"
-                            type="password"
-                            autoComplete="new-password"
-                            value={newPassword}
-                            onChange={(event) => {
-                                setNewPassword(event.target.value);
-                                setPasswordFormErrors((current) => ({
-                                    ...current,
-                                    newPassword: undefined,
-                                }));
-                            }}
-                            aria-invalid={Boolean(passwordFormErrors.newPassword)}
-                            aria-describedby={passwordFormErrors.newPassword ? 'password-new-error' : undefined}
-                            disabled={isChangingPassword}
-                        />
-                        {passwordFormErrors.newPassword && (
-                            <p id="password-new-error">{passwordFormErrors.newPassword}</p>
-                        )}
-                    </div>
+                            <div className="login-field">
+                                <label htmlFor="password-confirmation">
+                                    Confirmar nova senha
+                                </label>
+                                <PasswordInput
+                                    className="w-full"
+                                    id="password-confirmation"
+                                    name="passwordConfirmation"
+                                    visibilityLabel="confirmação da nova senha"
+                                    autoComplete="new-password"
+                                    value={passwordConfirmation}
+                                    onChange={(event) => {
+                                        setPasswordConfirmation(
+                                            event.target.value
+                                        );
+                                        setPasswordFormErrors((current) => ({
+                                            ...current,
+                                            passwordConfirmation: undefined,
+                                        }));
+                                    }}
+                                    aria-invalid={Boolean(
+                                        passwordFormErrors.passwordConfirmation
+                                    )}
+                                    aria-describedby={
+                                        passwordFormErrors.passwordConfirmation
+                                            ? 'password-confirmation-error'
+                                            : undefined
+                                    }
+                                    disabled={isChangingPassword}
+                                />
+                                {passwordFormErrors.passwordConfirmation && (
+                                    <p
+                                        role="alert"
+                                        id="password-confirmation-error"
+                                    >
+                                        {
+                                            passwordFormErrors.passwordConfirmation
+                                        }
+                                    </p>
+                                )}
+                            </div>
 
-                    <div className="flex flex-col gap-1">
-                        <label htmlFor="password-confirmation">Confirmar nova senha</label>
-                        <input
-                            className="w-full"
-                            id="password-confirmation"
-                            name="passwordConfirmation"
-                            type="password"
-                            autoComplete="new-password"
-                            value={passwordConfirmation}
-                            onChange={(event) => {
-                                setPasswordConfirmation(event.target.value);
-                                setPasswordFormErrors((current) => ({
-                                    ...current,
-                                    passwordConfirmation: undefined,
-                                }));
-                            }}
-                            aria-invalid={Boolean(passwordFormErrors.passwordConfirmation)}
-                            aria-describedby={passwordFormErrors.passwordConfirmation ? 'password-confirmation-error' : undefined}
-                            disabled={isChangingPassword}
-                        />
-                        {passwordFormErrors.passwordConfirmation && (
-                            <p id="password-confirmation-error">
-                                {passwordFormErrors.passwordConfirmation}
-                            </p>
-                        )}
-                    </div>
+                            {passwordErrorMessage && (
+                                <p className="login-message" role="alert">
+                                    {passwordErrorMessage}
+                                </p>
+                            )}
+                            {passwordSuccessMessage && (
+                                <p className="login-message" role="status">
+                                    {passwordSuccessMessage}
+                                </p>
+                            )}
 
-                    {passwordErrorMessage && <p role="alert">{passwordErrorMessage}</p>}
-                    {passwordSuccessMessage && <p role="status">{passwordSuccessMessage}</p>}
-
-                    <button className="self-start" type="submit" disabled={isChangingPassword}>
-                        {isChangingPassword ? 'Alterando...' : 'Alterar senha'}
-                    </button>
-                </form>
-            </section>
-        </main>
+                            <button
+                                className="login-submit profile-submit"
+                                type="submit"
+                                disabled={isChangingPassword}
+                            >
+                                {isChangingPassword
+                                    ? 'Alterando...'
+                                    : 'Alterar senha'}
+                            </button>
+                        </form>
+                    </section>
+                </div>
+            </div>
+        </ProfileShell>
     );
 }
 

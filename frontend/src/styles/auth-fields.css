@@ -1,0 +1,110 @@
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+.login-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+.login-field label {
+    font-size: 13px;
+    font-weight: 700;
+}
+.login-field input {
+    width: 100%;
+    min-height: 44px;
+    border: 1px solid #858d89;
+    border-radius: 10px;
+    padding: 9px 13px;
+    font: inherit;
+    font-size: 16px;
+    color: #202323;
+    background: #fff;
+    caret-color: #202323;
+}
+.login-field input:focus {
+    border-color: #202323;
+    outline: 2px solid #202323;
+    outline-offset: 2px;
+}
+.login-field input[aria-invalid='true'] {
+    border-color: #202323;
+    border-style: dashed;
+}
+.login-field input:disabled {
+    background: #f5f6f5;
+    color: #606565;
+}
+.login-field p {
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.6;
+    font-weight: 600;
+}
+.login-field p[role='alert'],
+.login-message[role='alert'] {
+    color: #b42318;
+}
+.login-password-input {
+    position: relative;
+}
+.login-password-input input {
+    padding-right: 48px;
+}
+.login-password-toggle {
+    position: absolute;
+    top: 0;
+    right: 2px;
+    width: 44px;
+    height: 100%;
+    display: grid;
+    place-items: center;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: #606565;
+    cursor: pointer;
+}
+.login-password-toggle:hover:not(:disabled) {
+    color: #202323;
+    background: #20232308;
+}
+.login-password-toggle:focus-visible {
+    outline-offset: -5px;
+}
+.login-password-toggle:disabled {
+    cursor: wait;
+}
+.login-submit {
+    width: 100%;
+    min-height: 44px;
+    border: 1px solid #000;
+    border-radius: 999px;
+    background: #000;
+    color: #fff;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 750;
+    padding: 11px 20px;
+}
+.login-submit:hover:not(:disabled) {
+    background: #292c2b;
+}
+.login-submit:disabled {
+    background: #454948;
+    opacity: 1;
+    border-color: #454948;
+    cursor: wait;
+}
+.login-message {
+    margin: 0;
+    padding: 13px 15px;
+    border: 1px solid #d5d8d7;
+    border-radius: 10px;
+    background: #f5f6f5;
+    font-size: 13px;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+}

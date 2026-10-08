@@ -131,6 +131,10 @@ public class UserService {
         if (password == null || password.isBlank() || !password.equals(confirmPassword)) {
             throw new BusinessException("As senhas devem ser iguais.");
         }
+        validatePasswordLength(password);
+    }
+
+    private void validatePasswordLength(String password) {
         // BCrypt aceita no máximo 72 bytes; caracteres Unicode podem ocupar mais de um byte.
         if (password.getBytes(StandardCharsets.UTF_8).length > 72) {
             throw new BusinessException("Senha muito longa. Use uma senha mais curta.");
@@ -144,6 +148,7 @@ public class UserService {
     }
 
     public void changePassword(Long userId, PasswordChangeRequestDTO dto) {
+        validatePasswordLength(dto.newPassword());
         User user = getByIdOrThrow(userId);
 
         if (!passwordEncoder.matches(dto.currentPassword(), user.getPassword())) {

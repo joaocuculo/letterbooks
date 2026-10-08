@@ -9,7 +9,8 @@ function AppLayout() {
         pathname === '/login' ||
         pathname === '/register' ||
         pathname === '/forgot-password' ||
-        pathname === '/reset-password'
+        pathname === '/reset-password' ||
+        pathname === '/profile'
     ) {
         return <Outlet />;
     }

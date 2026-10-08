@@ -35,3 +35,9 @@ Esboço do usuário: capas diagonais à esquerda, texto à direita e avaliaçõe
 ## Cadastro autenticado
 
 POST /auth/register retorna 201 com id, name, email e token JWT. UserService preserva validações e BCrypt e retorna o usuário criado internamente; AuthController usa TokenConfig, o mesmo do login, e expõe somente RegisterResponseDTO. Frontend usa signIn e redireciona para / com replace, sem nova chamada ao login. Redesign do e-mail permanece pendente.
+
+## Perfil da conta
+
+`/profile` permite consultar os dados da conta, editar nome/e-mail e alterar senha. Reutiliza o cabeçalho da Home e a identidade neutra aprovada. O resumo mostra iniciais, nome, e-mail, tipo, situação e data de cadastro; não inclui estatísticas nem upload de foto. Falha no carregamento oferece Tentar novamente.
+
+Os contratos existentes permanecem: `GET /users/me`, `PATCH /users/me` e `PATCH /users/me/password`. Alterar somente o nome dispensa senha; alterar o e-mail revela e exige a senha atual. Após salvar, o resumo e a identidade autenticada são atualizados por `refreshUser`. Alterar senha exige senha atual, nova senha diferente e confirmação local; frontend e backend aplicam as regras de cadastro/redefinição: 8–72 unidades UTF-16, maiúscula e minúscula Unicode, número ASCII, pontuação/símbolo Unicode e até 72 bytes UTF-8 para BCrypt. A confirmação não é enviada nem persistida. Sucesso limpa os campos de senha e mantém a sessão autenticada. Evidência e limites de verificação estão em `.impeccable/profile-brief.md`.
