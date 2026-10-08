@@ -393,7 +393,7 @@
   ],
   "narrative": {
     "northStar": "Um lugar para cada leitura — Diagonal",
-    "overview": "Este documento registra a Home Diagonal aprovada pelo usuário, extraída de `frontend/src/styles/home.css`, `frontend/src/pages/HomePage.tsx` e `frontend/src/data/homeBooks.ts`. A interface usa preto, branco e cinza fixos, Manrope local, títulos densos e capas reais como matéria visual principal. As capas preservam as cores das edições; não constituem cores de destaque da interface.\n\nO conteúdo em português apresenta organização e avaliação de livros com demonstrações identificadas. O sistema abrange a Home Diagonal e o modelo Galeria no login e no cadastro: outras páginas preservam o estilo anterior; `/explore` contém a antiga Home de descoberta. Login e cadastro estendem a identidade aprovada com formulário simples e cinco capas estáticas. Recuperação de senha preserva a página existente. A comparação entre modelos e o seletor de cores foram encerrados.",
+    "overview": "Este documento registra a Home Diagonal aprovada pelo usuário, extraída de `frontend/src/styles/home.css`, `frontend/src/pages/HomePage.tsx` e `frontend/src/data/homeBooks.ts`. A interface usa preto, branco e cinza fixos, Manrope local, títulos densos e capas reais como matéria visual principal. As capas preservam as cores das edições; não constituem cores de destaque da interface.\n\nO conteúdo em português apresenta organização e avaliação de livros com demonstrações identificadas. O sistema abrange a Home Diagonal e o modelo Galeria no login e no cadastro: outras páginas preservam o estilo anterior; `/explore` contém a antiga Home de descoberta. Login e cadastro estendem a identidade aprovada com formulário simples e cinco capas estáticas. Recuperação de senha usa formulário central e capas em escada cortadas nas bordas; a redefinição de senha compartilha essa composição. A comparação entre modelos e o seletor de cores foram encerrados.",
     "keyCharacteristics": [
       "Home Diagonal aprovada, com interface em preto, branco e cinza fixos.",
       "Capas protagonistas em seis colunas diagonais exclusivas, com movimento contínuo lento e controlável.",
@@ -418,7 +418,7 @@
     ],
     "donts": [
       "**Don't** reintroduzir comparação de modelos ou seletor de cores na Home.",
-      "**Don't** estender Galeria à recuperação de senha sem um trabalho específico nessa página.",
+      "**Don't** substituir a escada de capas da recuperação pela Galeria de login e cadastro.",
       "**Don't** apresentar exemplos como depoimentos reais, métricas ou funcionalidades prontas.",
       "**Don't** substituir capas reais por imagens geradas sem uma decisão explícita.",
       "**Don't** estender o estilo automaticamente às páginas que mantêm o sistema anterior."

@@ -1,0 +1,66 @@
+.recovery-page {
+    position: relative;
+    isolation: isolate;
+}
+.recovery-page .login-header,
+.recovery-page .login-content {
+    position: relative;
+    z-index: 1;
+}
+.recovery-page .login-content {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    padding-bottom: 68px;
+}
+.recovery-page h1,
+.recovery-page .login-description,
+.recovery-page .login-register {
+    text-align: center;
+}
+.recovery-page .login-form-section > .login-message {
+    margin-top: 24px;
+}
+.recovery-books-clip {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+}
+.recovery-books {
+    --cover-width: min(
+        135px,
+        calc((50vw - 250px) / 3.5),
+        calc((100svh - 170px) / 5.25)
+    );
+    position: absolute;
+    right: calc(var(--cover-width) * -0.5);
+    bottom: calc(var(--cover-width) * -0.75);
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+}
+.recovery-book-column {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: var(--cover-width);
+}
+.recovery-book-column img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+    border-radius: 5px;
+    box-shadow: 3px 10px 20px #20232320;
+}
+@media (max-width: 1023px) {
+    .recovery-books-clip {
+        display: none;
+    }
+}
+@media (max-height: 650px) {
+    .recovery-page .login-content {
+        padding-bottom: 24px;
+    }
+}

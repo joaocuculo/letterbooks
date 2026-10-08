@@ -148,7 +148,8 @@
     line-height: 1.6;
     font-weight: 600;
 }
-.register-password-error {
+.login-field p[role='alert'],
+.login-message[role='alert'] {
     color: #b42318;
 }
 .login-password-input {

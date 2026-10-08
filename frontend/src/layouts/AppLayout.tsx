@@ -4,7 +4,13 @@ import Footer from '../components/Footer';
 
 function AppLayout() {
     const { pathname } = useLocation();
-    if (pathname === '/' || pathname === '/login' || pathname === '/register') {
+    if (
+        pathname === '/' ||
+        pathname === '/login' ||
+        pathname === '/register' ||
+        pathname === '/forgot-password' ||
+        pathname === '/reset-password'
+    ) {
         return <Outlet />;
     }
     return (

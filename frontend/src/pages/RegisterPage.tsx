@@ -227,11 +227,7 @@ function RegisterPage() {
                         />
 
                         {passwordError && (
-                            <p
-                                className="register-password-error"
-                                id="password-error"
-                                role="alert"
-                            >
+                            <p id="password-error" role="alert">
                                 {passwordError}
                             </p>
                         )}

@@ -2,6 +2,7 @@ import { useState, type SubmitEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { requestPasswordReset } from '../services/authService';
 import { getApiErrorMessage } from '../utils/getApiErrorMessage.';
+import AuthGalleryLayout from '../layouts/AuthGalleryLayout';
 
 interface ForgotPasswordFormErrors {
     email?: string;
@@ -63,16 +64,25 @@ function ForgotPasswordPage() {
     }
 
     return (
-        <main className="mx-auto w-full max-w-md px-4 py-8">
-            <section className="flex flex-col gap-4">
-                <h1>Esqueci minha senha</h1>
+        <AuthGalleryLayout variant="recovery">
+            <section
+                className="login-form-section"
+                aria-labelledby="recovery-title"
+            >
+                <h1 id="recovery-title">Esqueci minha senha</h1>
 
-                <p>
-                    Informe seu e-mail para receber as instruções de redefinição de senha.
+                <p className="login-description">
+                    Informe seu e-mail para receber as instruções de redefinição
+                    de senha.
                 </p>
 
-                <form className="flex flex-col gap-4" onSubmit={handleSubmit} noValidate>
-                    <div className="flex flex-col gap-1">
+                <form
+                    className="login-form"
+                    onSubmit={handleSubmit}
+                    noValidate
+                    aria-busy={isSubmitting}
+                >
+                    <div className="login-field">
                         <label htmlFor="recovery-email">E-mail</label>
                         <input
                             className="w-full"
@@ -89,26 +99,46 @@ function ForgotPasswordPage() {
                                 }));
                             }}
                             aria-invalid={Boolean(formErrors.email)}
-                            aria-describedby={formErrors.email ? 'recovery-email-error' : undefined}
+                            aria-describedby={
+                                formErrors.email
+                                    ? 'recovery-email-error'
+                                    : undefined
+                            }
                             disabled={isSubmitting}
                         />
 
                         {formErrors.email && (
-                            <p id="recovery-email-error">{formErrors.email}</p>
+                            <p id="recovery-email-error" role="alert">
+                                {formErrors.email}
+                            </p>
                         )}
                     </div>
 
-                    {errorMessage && <p role="alert">{errorMessage}</p>}
-                    {successMessage && <p role="status">{successMessage}</p>}
+                    {errorMessage && (
+                        <p className="login-message" role="alert">
+                            {errorMessage}
+                        </p>
+                    )}
+                    {successMessage && (
+                        <p className="login-message" role="status">
+                            {successMessage}
+                        </p>
+                    )}
 
-                    <button className="self-start" type="submit" disabled={isSubmitting}>
+                    <button
+                        className="login-submit"
+                        type="submit"
+                        disabled={isSubmitting}
+                    >
                         {isSubmitting ? 'Enviando...' : 'Enviar instruções'}
                     </button>
                 </form>
 
-                <Link to="/login">Voltar para o login</Link>
+                <p className="login-register">
+                    <Link to="/login">Voltar para o login</Link>
+                </p>
             </section>
-        </main>
+        </AuthGalleryLayout>
     );
 }
 

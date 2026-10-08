@@ -2,6 +2,8 @@ import { useState, type SubmitEvent } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { resetPassword } from '../services/authService';
 import { getApiErrorMessage } from '../utils/getApiErrorMessage.';
+import AuthGalleryLayout from '../layouts/AuthGalleryLayout';
+import PasswordInput from '../components/PasswordInput';
 
 interface ResetPasswordFormErrors {
     newPassword?: string;
@@ -23,7 +25,8 @@ function validatePassword(
     if (!passwordConfirmation) {
         errors.passwordConfirmation = 'Confirme a nova senha.';
     } else if (passwordConfirmation !== newPassword) {
-        errors.passwordConfirmation = 'A confirmação deve ser igual à nova senha.';
+        errors.passwordConfirmation =
+            'A confirmação deve ser igual à nova senha.';
     }
 
     return errors;
@@ -69,7 +72,8 @@ function ResetPasswordPage() {
             navigate('/login', {
                 replace: true,
                 state: {
-                    successMessage: 'Senha redefinida com sucesso. Entre com sua nova senha.',
+                    successMessage:
+                        'Senha redefinida com sucesso. Entre com sua nova senha.',
                 },
             });
         } catch (error) {
@@ -89,31 +93,50 @@ function ResetPasswordPage() {
 
     if (!token) {
         return (
-            <main className="mx-auto w-full max-w-md px-4 py-8">
-                <section className="flex flex-col gap-4">
-                    <h1>Redefinir senha</h1>
-                    <p role="alert">Link de recuperação inválido ou expirado.</p>
-                    <Link to="/forgot-password">Solicitar um novo link</Link>
+            <AuthGalleryLayout variant="recovery">
+                <section
+                    className="login-form-section"
+                    aria-labelledby="reset-title"
+                >
+                    <h1 id="reset-title">Redefinir senha</h1>
+                    <p className="login-message" role="alert">
+                        Link de recuperação inválido ou expirado.
+                    </p>
+                    <p className="login-register">
+                        <Link to="/forgot-password">
+                            Solicitar um novo link
+                        </Link>
+                    </p>
                 </section>
-            </main>
+            </AuthGalleryLayout>
         );
     }
 
     return (
-        <main className="mx-auto w-full max-w-md px-4 py-8">
-            <section className="flex flex-col gap-4">
-                <h1>Redefinir senha</h1>
+        <AuthGalleryLayout variant="recovery">
+            <section
+                className="login-form-section"
+                aria-labelledby="reset-title"
+            >
+                <h1 id="reset-title">Redefinir senha</h1>
 
-                <p>Informe e confirme sua nova senha.</p>
+                <p className="login-description">
+                    Informe e confirme sua nova senha.
+                </p>
 
-                <form className="flex flex-col gap-4" onSubmit={handleSubmit} noValidate>
-                    <div className="flex flex-col gap-1">
+                <form
+                    className="login-form"
+                    onSubmit={handleSubmit}
+                    noValidate
+                    aria-busy={isSubmitting}
+                >
+                    <div className="login-field">
                         <label htmlFor="new-password">Nova senha</label>
-                        <input
+                        <PasswordInput
+                            visibilityLabel="nova senha"
                             className="w-full"
                             id="new-password"
                             name="newPassword"
-                            type="password"
                             autoComplete="new-password"
                             value={newPassword}
                             onChange={(event) => {
@@ -124,22 +147,30 @@ function ResetPasswordPage() {
                                 }));
                             }}
                             aria-invalid={Boolean(formErrors.newPassword)}
-                            aria-describedby={formErrors.newPassword ? 'new-password-error' : undefined}
+                            aria-describedby={
+                                formErrors.newPassword
+                                    ? 'new-password-error'
+                                    : undefined
+                            }
                             disabled={isSubmitting}
                         />
 
                         {formErrors.newPassword && (
-                            <p id="new-password-error">{formErrors.newPassword}</p>
+                            <p id="new-password-error" role="alert">
+                                {formErrors.newPassword}
+                            </p>
                         )}
                     </div>
 
-                    <div className="flex flex-col gap-1">
-                        <label htmlFor="password-confirmation">Confirmar nova senha</label>
-                        <input
+                    <div className="login-field">
+                        <label htmlFor="password-confirmation">
+                            Confirmar nova senha
+                        </label>
+                        <PasswordInput
+                            visibilityLabel="confirmação da nova senha"
                             className="w-full"
                             id="password-confirmation"
                             name="passwordConfirmation"
-                            type="password"
                             autoComplete="new-password"
                             value={passwordConfirmation}
                             onChange={(event) => {
@@ -149,28 +180,44 @@ function ResetPasswordPage() {
                                     passwordConfirmation: undefined,
                                 }));
                             }}
-                            aria-invalid={Boolean(formErrors.passwordConfirmation)}
-                            aria-describedby={formErrors.passwordConfirmation ? 'password-confirmation-error' : undefined}
+                            aria-invalid={Boolean(
+                                formErrors.passwordConfirmation
+                            )}
+                            aria-describedby={
+                                formErrors.passwordConfirmation
+                                    ? 'password-confirmation-error'
+                                    : undefined
+                            }
                             disabled={isSubmitting}
                         />
 
                         {formErrors.passwordConfirmation && (
-                            <p id="password-confirmation-error">
+                            <p id="password-confirmation-error" role="alert">
                                 {formErrors.passwordConfirmation}
                             </p>
                         )}
                     </div>
 
-                    {errorMessage && <p role="alert">{errorMessage}</p>}
+                    {errorMessage && (
+                        <p className="login-message" role="alert">
+                            {errorMessage}
+                        </p>
+                    )}
 
-                    <button className="self-start" type="submit" disabled={isSubmitting}>
+                    <button
+                        className="login-submit"
+                        type="submit"
+                        disabled={isSubmitting}
+                    >
                         {isSubmitting ? 'Redefinindo...' : 'Redefinir senha'}
                     </button>
                 </form>
 
-                <Link to="/forgot-password">Solicitar um novo link</Link>
+                <p className="login-register">
+                    <Link to="/forgot-password">Solicitar um novo link</Link>
+                </p>
             </section>
-        </main>
+        </AuthGalleryLayout>
     );
 }
 

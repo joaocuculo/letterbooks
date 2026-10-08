@@ -101,7 +101,7 @@ components:
 
 Este documento registra a Home Diagonal aprovada pelo usuário, extraída de `frontend/src/styles/home.css`, `frontend/src/pages/HomePage.tsx` e `frontend/src/data/homeBooks.ts`. A interface usa preto, branco e cinza fixos, Manrope local, títulos densos e capas reais como matéria visual principal. As capas preservam as cores das edições; não constituem cores de destaque da interface.
 
-O conteúdo em português apresenta organização e avaliação de livros com demonstrações identificadas. O sistema abrange a Home Diagonal e o modelo Galeria no login e no cadastro: outras páginas preservam o estilo anterior; `/explore` contém a antiga Home de descoberta. Login e cadastro estendem a identidade aprovada com formulário simples e cinco capas estáticas. Recuperação de senha preserva a página existente. A comparação entre modelos e o seletor de cores foram encerrados.
+O conteúdo em português apresenta organização e avaliação de livros com demonstrações identificadas. O sistema abrange a Home Diagonal e o modelo Galeria no login e no cadastro: outras páginas preservam o estilo anterior; `/explore` contém a antiga Home de descoberta. Login e cadastro estendem a identidade aprovada com formulário simples e cinco capas estáticas. Recuperação de senha usa formulário central e capas em escada cortadas nas bordas; a redefinição de senha compartilha essa composição. A comparação entre modelos e o seletor de cores foram encerrados.
 
 **Key Characteristics:**
 - Home Diagonal aprovada, com interface em preto, branco e cinza fixos.
@@ -174,7 +174,7 @@ Os exemplos de estantes usam fundo suave, cantos de 12px e padding de 18px 24px.
 
 ### Navigation
 
-Cabeçalho da Home com marca, Explorar, Pesquisar, Como funciona e ações conforme autenticação. Visitantes seguem para cadastro; pessoas autenticadas seguem para biblioteca e têm menu de conta. A descoberta anterior continua em `/explore`. Login e cadastro compartilham cabeçalho próprio com marca e voltar ao início; recuperação mantém a página existente.
+Cabeçalho da Home com marca, Explorar, Pesquisar, Como funciona e ações conforme autenticação. Visitantes seguem para cadastro; pessoas autenticadas seguem para biblioteca e têm menu de conta. A descoberta anterior continua em `/explore`. Login e cadastro compartilham cabeçalho próprio com marca e voltar ao início; recuperação usa o cabeçalho compartilhado e capas em escada.
 
 ### Login e Cadastro Galeria
 
@@ -204,9 +204,15 @@ O movimento também pausa quando o hero sai da viewport ou quando o documento fi
 
 ### Don't:
 - **Don't** reintroduzir comparação de modelos ou seletor de cores na Home.
-- **Don't** estender Galeria à recuperação de senha sem um trabalho específico nessa página.
+- **Don't** substituir a escada de capas da recuperação pela Galeria de login e cadastro.
 - **Don't** apresentar exemplos como depoimentos reais, métricas ou funcionalidades prontas.
 - **Don't** substituir capas reais por imagens geradas sem uma decisão explícita.
 - **Don't** estender o estilo automaticamente às páginas que mantêm o sistema anterior.
 
 Os dois campos de senha do cadastro usam PasswordInput com botão de olho independente, tipo button, rótulo acessível Mostrar/Ocultar e aria-controls. Ambos iniciam ocultos, preservam valor e autocomplete ao alternar e desabilitam o controle durante envio. Ícone SVG neutro com área de toque de 44px e foco visível; sem novas dependências.
+
+Validações por campo e mensagens de erro da API nos formulários de login e cadastro usam vermelho #b42318, por seletores role=alert no CSS compartilhado. Mensagens de sucesso role=status preservam seu estilo.
+
+## Recuperação de senha — Escada
+
+/forgot-password reutiliza AuthGalleryLayout com variant=recovery. Formulário até 350px centralizado horizontalmente na página, título e descrição centralizados e campos/mensagens alinhados à esquerda. Cabeçalho compartilhado, sem menu principal ou rodapé. Dez capas locais distintas ficam em quatro colunas com 1, 2, 3 e 4 imagens, sem rotação ou movimento; proporção 2:3, gap de 12px e sombra suave. Metade da última coluna e da fileira inferior transborda além das bordas, recortada em uma camada decorativa com overflow:hidden e pointer-events:none. A largura das capas acompanha a largura e altura da viewport para preservar o formulário. Abaixo de 1024px, a decoração é ocultada. Somente a página pode rolar em alturas insuficientes; não há rolagem interna. POST /auth/forgot-password, mensagens da API e fluxo atual preservados; /reset-password também utiliza essa composição, preservando token, validação e retorno ao login.
