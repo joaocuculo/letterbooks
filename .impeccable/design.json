@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "generatedAt": "2026-10-07T21:13:58Z",
-  "title": "Design System: LetterBooks — Home Diagonal",
+  "title": "Design System: LetterBooks — Home Diagonal e Autenticação Galeria",
   "extensions": {
     "colorMeta": {
       "accent": {
@@ -235,7 +235,7 @@
         "value": "760px"
       }
     ],
-    "scope": "Somente Home Diagonal. /explore mantém a descoberta anterior. Galeria reservada para login/cadastro em trabalho futuro; páginas de autenticação não alteradas.",
+    "scope": "Home Diagonal e Autenticação Galeria. /explore mantém a descoberta anterior. Login e cadastro compartilham AuthGalleryLayout. Recuperação e outras páginas preservam o estilo anterior.",
     "status": "Diagonal aprovada com preto, branco e cinza fixos. Comparação, Foco e seletor de cores removidos da Home.",
     "tonalRampNote": "Rampas sintetizadas somente para inspeção no painel; não são tokens implementados. Rampas neutras de transparências mostram a família tonal, sem simular a composição alfa. As cores normativas permanecem no frontmatter de DESIGN.md.",
     "dynamicColors": {
@@ -248,7 +248,7 @@
       "frontend/src/pages/HomePage.tsx",
       "frontend/src/data/homeBooks.ts",
       "PRODUCT.md",
-      ".impeccable/home-brief.md"
+      ".impeccable/home-brief.md", "frontend/src/pages/LoginPage.tsx", "frontend/src/styles/login.css", ".impeccable/login-brief.md", "frontend/src/layouts/AuthGalleryLayout.tsx", "frontend/src/pages/RegisterPage.tsx", ".impeccable/register-brief.md"
     ],
     "materials": [
       {
@@ -284,6 +284,57 @@
         "9786580210008"
       ]
     },
+    "loginGallery": {
+  "fontFamily": "Manrope, sans-serif",
+  "formMaxWidth": "350px",
+  "headerHeight": "68px", "compactHeaderHeight": "56px at max-height: 650px", "pageHeight": "100svh", "pageOverflow": "hidden", "formOverflow": "auto somente quando não cabe", "galleryWidth": "min(100%, 550px, calc((100svh - 180px) / 1.08))", "coverAspectRatio": "2 / 3", "coverObjectFit": "cover",
+  "headerContents": [
+    "marca",
+    "voltar ao início"
+  ],
+  "inputMinHeight": "44px",
+  "inputBorder": "1px solid #858d89",
+  "inputBorderContrastOnWhite": "3.40:1",
+  "inputRadius": "10px",
+  "hiddenBelow": "1024px",
+  "motion": "none",
+  "decorative": true,
+  "coverIsbns": [
+    "9786555320213",
+    "9788573263350",
+    "9780441172719",
+    "9780547928227",
+    "9780141439518"
+  ],
+  "provenance": "Cinco JPEGs locais reutilizados de /images/books/; preservar registros de origem existentes.",
+  "behavior": "Validação, loading, feedback, signIn e destino interno com query e hash preservados; cadastro e recuperação mantidos.",
+  "reviewEvidence": [
+    ".impeccable/review/login-compact-desktop.jpg",
+    ".impeccable/review/login-compact-mobile.jpg",
+    ".impeccable/review/login-compact-short.jpg"
+  ],
+  "verification": "UI local e harness isolado com adapter Axios para 401, rede, loading, successMessage, signIn e /my-books?filter=read#list. Versão anterior: build/lint passaram e revisão ship. Refinamento compacto: build final passou; revisão ship sem defeito material nas três capturas; erros locais em 320px com dois alertas corretos e sem scroll externo; sem scroll externo em 1520x728, 320x568, 720x480; formulário rola somente em 720x480. Viewport 720x480 equivalente espacial a zoom 200%, sem teste de zoom real."
+},
+    "registerGallery": {
+  "layout": "frontend/src/layouts/AuthGalleryLayout.tsx",
+  "sharedWith": "LoginPage",
+  "css": "frontend/src/styles/login.css",
+  "route": "/register sem AppLayout anterior",
+  "fields": [
+    "Nome",
+    "E-mail",
+    "Senha", "Confirme sua senha"
+  ],
+  "passwordMinimumLength": 8, "passwordMaximumUtf16Length": 72, "passwordMaximumUtf8Bytes": 72, "passwordRequirements": ["8 a 72 unidades UTF-16", "Maiúscula Unicode", "Minúscula Unicode", "Número ASCII", "Pontuação ou símbolo Unicode"], "requirementsFeedback": "Lista associada ao campo; círculo pendente/check SVG e texto acessível atendido/pendente", "confirmationRequired": true, "confirmationMustMatch": true, "confirmationPersisted": false, "backendContract": "RegisterRequestDTO dedicado com @Valid; UserRequestDTO de edição intacto; validatePasswords e validateEmailAvailable no UserService",
+  "behavior": "Endpoint, autocomplete e links preservados; confirmação obrigatória e igual; cinco requisitos e limite BCrypt verificados; loading acessível; sucesso na própria tela com role=status e limpeza de ambas as senhas; erros com role=alert.",
+  "reviewEvidence": [
+    ".impeccable/review/register-password-desktop.jpg",
+    ".impeccable/review/register-password-mobile.jpg",
+    ".impeccable/review/register-password-small-mobile.jpg",
+    ".impeccable/review/register-password-check.html"
+  ],
+  "verification": "Versão anterior: DOM sem overflow externo em 1520x728, 820x1180 e 320x568; revisão ship. Extensão com confirmação e requisitos: build/lint passaram; 22 testes backend passaram (15 DTO, sete serviço); revisão ship. Capturas atuais 1520x820, 390x844, 320x568; ações acessíveis por rolagem interna em 320px. Browser: quatro alertas vazios, divergência, senha fraca, cinco requisitos atendidos. Harness Axios confirmou confirmPassword no payload, desabilitação no envio por Enter, status de sucesso e limpeza das duas senhas; sem conta real ou UI conectada ao backend. Harness temporário do frontend removido."
+},
     "heroGeometry": {
       "desktopLeft": "calc(-720px + var(--hero-bleed))",
       "tabletLeft": "-790px",
@@ -342,13 +393,13 @@
   ],
   "narrative": {
     "northStar": "Um lugar para cada leitura — Diagonal",
-    "overview": "Este documento registra a Home Diagonal aprovada pelo usuário, extraída de `frontend/src/styles/home.css`, `frontend/src/pages/HomePage.tsx` e `frontend/src/data/homeBooks.ts`. A interface usa preto, branco e cinza fixos, Manrope local, títulos densos e capas reais como matéria visual principal. As capas preservam as cores das edições; não constituem cores de destaque da interface.\n\nO conteúdo em português apresenta organização e avaliação de livros com demonstrações identificadas. O sistema está restrito à Home: outras páginas preservam o estilo anterior; `/explore` contém a antiga Home de descoberta. Galeria fica reservada para um futuro trabalho em login/cadastro; essas páginas não foram alteradas. A comparação entre modelos e o seletor de cores foram encerrados.",
+    "overview": "Este documento registra a Home Diagonal aprovada pelo usuário, extraída de `frontend/src/styles/home.css`, `frontend/src/pages/HomePage.tsx` e `frontend/src/data/homeBooks.ts`. A interface usa preto, branco e cinza fixos, Manrope local, títulos densos e capas reais como matéria visual principal. As capas preservam as cores das edições; não constituem cores de destaque da interface.\n\nO conteúdo em português apresenta organização e avaliação de livros com demonstrações identificadas. O sistema abrange a Home Diagonal e o modelo Galeria no login e no cadastro: outras páginas preservam o estilo anterior; `/explore` contém a antiga Home de descoberta. Login e cadastro estendem a identidade aprovada com formulário simples e cinco capas estáticas. Recuperação de senha preserva a página existente. A comparação entre modelos e o seletor de cores foram encerrados.",
     "keyCharacteristics": [
       "Home Diagonal aprovada, com interface em preto, branco e cinza fixos.",
       "Capas protagonistas em seis colunas diagonais exclusivas, com movimento contínuo lento e controlável.",
       "Fade contínuo em toda a altura do hero desktop e avaliação em vidro translúcido.",
       "Avaliações ilustrativas e prévias explicitamente identificadas.",
-      "Sistema aplicado somente à Home."
+      "Identidade aplicada à Home, ao login e ao cadastro."
     ],
     "rules": [
       {
@@ -363,11 +414,11 @@
       "**Do** preservar o fade contínuo do hero desktop e o vidro com contingência sem desfoque.",
       "**Do** identificar avaliações ilustrativas e recursos cuja interface está pendente.",
       "**Do** preservar assets locais e seus registros de origem.",
-      "**Do** limitar este sistema à Home enquanto a migração das outras páginas não for solicitada."
+      "**Do** limitar este sistema à Home, ao login e ao cadastro enquanto a migração das outras páginas não for solicitada."
     ],
     "donts": [
       "**Don't** reintroduzir comparação de modelos ou seletor de cores na Home.",
-      "**Don't** aplicar Galeria a login/cadastro sem um trabalho específico nessas páginas.",
+      "**Don't** estender Galeria à recuperação de senha sem um trabalho específico nessa página.",
       "**Don't** apresentar exemplos como depoimentos reais, métricas ou funcionalidades prontas.",
       "**Don't** substituir capas reais por imagens geradas sem uma decisão explícita.",
       "**Don't** estender o estilo automaticamente às páginas que mantêm o sistema anterior."

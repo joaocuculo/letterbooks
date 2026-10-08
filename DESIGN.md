@@ -1,6 +1,6 @@
 ---
-name: LetterBooks — Home Diagonal
-description: Home aprovada com capas diagonais em movimento e interface em preto, branco e cinza.
+name: LetterBooks — Home Diagonal e Autenticação Galeria
+description: Home com capas diagonais em movimento e autenticação com galeria estática; interface em preto, branco e cinza.
 colors:
   accent: "#000000"
   white: "#ffffff"
@@ -13,6 +13,7 @@ colors:
   review-border: "#d5d8d7"
   review-layer-front: "#ffffff80"
   review-layer-back: "#e4e6e680"
+  login-input-border: "#858d89"
 typography:
   display:
     fontFamily: "Manrope, sans-serif"
@@ -40,11 +41,18 @@ typography:
     fontFamily: "Manrope, sans-serif"
     fontSize: "13px"
     fontWeight: 750
+  login-title:
+    fontFamily: "Manrope, sans-serif"
+    fontSize: "44px"
+    fontWeight: 800
+    lineHeight: 1.15
+    letterSpacing: "-0.035em"
 rounded:
   pill: "999px"
   card: "16px"
   shelf: "12px"
   cover: "5px 9px 9px 5px"
+  input: "10px"
 spacing:
   compact: "9px"
   small: "14px"
@@ -78,6 +86,11 @@ components:
     backgroundColor: "{colors.surface}"
     rounded: "{rounded.card}"
     padding: "28px"
+  login-input:
+    backgroundColor: "{colors.white}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.input}"
+    padding: "9px 13px"
 ---
 
 # Design System: LetterBooks
@@ -88,14 +101,14 @@ components:
 
 Este documento registra a Home Diagonal aprovada pelo usuário, extraída de `frontend/src/styles/home.css`, `frontend/src/pages/HomePage.tsx` e `frontend/src/data/homeBooks.ts`. A interface usa preto, branco e cinza fixos, Manrope local, títulos densos e capas reais como matéria visual principal. As capas preservam as cores das edições; não constituem cores de destaque da interface.
 
-O conteúdo em português apresenta organização e avaliação de livros com demonstrações identificadas. O sistema está restrito à Home: outras páginas preservam o estilo anterior; `/explore` contém a antiga Home de descoberta. Galeria fica reservada para um futuro trabalho em login/cadastro; essas páginas não foram alteradas. A comparação entre modelos e o seletor de cores foram encerrados.
+O conteúdo em português apresenta organização e avaliação de livros com demonstrações identificadas. O sistema abrange a Home Diagonal e o modelo Galeria no login e no cadastro: outras páginas preservam o estilo anterior; `/explore` contém a antiga Home de descoberta. Login e cadastro estendem a identidade aprovada com formulário simples e cinco capas estáticas. Recuperação de senha preserva a página existente. A comparação entre modelos e o seletor de cores foram encerrados.
 
 **Key Characteristics:**
 - Home Diagonal aprovada, com interface em preto, branco e cinza fixos.
 - Capas protagonistas em seis colunas diagonais exclusivas, com movimento contínuo lento e controlável.
 - Fade contínuo em toda a altura do hero desktop e avaliação em vidro translúcido.
 - Avaliações ilustrativas e prévias explicitamente identificadas.
-- Sistema aplicado somente à Home.
+- Identidade aplicada à Home, ao login e ao cadastro.
 
 ## Colors
 
@@ -117,6 +130,8 @@ Manrope é uma fonte variável local (`/fonts/Manrope.ttf`, pesos 200–800, `fo
 
 A hierarquia base está no frontmatter. Os parágrafos principais têm largura máxima de 390px. Textos secundários usam 13px e entrelinha de 1.8–1.9; metadados variam entre 9px e 11px. Títulos têm espaçamento negativo e quebra balanceada. No celular, o título principal usa `clamp(38px, 8vw, 60px)` e o parágrafo do hero usa 13px, entrelinha 1.8 e largura máxima de 360px.
 
+Login e cadastro usam a mesma Manrope local: título de 44px (38px até 480px de largura; 32px até 650px de altura), descrição de 14px com entrelinha 1.8, rótulos de 13px e campos de 16px.
+
 ## Layout
 
 Cabeçalho e rodapé têm largura máxima de 1440px e padding horizontal proporcional de 5.5%. O cabeçalho tem 68px de altura no desktop. O hero chega a 1600px e tem altura mínima de 730px; o conteúdo inferior chega a 1160px, com padding lateral de 40px. As seções de biblioteca e avaliação usam duas colunas alternadas, intervalo de 90px e bastante espaço vertical.
@@ -127,6 +142,8 @@ Em até 1100px, o texto começa em 52%, o hero tem mínimo de 700px e os interva
 
 No celular, o texto fica acima da composição de capas, com padding inferior de 300px. O campo de capas ocupa os 490px inferiores, com máscara vertical transparente nas extremidades e centro preservado entre 25% e 70%. As colunas diminuem para 125px e os intervalos para 18px. O rodapé não reserva espaço para painel de comparação.
 
+No modelo Galeria de login e cadastro, a página tem altura mínima de 100svh e cresce naturalmente quando o conteúdo não cabe. O cabeçalho de 68px contém somente marca e “Voltar ao início”; até 650px de altura, reduz para 56px. O conteúdo chega a 1280px; no desktop, formulário de até 350px à esquerda e galeria à direita. Espaços menores e padding de 20px no topo e 24px na base posicionam o bloco mais acima. A galeria fica oculta abaixo de 1024px, com formulário centralizado. O formulário não possui rolagem interna nem altura máxima. Em janelas muito baixas, estados com erros ou teclado aberto, somente a página rola, mantendo todos os campos e ações acessíveis. Não há card externo, menu principal ou rodapé nessa página.
+
 ## Elevation & Depth
 
 A página é majoritariamente plana; a profundidade está nas capas, na pilha de avaliações e no menu de conta. Capas recebem sombra `2px 7px 14px #18232224` e uma faixa de luz/sombra que sugere lombada. Avaliações usam `0 7px 28px #20232312`, borda de 1px e duas camadas giradas a 3° e 5°. O menu usa `0 12px 30px #20232320`.
@@ -134,6 +151,8 @@ A página é majoritariamente plana; a profundidade está nas capas, na pilha de
 O fade horizontal das capas forma uma faixa vertical contínua no desktop. Não há pseudoelemento branco, recorte ou sombras brancas ao redor do título, subtítulo e ações. Os fades superior e inferior e a máscara móvel permanecem.
 
 O cartão de avaliação tem fundo branco de contingência. Somente no hero, quando `backdrop-filter` ou `-webkit-backdrop-filter` é suportado, usa o branco mais translúcido do token de vidro com desfoque de 14px. A avaliação da seção inferior mantém a contingência sem desfoque. Os controles do hero têm proteção branca própria (`#fffffff0`).
+
+As cinco capas estáticas do login usam sombra `3px 12px 22px #20232320`; o formulário permanece plano. São assets locais reutilizados, com os registros de origem existentes preservados.
 
 ## Shapes
 
@@ -155,7 +174,15 @@ Os exemplos de estantes usam fundo suave, cantos de 12px e padding de 18px 24px.
 
 ### Navigation
 
-Cabeçalho com marca, Explorar, Pesquisar, Como funciona e ações conforme autenticação. Visitantes seguem para cadastro; pessoas autenticadas seguem para biblioteca e têm menu de conta. A descoberta anterior continua em `/explore`. Login e cadastro mantêm as páginas existentes; Galeria é uma direção reservada para trabalho futuro nelas.
+Cabeçalho da Home com marca, Explorar, Pesquisar, Como funciona e ações conforme autenticação. Visitantes seguem para cadastro; pessoas autenticadas seguem para biblioteca e têm menu de conta. A descoberta anterior continua em `/explore`. Login e cadastro compartilham cabeçalho próprio com marca e voltar ao início; recuperação mantém a página existente.
+
+### Login e Cadastro Galeria
+
+Campos brancos com borda neutra (`login-input-border`), cantos de 10px e altura mínima de 44px; foco com borda e contorno na tinta principal. Erros usam borda tracejada, `aria-invalid`, descrição associada e anúncio `role="alert"`; mensagens de sucesso usam `role="status"`. A ação preta em cápsula também tem mínimo de 44px. Durante o envio, formulário informa `aria-busy`, campos e botão ficam desabilitados e a ação mostra “Entrando...”. Link de pular conteúdo e foco visível atendem navegação por teclado.
+
+À direita ficam Água viva, Noites brancas, Duna, O hobbit e Orgulho e preconceito, com uma capa central alta e quatro ao redor, sem movimento. Todas têm o mesmo tamanho e proporção 2:3, com object-fit: cover para recortar sem deformar; a galeria dimensiona a largura por min(100%, 550px, calc((100svh - 180px) / 1.08)). A composição é decorativa (`aria-hidden`, imagens com `alt=""`) e usa os cinco JPEGs locais por ISBN. Autenticação, feedback, recuperação, cadastro e destino interno após `signIn` permanecem preservados, inclusive query string e fragmento.
+
+O layout compartilhado AuthGalleryLayout reúne cabeçalho, conteúdo e galeria idênticos, usando o CSS do login compacto. A rota /register usa esse layout diretamente, sem o AppLayout anterior. Cadastro contém Nome, E-mail, Senha e Confirme sua senha; preserva o endpoint, autocomplete e link para entrar. A senha mostra somente a primeira exigência pendente em vermelho (#b42318) abaixo do campo, atualizada durante a digitação e associada por aria-describedby. A mensagem desaparece quando a senha é válida; o campo vazio inicial não mostra erro antes do envio. As regras permanecem: 8 a 72 unidades UTF-16, letra maiúscula Unicode, letra minúscula Unicode, número ASCII e pontuação ou símbolo Unicode. Não há lista de requisitos. A confirmação é obrigatória e deve coincidir; o limite adicional de 72 bytes UTF-8 evita exceder BCrypt e mostra mensagem de senha muito longa. Durante o envio, mostra “Cadastrando...”; o sucesso continua na própria tela, com role="status" e limpeza dos dois campos de senha. Erros de campo/API usam role="alert" e associação ao campo.
 
 ### Capas e movimento
 
@@ -173,11 +200,13 @@ O movimento também pausa quando o hero sai da viewport ou quando o documento fi
 - **Do** preservar o fade contínuo do hero desktop e o vidro com contingência sem desfoque.
 - **Do** identificar avaliações ilustrativas e recursos cuja interface está pendente.
 - **Do** preservar assets locais e seus registros de origem.
-- **Do** limitar este sistema à Home enquanto a migração das outras páginas não for solicitada.
+- **Do** limitar este sistema à Home, ao login e ao cadastro enquanto a migração das outras páginas não for solicitada.
 
 ### Don't:
 - **Don't** reintroduzir comparação de modelos ou seletor de cores na Home.
-- **Don't** aplicar Galeria a login/cadastro sem um trabalho específico nessas páginas.
+- **Don't** estender Galeria à recuperação de senha sem um trabalho específico nessa página.
 - **Don't** apresentar exemplos como depoimentos reais, métricas ou funcionalidades prontas.
 - **Don't** substituir capas reais por imagens geradas sem uma decisão explícita.
 - **Don't** estender o estilo automaticamente às páginas que mantêm o sistema anterior.
+
+Os dois campos de senha do cadastro usam PasswordInput com botão de olho independente, tipo button, rótulo acessível Mostrar/Ocultar e aria-controls. Ambos iniciam ocultos, preservam valor e autocomplete ao alternar e desabilitam o controle durante envio. Ícone SVG neutro com área de toque de 44px e foco visível; sem novas dependências.

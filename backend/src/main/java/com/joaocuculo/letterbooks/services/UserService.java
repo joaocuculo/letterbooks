@@ -2,6 +2,7 @@ package com.joaocuculo.letterbooks.services;
 
 import com.joaocuculo.letterbooks.config.JWTUserData;
 import com.joaocuculo.letterbooks.dto.request.PasswordChangeRequestDTO;
+import com.joaocuculo.letterbooks.dto.request.RegisterRequestDTO;
 import com.joaocuculo.letterbooks.dto.request.UserProfileUpdateDTO;
 import com.joaocuculo.letterbooks.dto.request.UserRequestDTO;
 import com.joaocuculo.letterbooks.dto.request.UserStatusUpdateDTO;
@@ -21,6 +22,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.nio.charset.StandardCharsets;
 
 @Service
 public class UserService {
@@ -47,10 +50,9 @@ public class UserService {
         return repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado."));
     }
 
-    public RegisterResponseDTO register(UserRequestDTO dto) {
-        if (repository.existsByEmail(dto.email())) {
-            throw new BusinessException("Este e-mail já está cadastrado.");
-        }
+    public RegisterResponseDTO register(RegisterRequestDTO dto) {
+        validatePasswords(dto.password(), dto.confirmPassword());
+        validateEmailAvailable(dto.email());
 
         User user = new User(
                 dto.name(),
@@ -86,8 +88,8 @@ public class UserService {
         if (!user.getId().equals(authUser.userId()) && authUser.role() != UserRole.ADMIN) {
             throw new ForbiddenException("Você não tem permissão para alterar este usuário.");
         }
-        if (!user.getEmail().equals(dto.email()) && repository.existsByEmail(dto.email())) {
-            throw new BusinessException("Este e-mail já está cadastrado.");
+        if (!user.getEmail().equals(dto.email())) {
+            validateEmailAvailable(dto.email());
         }
 
         user.setName(dto.name());
@@ -120,9 +122,7 @@ public class UserService {
             if (!passwordEncoder.matches(dto.currentPassword(), user.getPassword())) {
                 throw new BusinessException("Senha atual incorreta.");
             }
-            if (repository.existsByEmail(email)) {
-                throw new BusinessException("Este e-mail já está cadastrado.");
-            }
+            validateEmailAvailable(email);
         }
 
         user.setName(name);
@@ -130,6 +130,22 @@ public class UserService {
         repository.save(user);
 
         return UserMapper.toResponseDTO(user);
+    }
+
+    private void validatePasswords(String password, String confirmPassword) {
+        if (password == null || password.isBlank() || !password.equals(confirmPassword)) {
+            throw new BusinessException("As senhas devem ser iguais.");
+        }
+        // BCrypt aceita no máximo 72 bytes; caracteres Unicode podem ocupar mais de um byte.
+        if (password.getBytes(StandardCharsets.UTF_8).length > 72) {
+            throw new BusinessException("Senha muito longa. Use uma senha mais curta.");
+        }
+    }
+
+    private void validateEmailAvailable(String email) {
+        if (repository.existsByEmail(email)) {
+            throw new BusinessException("Este e-mail já está cadastrado.");
+        }
     }
 
     public void changePassword(Long userId, PasswordChangeRequestDTO dto) {

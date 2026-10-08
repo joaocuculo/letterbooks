@@ -4,7 +4,7 @@ import com.joaocuculo.letterbooks.config.TokenConfig;
 import com.joaocuculo.letterbooks.dto.request.ForgotPasswordRequestDTO;
 import com.joaocuculo.letterbooks.dto.request.LoginRequestDTO;
 import com.joaocuculo.letterbooks.dto.request.ResetPasswordRequestDTO;
-import com.joaocuculo.letterbooks.dto.request.UserRequestDTO;
+import com.joaocuculo.letterbooks.dto.request.RegisterRequestDTO;
 import com.joaocuculo.letterbooks.dto.response.LoginResponseDTO;
 import com.joaocuculo.letterbooks.dto.response.MessageResponseDTO;
 import com.joaocuculo.letterbooks.dto.response.RegisterResponseDTO;
@@ -50,7 +50,7 @@ public class AuthController {
     }
 
     @PostMapping(value = "/register")
-    public ResponseEntity<RegisterResponseDTO> register(@RequestBody @Valid UserRequestDTO request) {
+    public ResponseEntity<RegisterResponseDTO> register(@RequestBody @Valid RegisterRequestDTO request) {
         RegisterResponseDTO user = userService.register(request);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(user.id()).toUri();
         return ResponseEntity.created(uri).body(user);

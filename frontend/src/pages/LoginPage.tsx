@@ -1,9 +1,10 @@
-import { useState } from "react";
-import type { SubmitEvent } from "react";
-import { getApiErrorMessage } from "../utils/getApiErrorMessage.";
-import { login } from "../services/authService";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
+import { useState } from 'react';
+import type { SubmitEvent } from 'react';
+import { getApiErrorMessage } from '../utils/getApiErrorMessage.';
+import { login } from '../services/authService';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
+import AuthGalleryLayout from '../layouts/AuthGalleryLayout';
 
 interface LoginFormErrors {
     email?: string;
@@ -16,7 +17,8 @@ function validateLoginForm(email: string, password: string): LoginFormErrors {
 
     if (!normalizedEmail) {
         errors.email = 'Informe seu e-mail.';
-    } else if (!normalizedEmail.includes('@')) { // inserir um regex de validação de e-mail
+    } else if (!normalizedEmail.includes('@')) {
+        // inserir um regex de validação de e-mail
         errors.email = 'Informe um e-mail válido.';
     }
 
@@ -28,8 +30,8 @@ function validateLoginForm(email: string, password: string): LoginFormErrors {
 }
 
 function LoginPage() {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
 
     const [formErrors, setFormErrors] = useState<LoginFormErrors>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -56,9 +58,9 @@ function LoginPage() {
             ? requestedPath
             : '/';
 
-    async function handleSubmit(event:SubmitEvent<HTMLFormElement>) {
+    async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
         event.preventDefault();
-        
+
         const validationErrors = validateLoginForm(email, password);
 
         if (Object.keys(validationErrors).length > 0) {
@@ -76,22 +78,18 @@ function LoginPage() {
 
             const { token } = await login({
                 email: email.trim(),
-                password
+                password,
             });
 
             signIn(token);
-            setPassword("");
+            setPassword('');
             navigate(destination, { replace: true });
         } catch (error) {
             setErrorMessage(
-                getApiErrorMessage(
-                    error,
-                    "Não foi possível realizar o login",
-                    {
-                        401: "E-mail ou senha inválidos.",
-                        403: "E-mail ou senha inválidos.",
-                    }
-                )
+                getApiErrorMessage(error, 'Não foi possível realizar o login', {
+                    401: 'E-mail ou senha inválidos.',
+                    403: 'E-mail ou senha inválidos.',
+                })
             );
         } finally {
             setIsSubmitting(false);
@@ -99,81 +97,120 @@ function LoginPage() {
     }
 
     return (
-        <main className="mx-auto w-full max-w-md px-4 py-8">
-            <section className="flex flex-col gap-4">
-                <h1>Entrar</h1>
+        <AuthGalleryLayout>
+            <section
+                className="login-form-section"
+                aria-labelledby="login-title"
+            >
+                <h1 id="login-title">Entrar</h1>
 
-                <p>Use seu e-mail e sua senha cadastrados no LetterBooks.</p>
+                <p className="login-description">
+                    Use seu e-mail e sua senha cadastrados no LetterBooks.
+                </p>
 
                 <form
-                    className="flex flex-col gap-4"
+                    className="login-form"
                     onSubmit={handleSubmit}
                     noValidate
+                    aria-busy={isSubmitting}
                 >
-                    <div className="flex flex-col gap-1">
-                        <label htmlFor="email">
-                            E-mail
-                        </label>
+                    <div className="login-field">
+                        <label htmlFor="email">E-mail</label>
 
-                        <input className="w-full" type="email" id="email" name="email" autoComplete="email" value={email} onChange={(event) => {
-                            setEmail(event.target.value);
+                        <input
+                            className="w-full"
+                            type="email"
+                            id="email"
+                            name="email"
+                            autoComplete="email"
+                            value={email}
+                            onChange={(event) => {
+                                setEmail(event.target.value);
 
-                            setFormErrors((current) => ({
-                                ...current,
-                                email: undefined
-                            }));
-                        }} aria-invalid={Boolean(
-                            formErrors.email
-                        )} aria-describedby={
-                            formErrors.email ? "email-error" : undefined
-                        } disabled={isSubmitting}/>
+                                setFormErrors((current) => ({
+                                    ...current,
+                                    email: undefined,
+                                }));
+                            }}
+                            aria-invalid={Boolean(formErrors.email)}
+                            aria-describedby={
+                                formErrors.email ? 'email-error' : undefined
+                            }
+                            disabled={isSubmitting}
+                        />
 
                         {formErrors.email && (
-                            <p id="email-error">{formErrors.email}</p>
+                            <p id="email-error" role="alert">
+                                {formErrors.email}
+                            </p>
                         )}
                     </div>
 
-                    <div className="flex flex-col gap-1">
-                        <label htmlFor="password">
-                            Senha
-                        </label>
+                    <div className="login-field">
+                        <label htmlFor="password">Senha</label>
 
-                        <input className="w-full" type="password" id="password" name="password" autoComplete="current-password" value={password} onChange={(event) => {
-                            setPassword(event.target.value);
+                        <input
+                            className="w-full"
+                            type="password"
+                            id="password"
+                            name="password"
+                            autoComplete="current-password"
+                            value={password}
+                            onChange={(event) => {
+                                setPassword(event.target.value);
 
-                            setFormErrors((current) => ({
-                                ...current,
-                                password: undefined
-                            }));
-                        }} aria-invalid={Boolean(
-                            formErrors.password
-                        )} aria-describedby={
-                            formErrors.password ? "password-error" : undefined
-                        } disabled={isSubmitting}/>
+                                setFormErrors((current) => ({
+                                    ...current,
+                                    password: undefined,
+                                }));
+                            }}
+                            aria-invalid={Boolean(formErrors.password)}
+                            aria-describedby={
+                                formErrors.password
+                                    ? 'password-error'
+                                    : undefined
+                            }
+                            disabled={isSubmitting}
+                        />
 
                         {formErrors.password && (
-                            <p id="password-error">{formErrors.password}</p>
+                            <p id="password-error" role="alert">
+                                {formErrors.password}
+                            </p>
                         )}
 
-                        <Link to="/forgot-password">Esqueci minha senha</Link>
+                        <Link className="login-forgot" to="/forgot-password">
+                            Esqueci minha senha
+                        </Link>
                     </div>
 
                     {errorMessage && (
-                        <p role="alert">{errorMessage}</p>
+                        <p className="login-message" role="alert">
+                            {errorMessage}
+                        </p>
                     )}
 
                     {successMessage && (
-                        <p role="status">{successMessage}</p>
+                        <p className="login-message" role="status">
+                            {successMessage}
+                        </p>
                     )}
 
-                    <button className="self-start" type="submit" disabled={isSubmitting}>
-                        {isSubmitting ? "Entrando..." : "Entrar"}
+                    <button
+                        className="login-submit"
+                        type="submit"
+                        disabled={isSubmitting}
+                    >
+                        {isSubmitting ? 'Entrando...' : 'Entrar'}
                     </button>
                 </form>
-                
-                <span>Ainda não possui uma conta? <Link to="/register">Cadastre-se</Link></span>
+
+                <p className="login-register">
+                    Ainda não possui uma conta?{' '}
+                    <Link to="/register">Cadastre-se</Link>
+                </p>
             </section>
-        </main>
+        </AuthGalleryLayout>
     );
 }
 

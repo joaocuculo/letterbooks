@@ -4,7 +4,7 @@ import Footer from '../components/Footer';
 
 function AppLayout() {
     const { pathname } = useLocation();
-    if (pathname === '/') {
+    if (pathname === '/' || pathname === '/login' || pathname === '/register') {
         return <Outlet />;
     }
     return (
