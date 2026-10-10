@@ -10,7 +10,10 @@ function AppLayout() {
         pathname === '/register' ||
         pathname === '/forgot-password' ||
         pathname === '/reset-password' ||
-        pathname === '/profile'
+        pathname === '/profile' ||
+        pathname === '/explore' ||
+        pathname === '/search' ||
+        /^\/books\/[^/]+\/?$/.test(pathname)
     ) {
         return <Outlet />;
     }

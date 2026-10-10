@@ -101,14 +101,14 @@ components:
 
 Este documento registra a Home Diagonal aprovada pelo usuário, extraída de `frontend/src/styles/home.css`, `frontend/src/pages/HomePage.tsx` e `frontend/src/data/homeBooks.ts`. A interface usa preto, branco e cinza fixos, Manrope local, títulos densos e capas reais como matéria visual principal. As capas preservam as cores das edições; não constituem cores de destaque da interface.
 
-O conteúdo em português apresenta organização e avaliação de livros com demonstrações identificadas. O sistema abrange a Home Diagonal e o modelo Galeria no login e no cadastro: outras páginas preservam o estilo anterior; `/explore` contém a antiga Home de descoberta. Login e cadastro estendem a identidade aprovada com formulário simples e cinco capas estáticas. Recuperação de senha usa formulário central e capas em escada cortadas nas bordas; a redefinição de senha compartilha essa composição. A comparação entre modelos e o seletor de cores foram encerrados.
+O conteúdo em português apresenta organização e avaliação de livros com demonstrações identificadas. A identidade aprovada abrange a Home Diagonal, autenticação, recuperação/redefinição de senha, Perfil e Explorar. `/explore` unifica descoberta e pesquisa; as demais páginas preservam seu estilo até uma migração solicitada. Login e cadastro estendem a identidade com formulário simples e cinco capas estáticas. Recuperação de senha usa formulário central e capas em escada cortadas nas bordas; a redefinição compartilha essa composição. A comparação entre modelos e o seletor de cores foram encerrados.
 
 **Key Characteristics:**
 - Home Diagonal aprovada, com interface em preto, branco e cinza fixos.
 - Capas protagonistas em seis colunas diagonais exclusivas, com movimento contínuo lento e controlável.
 - Fade contínuo em toda a altura do hero desktop e avaliação em vidro translúcido.
 - Avaliações ilustrativas e prévias explicitamente identificadas.
-- Identidade aplicada à Home, ao login e ao cadastro.
+- Identidade aplicada à Home, autenticação, recuperação/redefinição, Perfil e Explorar, com composições próprias por superfície.
 
 ## Colors
 
@@ -126,6 +126,8 @@ As contingências textuais das capas mantêm os fundos de edição implementados
 
 ## Typography
 
+Explorar reutiliza Manrope local. O título da descoberta varia entre 30px e 44px, com peso 800 e entrelinha 1.2; resultados usam 24px (20px em até 479px). Títulos das seções usam 25px; títulos dos livros, 16px com entrelinha 1.4; autores e metadados, 13px com entrelinha 1.6. Esses tamanhos pertencem à superfície, sem substituir a hierarquia da Home.
+
 Manrope é uma fonte variável local (`/fonts/Manrope.ttf`, pesos 200–800, `font-display: swap`), com fallback sans-serif. A mesma família cobre títulos, corpo e controles. A exceção é a capa textual de contingência: Georgia para título e Manrope para autor.
 
 A hierarquia base está no frontmatter. Os parágrafos principais têm largura máxima de 390px. Textos secundários usam 13px e entrelinha de 1.8–1.9; metadados variam entre 9px e 11px. Títulos têm espaçamento negativo e quebra balanceada. No celular, o título principal usa `clamp(38px, 8vw, 60px)` e o parágrafo do hero usa 13px, entrelinha 1.8 e largura máxima de 360px.
@@ -138,13 +140,15 @@ Cabeçalho e rodapé têm largura máxima de 1440px e padding horizontal proporc
 
 As capas ficam à esquerda em seis colunas giradas a −32°, recortadas e dissolvidas em branco. A grade preenche também a região triangular inferior esquerda. Sua origem fica em −720px no desktop, −790px até 1100px e −646px no celular. No desktop, a largura do campo é 85% do hero mais a sangria `max(0px, (100vw - 1600px) / 2)`, e a posição compensa essa sangria para levar as capas à borda da viewport mesmo quando o hero centralizado para de crescer. O texto começa em 54% da largura do hero, seguido pela pilha de avaliações. As colunas têm 155px de largura e intervalo de 25px; as pares recebem deslocamento inicial de 120px. Máscaras vertical e horizontal se intersectam: a primeira preserva o centro entre 80px do topo e 120px da base; a segunda dissolve as capas da esquerda para a direita em uma faixa contínua por toda a altura do hero, com `linear-gradient(to right, black 40%, #0008 50%, #0001 62%, transparent 74%)`. Um gradiente branco de 120px integra a base ao restante da página.
 
-Em até 1100px, o texto começa em 52%, o hero tem mínimo de 700px e os intervalos das seções diminuem para 50px. Em até 760px, as seções passam a uma coluna e o padding principal cai a 26px. O cabeçalho móvel ocupa duas linhas, tem altura automática e mínimo de 88px: marca e conta ficam acima; Explorar e Pesquisar ficam abaixo. Entrar continua visível para visitantes; Como funciona fica oculto.
+Em até 1100px, o texto começa em 52%, o hero tem mínimo de 700px e os intervalos das seções diminuem para 50px. Em até 760px, as seções passam a uma coluna e o padding principal cai a 26px. O cabeçalho móvel ocupa duas linhas, tem altura automática e mínimo de 88px: marca e conta ficam acima; Explorar fica abaixo. Entrar continua visível para visitantes; Como funciona fica oculto.
 
 No celular, o texto fica acima da composição de capas, com padding inferior de 300px. O campo de capas ocupa os 490px inferiores, com máscara vertical transparente nas extremidades e centro preservado entre 25% e 70%. As colunas diminuem para 125px e os intervalos para 18px. O rodapé não reserva espaço para painel de comparação.
 
 No modelo Galeria de login e cadastro, a página tem altura mínima de 100svh e cresce naturalmente quando o conteúdo não cabe. O cabeçalho de 68px contém somente marca e “Voltar ao início”; até 650px de altura, reduz para 56px. O conteúdo chega a 1280px; no desktop, formulário de até 350px à esquerda e galeria à direita. Espaços menores e padding de 20px no topo e 24px na base posicionam o bloco mais acima. A galeria fica oculta abaixo de 1024px, com formulário centralizado. O formulário não possui rolagem interna nem altura máxima. Em janelas muito baixas, estados com erros ou teclado aberto, somente a página rola, mantendo todos os campos e ações acessíveis. Não há card externo, menu principal ou rodapé nessa página.
 
 ## Elevation & Depth
+
+Explorar usa composição plana, com separação por espaço e linhas neutras. A página não replica as sombras, rotações ou vidro do hero. As capas conservam a imagem inteira com `object-fit: contain` dentro da proporção 2:3.
 
 A página é majoritariamente plana; a profundidade está nas capas, na pilha de avaliações e no menu de conta. Capas recebem sombra `2px 7px 14px #18232224` e uma faixa de luz/sombra que sugere lombada. Avaliações usam `0 7px 28px #20232312`, borda de 1px e duas camadas giradas a 3° e 5°. O menu usa `0 12px 30px #20232320`.
 
@@ -155,6 +159,8 @@ O cartão de avaliação tem fundo branco de contingência. Somente no hero, qua
 As cinco capas estáticas do login usam sombra `3px 12px 22px #20232320`; o formulário permanece plano. São assets locais reutilizados, com os registros de origem existentes preservados.
 
 ## Shapes
+
+Em Explorar, capas têm cantos de 8px, busca de 12px e campos de filtro de 10px. Ações principais mantêm a cápsula preta. O seletor de visualização tem borda neutra e cantos de 10px; a opção ativa usa tinta principal e ícone branco.
 
 Botões principais são cápsulas; cartões e painéis têm cantos suaves. Capas preservam proporção 2:3, recorte da imagem e cantos assimétricos que lembram um livro. Avatares de iniciais e controles de avaliação são circulares. As rotações pertencem à composição de capas e à pilha de avaliações; os blocos de leitura permanecem alinhados.
 
@@ -174,7 +180,23 @@ Os exemplos de estantes usam fundo suave, cantos de 12px e padding de 18px 24px.
 
 ### Navigation
 
-Cabeçalho da Home com marca, Explorar, Pesquisar, Como funciona e ações conforme autenticação. Visitantes seguem para cadastro; pessoas autenticadas seguem para biblioteca e têm menu de conta. A descoberta anterior continua em `/explore`. Login e cadastro compartilham cabeçalho próprio com marca e voltar ao início; recuperação usa o cabeçalho compartilhado e capas em escada.
+SiteHeader compartilhado pela Home, Perfil e Explorar, com marca, link único Explorar, Como funciona e ações conforme autenticação. Explorar substitui o antigo link Pesquisar e leva à descoberta e pesquisa em `/explore`; `/search` redireciona preservando query e fragmento. Visitantes têm Entrar e Criar conta; pessoas autenticadas seguem para Meus livros e têm menu de conta. Login e cadastro compartilham cabeçalho próprio com marca e voltar ao início; recuperação usa o cabeçalho de autenticação e capas em escada.
+
+### Explorar — extensão aprovada
+
+Descoberta apresenta introdução e busca centralizadas, pesquisa avançada em drawer e grades completas de até doze livros por seção. Pesquisa submetida move a busca para o topo dispõe resultados em toda a largura e mantém os filtros ocultos em um drawer à direita, aberto pelo ícone SlidersHorizontal dentro da busca. O conteúdo chega a 1280px, com padding de 64px 48px 80px; abaixo de 1024px usa 40px 28px 64px e abaixo de 480px, 32px 20px 56px. Grade compacta tem quatro colunas no desktop, duas no tablet e uma no celular estreito; detalhada tem duas no desktop e uma abaixo de 1024px. Cada item detalhado dispõe capa e texto lado a lado, com editora e data adicionais. O seletor usa `aria-pressed` e altera apenas a apresentação, sem consultar a API.
+
+Campos de filtro têm rótulo visível, borda neutra e altura de 44px; busca mostra foco no contêiner e as ações mantêm área mínima de 44px. O disclosure nativo permite abrir/fechar filtros por teclado, inclusive durante pesquisa. Termo e filtros só são aplicados por envio; Limpar filtros conserva o termo aplicado, enquanto Limpar pesquisa retorna à descoberta. A URL registra termo, filtros e página. Pesquisa solicita vinte livros por página e oferece Anterior/Próxima quando existem outras páginas.
+
+Título e capa abrem detalhes; capa ausente ou quebrada mostra “Capa indisponível”, mantendo o acesso ao livro. Favoritar expõe estado pressionado e desabilita a ação durante o salvamento. Visitantes seguem ao login com retorno à URL atual. Carregamento e vazio usam anúncio de estado; erros usam `role="alert"` e vermelho #b42318, herdado da autenticação e do Perfil. Falha de carregamento oferece Tentar novamente. Contrato, evidências e limites de validação: `.impeccable/explore-brief.md` e `docs/explore.md`.
+
+### Detalhes do livro — extensão aprovada
+
+`/books/:googleBooksId` reutiliza SiteHeader, Manrope compacta e a paleta neutra; a capa conserva sua cor e imagem inteira. Conteúdo até 1120px, título de 28–36px, seções de 19px e corpo de 14px; sinopse com entrelinha 1.85 e medida de até 70ch. Biblioteca é a composição consolidada, com capa/ações em lateral de 240px e leitura à direita, sticky somente quando a lateral mais 48px cabe na altura. A comparação com Apresentação e Editorial foi encerrada. Esta composição pertence à superfície de detalhes, sem impor seu layout às demais páginas.
+
+Abaixo de 1024px, Biblioteca empilha identificação, capa, ações, sinopse, edição e opiniões. Padding de 32px 40px 72px no desktop, 24px 28px 56px abaixo de 1024px e 20px 20px 48px abaixo de 480px; somente a página rola. A capa tem cantos de 5px e sombra discreta `3px 10px 12px #20232320`; ausência/falha mostra “Capa indisponível” em superfície neutra. Clicar na capa abre lightbox escuro com a mesma imagem, fechamento por Escape, clique fora ou botão e retorno do foco; ampliar não melhora a qualidade da fonte.
+
+A ação principal mantém cápsula preta; favorito usa botão neutro com estado pressionado. Campos têm cantos de 10px, ações/controles têm altura mínima de 44px e campos usam texto de 16px abaixo de 1024px. Avaliação abre inline com foco na nota selecionada, inclusive zero; estrelas oferecem prévia no hover e seleção por radios nativos, com opção explícita “Sem estrelas”. Salvar/cancelar devolvem foco à região de avaliação. Cartões de avaliações usam cinza suave e cantos arredondados; somente a própria avaliação tem menu de reticências com Editar/Excluir. Excluir usa vermelho existente e diálogo de confirmação. Abaixo da edição, “Na sua biblioteca” apresenta agrupamentos de leitura e estantes personalizadas como nomes sem links e fica oculto sem associações. Mensagens de erro usam vermelho existente e `role="alert"`; carregamentos/sucesso usam `role="status"`. Contrato, capturas ilustrativas e limites de verificação: `.impeccable/book-details-brief.md` e `docs/book-details.md`.
 
 ### Login e Cadastro Galeria
 
@@ -200,7 +222,7 @@ O movimento também pausa quando o hero sai da viewport ou quando o documento fi
 - **Do** preservar o fade contínuo do hero desktop e o vidro com contingência sem desfoque.
 - **Do** identificar avaliações ilustrativas e recursos cuja interface está pendente.
 - **Do** preservar assets locais e seus registros de origem.
-- **Do** limitar este sistema à Home, ao login e ao cadastro enquanto a migração das outras páginas não for solicitada.
+- **Do** preservar as extensões aprovadas de autenticação, recuperação/redefinição, Perfil e Explorar; outras páginas aguardam migração solicitada.
 
 ### Don't:
 - **Don't** reintroduzir comparação de modelos ou seletor de cores na Home.
@@ -225,3 +247,17 @@ Validações por campo e mensagens de erro da API nos formulários de login e ca
 `/profile` estende a identidade neutra da Home e da autenticação, com Manrope local, fundo branco e o SiteHeader compartilhado de 68px. O conteúdo tem largura máxima de 1120px e título entre 30px e 40px; no desktop, resumo de conta de 300px à esquerda e formulários à direita, separados por 80px. O resumo usa fundo suave, borda neutra, cantos de 16px e avatar circular de iniciais de 80px. Nome, e-mail, tipo, situação e data de cadastro são dados da conta; não há estatísticas ou upload de foto. Dados pessoais e Alterar senha aparecem em sequência, separados por uma linha fina, sem cartões externos.
 
 Abaixo de 1024px, resumo e formulários formam uma coluna de até 680px; abaixo de 481px, os metadados também empilham e os botões ocupam toda a largura. A página cresce e rola naturalmente. Campos compartilham a altura mínima de 44px, cantos de 10px, foco escuro e borda tracejada de erro da autenticação; ações usam cápsula preta. PasswordInput mantém olhos independentes com área de toque de 44px. Erros de campo e API usam vermelho e `role="alert"`, associados por `aria-describedby`; sucesso e carregamento usam `role="status"`. A nova senha exibe somente a primeira exigência pendente, sem lista. O cabeçalho, link de pular conteúdo e foco visível preservam o acesso por teclado. Esta extensão autoriza o Perfil; outras páginas conservam seu sistema até migração solicitada. Evidência e fluxos: `.impeccable/profile-brief.md`.
+
+### Refinamento do campo Explorar
+
+O campo principal é uma cápsula com ação Pesquisar interna à direita, fundo branco, borda #d5d8d7 e sombra suave 0 3px 10px #20232314. O botão mantém preto e altura mínima de 44px. Em 320px, o ícone decorativo é ocultado e espaçamentos reduzidos para preservar campo e ação na mesma linha. Descoberta solicita até 12 livros por seção para preencher três fileiras de quatro no desktop; pesquisa continua com 20 por página.
+
+### Pesquisa avançada em drawer
+
+Em Explorar, o controle SlidersHorizontal fica à esquerda de Pesquisar, sem borda e com fundo neutro no hover. O drawer lateral usa branco, Manrope, título de 22px, rótulos de 13px e campos de 44px; largura máxima de 400px, adaptada à tela. Base UI fornece foco modal e fechamento por Escape/clique fora. Transições respeitam movimento reduzido. Filtros não ocupam coluna na grade.
+
+### Escala compacta — 2026-10-10
+
+As páginas com identidade Manrope usam texto base de 14px. Campos têm texto de 14px no desktop e 16px abaixo de 760px, preservando altura mínima de 44px e evitando zoom automático ao digitar no celular. Títulos: Home 34–56px (32–48px no celular), Explorar 26–36px, acesso 36px (32px no celular e 28px em telas baixas), Perfil 26–34px. Rótulos e textos auxiliares já pequenos foram preservados. O hero desktop passa a 650px mínimos; o conteúdo de Explorar chega a 1120px, com capas de até 180px e metadados alinhados à capa. Espaços entre seções e ações foram reduzidos mantendo a composição aprovada. Revisão visual com dados simulados em desktop e 320px, sem overflow horizontal em Explorar, cadastro e Perfil.
+
+Ajuste da Home: bloco de texto, ações e avaliações deslocado para 59% da largura no desktop, com largura de 41%; em telas intermediárias inicia em 55%. Celular mantém margem zero e largura automática.

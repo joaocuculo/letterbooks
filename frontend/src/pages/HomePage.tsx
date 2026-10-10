@@ -368,7 +368,7 @@ function HomePage() {
                                 Dê uma nota, registre o que sentiu e volte às
                                 histórias pelo que elas significaram para você.
                             </p>
-                            <Link to="/search" className="landing-text-link">
+                            <Link to="/explore" className="landing-text-link">
                                 Encontrar um livro para avaliar <Arrow />
                             </Link>
                         </div>

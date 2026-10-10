@@ -17,9 +17,6 @@ function SiteHeader() {
             </Link>
             <nav aria-label="Navegação principal" className="landing-nav">
                 <Link to="/explore">Explorar</Link>
-                <Link to="/search" className="landing-search-link">
-                    Pesquisar
-                </Link>
                 <a
                     href={
                         pathname === '/' ? '#possibilities' : '/#possibilities'

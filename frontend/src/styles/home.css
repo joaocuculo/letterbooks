@@ -16,6 +16,7 @@
     background: white;
     color: var(--ink);
     font-family: Manrope, sans-serif;
+    font-size: 14px;
     overflow: clip;
 }
 .landing *,
@@ -57,7 +58,7 @@
     display: inline-flex;
     align-items: center;
     gap: 9px;
-    font-size: 22px;
+    font-size: 20px;
     font-weight: 800;
     letter-spacing: -0.04em;
     white-space: nowrap;
@@ -89,7 +90,8 @@
     justify-content: center;
     align-items: center;
     gap: 20px;
-    padding: 17px 24px;
+    padding: 13px 22px;
+    min-height: 44px;
     border-radius: 999px;
     background: var(--accent);
     color: var(--on-accent);
@@ -149,14 +151,14 @@
     isolation: isolate;
     max-width: 1600px;
     margin: auto;
-    min-height: 730px;
+    min-height: 650px;
 }
 .hero-copy {
     position: relative;
     z-index: 2;
 }
 .hero-copy h1 {
-    font-size: clamp(40px, 4.5vw, 68px);
+    font-size: clamp(34px, 3.8vw, 56px);
     font-weight: 750;
     line-height: 1.08;
     letter-spacing: -0.04em;
@@ -164,11 +166,11 @@
     margin: 0;
 }
 .hero-intro > p {
-    font-size: 15px;
+    font-size: 14px;
     color: var(--muted);
     max-width: 390px;
     line-height: 1.85;
-    margin: 25px 0 28px;
+    margin: 20px 0 24px;
 }
 .hero-copy .review-controls {
     background: #fffffff0;
@@ -234,8 +236,9 @@
     margin-top: 20px;
 }
 .landing-diagonal .hero-copy {
-    margin-left: 54%;
-    padding: 110px 5% 80px 0;
+    margin-left: 59%;
+    padding: 84px 0 64px;
+    width: 41%;
 }
 .landing-diagonal .hero-books {
     position: absolute;
@@ -253,7 +256,13 @@
             black calc(100% - 120px),
             transparent
         ),
-          linear-gradient(to right, black 40%, #0008 50%, #0001 62%, transparent 74%);
+        linear-gradient(
+            to right,
+            black 40%,
+            #0008 50%,
+            #0001 62%,
+            transparent 74%
+        );
     mask-composite: intersect;
 }
 .diagonal-grid {
@@ -326,7 +335,7 @@
     max-width: 430px;
 }
 .hero-copy > .review-area {
-    margin-top: 45px;
+    margin-top: 32px;
 }
 .review-stack {
     position: relative;
@@ -351,7 +360,7 @@
 }
 .review-card {
     background: #ffffffed;
-      border: 1px solid #d5d8d7;
+    border: 1px solid #d5d8d7;
     padding: 21px 23px;
     border-radius: 16px;
     box-shadow: 0 7px 28px #20232312;
@@ -443,7 +452,7 @@
 .landing-possibilities {
     max-width: 1160px;
     margin: auto;
-    padding: 80px 40px 0;
+    padding: 60px 40px 0;
     scroll-margin-top: 35px;
 }
 .possibilities-heading {
@@ -451,11 +460,11 @@
     align-items: end;
     justify-content: space-between;
     gap: 40px;
-    margin-bottom: 80px;
+    margin-bottom: 56px;
 }
 .possibilities-heading h2,
 .landing-closing h2 {
-    font-size: clamp(38px, 4vw, 56px);
+    font-size: clamp(30px, 3.2vw, 44px);
     letter-spacing: -0.04em;
     line-height: 1.12;
     font-weight: 750;
@@ -470,12 +479,12 @@
 .possibility-library {
     display: grid;
     grid-template-columns: 0.9fr 1.1fr;
-    gap: 90px;
+    gap: 64px;
     align-items: center;
 }
 .possibility-copy h3,
 .landing-shelves h3 {
-    font-size: clamp(28px, 3vw, 38px);
+    font-size: clamp(24px, 2.5vw, 32px);
     font-weight: 700;
     line-height: 1.2;
     letter-spacing: -0.035em;
@@ -541,9 +550,9 @@
 .possibility-reviews {
     display: grid;
     grid-template-columns: 1.1fr 0.9fr;
-    gap: 90px;
+    gap: 64px;
     align-items: center;
-    margin: 110px 0;
+    margin: 80px 0;
 }
 .possibility-reviews .possibility-copy {
     order: 2;
@@ -588,7 +597,7 @@
 .landing-closing {
     text-align: center;
     background: var(--accent-soft);
-    padding: 90px 24px;
+    padding: 64px 24px;
 }
 .landing-closing .landing-button {
     margin-top: 32px;
@@ -628,14 +637,15 @@
         flex-wrap: wrap;
     }
     .landing-diagonal .hero-copy {
-        margin-left: 52%;
+        margin-left: 55%;
+        width: 41%;
         padding-top: 75px;
     }
     .diagonal-grid {
         left: -790px;
     }
     .landing-hero {
-        min-height: 700px;
+        min-height: 620px;
     }
     .possibility-library,
     .possibility-reviews {
@@ -688,7 +698,7 @@
         min-height: 0;
     }
     .hero-copy h1 {
-        font-size: clamp(38px, 8vw, 60px);
+        font-size: clamp(32px, 7vw, 48px);
     }
     .hero-intro > p {
         font-size: 13px;
@@ -708,6 +718,7 @@
     }
     .landing-diagonal .hero-copy {
         margin: 0;
+        width: auto;
         padding: 32px 26px 300px;
     }
     .landing-diagonal .hero-copy > .review-area {
@@ -752,7 +763,7 @@
         margin-bottom: 45px;
     }
     .possibilities-heading h2 {
-        font-size: 39px;
+        font-size: 32px;
     }
     .possibilities-heading p {
         margin-top: 24px;
@@ -764,7 +775,7 @@
         gap: 35px;
     }
     .possibility-copy h3 {
-        font-size: 31px;
+        font-size: 27px;
     }
     .possibility-copy p {
         font-size: 12px;
@@ -810,7 +821,7 @@
         padding: 65px 24px;
     }
     .landing-closing h2 {
-        font-size: 35px;
+        font-size: 30px;
     }
     .landing-footer {
         padding: 35px 26px;
@@ -836,3 +847,4 @@
         scroll-behavior: auto !important;
     }
 }
+

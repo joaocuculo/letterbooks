@@ -36,7 +36,7 @@ public class BookController {
     @GetMapping("/search")
     public ResponseEntity<Page<BookCardResponseDTO>> search(
             @Valid @ModelAttribute BookSearchRequestDTO searchRequestDTO,
-            @PageableDefault(page = 0, size = 10) Pageable pageable,
+            @PageableDefault(page = 0, size = 20) Pageable pageable,
             @AuthenticationPrincipal JWTUserData user) {
         Long userId = user != null ? user.userId() : null;
         Page<BookCardResponseDTO> searchResult = bookService.search(searchRequestDTO, pageable, userId);

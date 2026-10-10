@@ -17,7 +17,7 @@ public class GoogleBooksService {
 
     @Cacheable(
             cacheNames = "googleBooksSearch",
-            unless = "#result == null"
+            unless = "#result == null || #result.items() == null || #result.items().isEmpty()"
     )
     public GoogleBooksSearchResponseDTO search(String query, Integer maxResults, Integer startIndex) {
         return googleBooksClient.search(query, maxResults, startIndex);

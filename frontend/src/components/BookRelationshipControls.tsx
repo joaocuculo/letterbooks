@@ -1,7 +1,5 @@
-import type {
-    UserBookResponse,
-    UserBookStatus,
-} from '../types/userBook';
+import { Heart, Trash2 } from 'lucide-react';
+import type { UserBookResponse, UserBookStatus } from '../types/userBook';
 import { userBookStatusOptions } from '../utils/userBookStatus';
 
 interface BookRelationshipControlsProps {
@@ -15,7 +13,7 @@ interface BookRelationshipControlsProps {
     onRemove: () => void;
 }
 
-function BookRelationshipControls({
+export default function BookRelationshipControls({
     userBook,
     isAuthenticated,
     isLoading,
@@ -25,59 +23,71 @@ function BookRelationshipControls({
     onStatusChange,
     onRemove,
 }: BookRelationshipControlsProps) {
-    if (isAuthenticated && isLoading) {
-        return (
-            <section className="flex flex-col items-start gap-2">
-                <h2>Minha relação com o livro</h2>
-                <p>Carregando seus dados...</p>
-            </section>
-        );
-    }
-
+    if (isAuthenticated && isLoading)
+        return <p role="status">Carregando seus dados...</p>;
     return (
-        <section className="flex flex-col items-start gap-2">
-            <h2>Minha relação com o livro</h2>
-
-            {errorMessage && <p role="alert">{errorMessage}</p>}
-
-            <button
-                type="button"
-                onClick={onFavoriteToggle}
-                disabled={isSaving}
-            >
-                {isSaving
-                    ? 'Salvando...'
-                    : userBook?.isFavorite
-                      ? 'Desfavoritar'
-                      : 'Favoritar'}
-            </button>
-
-            <label htmlFor="book-status">Status de leitura</label>
-            <select
-                id="book-status"
-                value={userBook?.status ?? ''}
-                onChange={(event) =>
-                    onStatusChange(event.target.value as UserBookStatus)
-                }
-                disabled={isSaving}
-            >
-                <option value="" disabled>
-                    Selecione um status
-                </option>
-                {userBookStatusOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                        {option.label}
-                    </option>
-                ))}
-            </select>
-
-            {userBook && (
-                <button type="button" onClick={onRemove} disabled={isSaving}>
-                    {isSaving ? 'Processando...' : 'Remover da biblioteca'}
+        <section
+            className="book-relationship"
+            aria-label="Minha relação com o livro"
+            aria-busy={isSaving}
+        >
+            {errorMessage && (
+                <p className="book-error" role="alert">
+                    {errorMessage}
+                </p>
+            )}
+            <div className="book-relationship-row">
+                <button
+                    type="button"
+                    className="book-secondary"
+                    aria-pressed={userBook?.isFavorite ?? false}
+                    onClick={onFavoriteToggle}
+                    disabled={isSaving}
+                >
+                    <Heart
+                        size={17}
+                        fill={userBook?.isFavorite ? 'currentColor' : 'none'}
+                        aria-hidden="true"
+                    />
+                    {userBook?.isFavorite ? 'Favoritado' : 'Favoritar'}
                 </button>
+                <div className="book-status-field">
+                    <label htmlFor="book-status">Status de leitura</label>
+                    <select
+                        id="book-status"
+                        value={userBook?.status ?? ''}
+                        onChange={(event) =>
+                            onStatusChange(event.target.value as UserBookStatus)
+                        }
+                        disabled={isSaving}
+                    >
+                        <option value="" disabled>
+                            Selecione um status
+                        </option>
+                        {userBookStatusOptions.map((option) => (
+                            <option key={option.value} value={option.value}>
+                                {option.label}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+            </div>
+            {userBook && (
+                <button
+                    type="button"
+                    className="book-text-button"
+                    onClick={onRemove}
+                    disabled={isSaving}
+                >
+                    <Trash2 size={15} aria-hidden="true" />
+                    Remover da biblioteca
+                </button>
+            )}
+            {isSaving && (
+                <p role="status" className="book-muted">
+                    Salvando...
+                </p>
             )}
         </section>
     );
 }
-
-export default BookRelationshipControls;

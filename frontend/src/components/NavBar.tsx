@@ -21,7 +21,7 @@ function NavBar() {
                         
                     </NavLink>
 
-                    <NavLink to="/search">Pesquisar</NavLink>
+                    <NavLink to="/explore">Explorar</NavLink>
 
                     {isAuthenticated ? (
                         <>

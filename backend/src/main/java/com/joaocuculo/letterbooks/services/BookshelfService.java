@@ -3,6 +3,7 @@ package com.joaocuculo.letterbooks.services;
 import com.joaocuculo.letterbooks.dto.request.BookshelfRequestDTO;
 import com.joaocuculo.letterbooks.dto.request.BookshelfUpdateDTO;
 import com.joaocuculo.letterbooks.dto.response.BookshelfResponseDTO;
+import com.joaocuculo.letterbooks.dto.response.BookshelfMembershipDTO;
 import com.joaocuculo.letterbooks.dto.response.BookshelfSummaryDTO;
 import com.joaocuculo.letterbooks.entities.Bookshelf;
 import com.joaocuculo.letterbooks.entities.User;
@@ -28,6 +29,10 @@ public class BookshelfService {
     public BookshelfService(BookshelfRepository bookshelfRepository, UserService userService) {
         this.bookshelfRepository = bookshelfRepository;
         this.userService = userService;
+    }
+
+    public List<BookshelfMembershipDTO> findMineByGoogleBooksId(Long userId, String googleBooksId) {
+        return bookshelfRepository.findMembershipsByUserIdAndGoogleBooksId(userId, googleBooksId);
     }
 
     public BookshelfResponseDTO findById(Long id, Long userId) {

@@ -7,11 +7,11 @@
 .profile-content {
     max-width: 1120px;
     margin: 0 auto;
-    padding: 52px 40px 80px;
+    padding: 40px 40px 64px;
 }
 .profile-content h1 {
     margin: 0 0 36px;
-    font-size: clamp(30px, 3vw, 40px);
+    font-size: clamp(26px, 2.5vw, 34px);
     line-height: 1.2;
     font-weight: 800;
     letter-spacing: -0.035em;
@@ -19,11 +19,11 @@
 .profile-grid {
     display: grid;
     grid-template-columns: 300px minmax(0, 1fr);
-    gap: 80px;
+    gap: 56px;
     align-items: start;
 }
 .profile-summary {
-    padding: 32px 26px;
+    padding: 26px 22px;
     border: 1px solid #d5d8d7;
     border-radius: 16px;
     background: #f5f6f5;
@@ -44,7 +44,7 @@
 }
 .profile-summary h2 {
     margin: 0;
-    font-size: 21px;
+    font-size: 19px;
     font-weight: 750;
     line-height: 1.4;
     letter-spacing: -0.025em;
@@ -82,7 +82,7 @@
 }
 .profile-section-title {
     margin: 0 0 22px;
-    font-size: 21px;
+    font-size: 19px;
     line-height: 1.4;
     font-weight: 750;
     letter-spacing: -0.025em;

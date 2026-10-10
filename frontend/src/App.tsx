@@ -1,7 +1,7 @@
 import { Route, Routes } from 'react-router-dom';
 import AppLayout from './layouts/AppLayout';
 import HomePage from './pages/HomePage';
-import DiscoverPage from './pages/DiscoverPage';
+import ExplorePage from './pages/ExplorePage';
 import BookDetailsPage from './pages/BookDetailsPage';
 import LoginPage from './pages/LoginPage';
 import NotFoundPage from './pages/NotFoundPage';
@@ -32,7 +32,7 @@ function App() {
                 />
                 <Route path="reset-password" element={<ResetPasswordPage />} />
                 <Route path="search" element={<SearchPage />} />
-                <Route path="explore" element={<DiscoverPage />} />
+                <Route path="explore" element={<ExplorePage />} />
                 <Route
                     path="books/:googleBooksId"
                     element={<BookDetailsPage />}

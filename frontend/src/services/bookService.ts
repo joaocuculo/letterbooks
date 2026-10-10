@@ -4,9 +4,12 @@ import type { DiscoverResponse } from '../types/discover';
 import type { PageResponse } from '../types/page';
 import { api } from './api';
 
-export async function discover(): Promise<DiscoverResponse> {
+export async function discover(
+    signal?: AbortSignal
+): Promise<DiscoverResponse> {
     const response = await api.get<DiscoverResponse>('books/discover', {
         timeout: 20_000, // Aguarda as três buscas sequenciais do backend.
+        signal,
     });
     return response.data;
 }
@@ -34,7 +37,7 @@ export async function searchBooks(
             params: {
                 ...filters,
                 page,
-                size: 10,
+                size: 20,
             },
             signal,
         }

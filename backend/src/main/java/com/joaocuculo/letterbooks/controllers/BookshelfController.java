@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
+import com.joaocuculo.letterbooks.dto.response.BookshelfMembershipDTO;
 
 @RestController
 @RequestMapping(value = "/bookshelves")
@@ -30,6 +32,12 @@ public class BookshelfController {
     public BookshelfController(BookshelfService bookshelfService, BookshelfItemService bookshelfItemService) {
         this.bookshelfService = bookshelfService;
         this.bookshelfItemService = bookshelfItemService;
+    }
+
+    @GetMapping(value = "/book/google/{googleBooksId}/me")
+    public ResponseEntity<List<BookshelfMembershipDTO>> findMineByGoogleBooksId(
+            @PathVariable String googleBooksId, @AuthenticationPrincipal JWTUserData user) {
+        return ResponseEntity.ok().body(bookshelfService.findMineByGoogleBooksId(user.userId(), googleBooksId));
     }
 
     @GetMapping(value = "/{id}")

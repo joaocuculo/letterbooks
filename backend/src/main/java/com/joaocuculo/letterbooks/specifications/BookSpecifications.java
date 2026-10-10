@@ -3,9 +3,25 @@ package com.joaocuculo.letterbooks.specifications;
 import com.joaocuculo.letterbooks.dto.request.BookSearchRequestDTO;
 import com.joaocuculo.letterbooks.entities.Book;
 import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.util.List;
+import java.util.Locale;
+
 public class BookSpecifications {
+
+    public static Specification<Book> withSubjects(List<String> subjects) {
+        return (root, query, cb) -> {
+            query.distinct(true);
+            var categoryName = root.join("categories", JoinType.LEFT)
+                    .join("categoryNames", JoinType.LEFT).get("name").as(String.class);
+            Predicate[] predicates = subjects.stream()
+                    .map(subject -> cb.like(cb.lower(categoryName), "%" + subject.toLowerCase(Locale.ROOT) + "%"))
+                    .toArray(Predicate[]::new);
+            return cb.or(predicates);
+        };
+    }
 
     public static Specification<Book> withFilters(BookSearchRequestDTO filter) {
         return Specification

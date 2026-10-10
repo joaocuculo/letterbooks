@@ -13,6 +13,7 @@
     background: #fff;
     color: #202323;
     font-family: Manrope, sans-serif;
+    font-size: 14px;
 }
 .login-page *,
 .login-page *::before,
@@ -62,7 +63,7 @@
     display: inline-flex;
     align-items: center;
     gap: 9px;
-    font-size: 22px;
+    font-size: 20px;
     font-weight: 800;
     letter-spacing: -0.04em;
 }
@@ -93,13 +94,13 @@
 }
 .login-form-section h1 {
     margin: 0;
-    font-size: 44px;
+    font-size: 36px;
     line-height: 1.15;
     font-weight: 800;
     letter-spacing: -0.035em;
 }
 .login-description {
-    margin: 12px 0 24px;
+    margin: 10px 0 20px;
     font-size: 14px;
     line-height: 1.8;
     color: #606565;
@@ -195,7 +196,7 @@
         width: 15px;
     }
     .login-form-section h1 {
-        font-size: 38px;
+        font-size: 32px;
     }
     .login-content {
         padding-top: 12px;
@@ -211,7 +212,7 @@
         padding-bottom: 20px;
     }
     .login-form-section h1 {
-        font-size: 32px;
+        font-size: 28px;
     }
     .login-description {
         margin: 10px 0 18px;

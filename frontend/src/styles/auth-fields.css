@@ -1,7 +1,7 @@
 .login-form {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 14px;
 }
 .login-field {
     display: flex;
@@ -17,9 +17,9 @@
     min-height: 44px;
     border: 1px solid #858d89;
     border-radius: 10px;
-    padding: 9px 13px;
+    padding: 8px 12px;
     font: inherit;
-    font-size: 16px;
+    font-size: 14px;
     color: #202323;
     background: #fff;
     caret-color: #202323;
@@ -107,4 +107,10 @@
     font-size: 13px;
     line-height: 1.7;
     overflow-wrap: anywhere;
+}
+
+@media (max-width: 760px) {
+    .login-field input {
+        font-size: 16px;
+    }
 }

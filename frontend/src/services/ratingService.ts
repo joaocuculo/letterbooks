@@ -30,9 +30,7 @@ export async function findMyRating(
     return response.status === 204 ? null : response.data;
 }
 
-export async function create(
-    data: RatingRequest
-): Promise<RatingResponse> {
+export async function create(data: RatingRequest): Promise<RatingResponse> {
     const response = await api.post<RatingResponse>('/ratings', data);
 
     return response.data;
@@ -48,4 +46,8 @@ export async function update(
     );
 
     return response.data;
+}
+
+export async function remove(ratingId: number): Promise<void> {
+    await api.delete(`/ratings/${ratingId}`);
 }

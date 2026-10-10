@@ -38,6 +38,21 @@ class BookSpecificationsTests {
     }
 
     @Test
+    void bookshelfMembershipQueryUsesCompositeItemMapping() throws NoSuchMethodException {
+        var method = com.joaocuculo.letterbooks.repositories.BookshelfRepository.class.getMethod(
+                "findMembershipsByUserIdAndGoogleBooksId", Long.class, String.class);
+        var annotation = method.getAnnotation(org.springframework.data.jpa.repository.Query.class);
+        try (var session = sessionFactory.openSession()) {
+            var query = session.createQuery(annotation.value(),
+                    com.joaocuculo.letterbooks.dto.response.BookshelfMembershipDTO.class);
+            query.setParameter("userId", 42L);
+            query.setParameter("googleBooksId", "duna");
+            assertEquals(42L, query.getParameterValue("userId"));
+            assertEquals("duna", query.getParameterValue("googleBooksId"));
+        }
+    }
+
+    @Test
     void authorFilterUsesAuthorNamesMapping() {
         validateQuery(new BookSearchRequestDTO(null, "F. Dostoiévski", null, null, null, null));
     }
@@ -50,6 +65,21 @@ class BookSpecificationsTests {
     @Test
     void combinedFiltersKeepDistinctBooks() {
         validateQuery(new BookSearchRequestDTO("Crime", "Dostoiévski", null, "Ficção", null, "castigo"));
+    }
+
+    @Test
+    void discoverSubjectsUseCategoryNamesAndDistinctBooks() {
+        try (var session = sessionFactory.openSession()) {
+            var cb = session.getCriteriaBuilder();
+            var query = cb.createQuery(Book.class);
+            var root = query.from(Book.class);
+            var predicate = BookSpecifications.withSubjects(java.util.List.of("fiction", "ficção"))
+                    .toPredicate(root, query, cb);
+            query.select(root).where(predicate);
+            assertDoesNotThrow(() -> session.createQuery(query));
+            assertTrue(query.isDistinct());
+            assertEquals(jakarta.persistence.criteria.Predicate.BooleanOperator.OR, predicate.getOperator());
+        }
     }
 
     private void validateQuery(BookSearchRequestDTO filter) {
