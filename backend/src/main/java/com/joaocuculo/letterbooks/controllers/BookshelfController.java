@@ -1,5 +1,6 @@
 package com.joaocuculo.letterbooks.controllers;
 
+import com.joaocuculo.letterbooks.dto.response.BookshelfBookDTO;
 import com.joaocuculo.letterbooks.config.JWTUserData;
 import com.joaocuculo.letterbooks.dto.request.BookshelfItemRequestDTO;
 import com.joaocuculo.letterbooks.dto.request.BookshelfRequestDTO;
@@ -45,6 +46,17 @@ public class BookshelfController {
             @PathVariable Long id, @AuthenticationPrincipal JWTUserData user) {
         BookshelfResponseDTO bookshelf = bookshelfService.findById(id, user.userId());
         return ResponseEntity.ok().body(bookshelf);
+    }
+
+    @GetMapping(value = "/{id}/summary")
+    public ResponseEntity<BookshelfSummaryDTO> findSummary(@PathVariable Long id, @AuthenticationPrincipal JWTUserData user) {
+        return ResponseEntity.ok(bookshelfService.findSummary(id, user.userId()));
+    }
+
+    @GetMapping(value = "/{id}/books")
+    public ResponseEntity<Page<BookshelfBookDTO>> findBooks(
+            @PathVariable Long id, @AuthenticationPrincipal JWTUserData user, @PageableDefault(size = 20) Pageable pageable) {
+        return ResponseEntity.ok(bookshelfService.findBooks(id, user.userId(), pageable));
     }
 
     @GetMapping(value = "/user/{userId}")

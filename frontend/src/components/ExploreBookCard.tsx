@@ -1,6 +1,9 @@
-import { BookOpen, Heart } from 'lucide-react';
+import { BookOpen, Heart, Ellipsis } from 'lucide-react';
+import { Menu } from '@base-ui/react/menu';
+import AddToShelfDialog from './AddToShelfDialog';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 import type { BookCardResponse } from '../types/book';
 
 interface Props {
@@ -17,6 +20,20 @@ export default function ExploreBookCard({
     onFavorite,
 }: Props) {
     const [brokenImage, setBrokenImage] = useState(false);
+    const [adding, setAdding] = useState(false);
+    const [shelfNotice, setShelfNotice] = useState('');
+    const { isAuthenticated } = useAuth();
+    const location = useLocation();
+    const navigate = useNavigate();
+    function openShelfPicker() {
+        if (!isAuthenticated)
+            navigate('/login', {
+                state: {
+                    from: location.pathname + location.search + location.hash,
+                },
+            });
+        else setAdding(true);
+    }
     return (
         <article
             className={`explore-book${detailed ? ' explore-book-detailed' : ''}`}
@@ -77,7 +94,35 @@ export default function ExploreBookCard({
                           ? 'Favoritado'
                           : 'Favoritar'}
                 </button>
+                <Menu.Root>
+                    <Menu.Trigger
+                        className="library-secondary"
+                        disabled={busy}
+                        aria-label={`Opções de ${book.title}`}
+                    >
+                        <Ellipsis size={18} />
+                    </Menu.Trigger>
+                    <Menu.Portal>
+                        <Menu.Positioner>
+                            <Menu.Popup className="landing library-menu">
+                                <Menu.Item onClick={openShelfPicker}>
+                                    Adicionar a uma estante
+                                </Menu.Item>
+                            </Menu.Popup>
+                        </Menu.Positioner>
+                    </Menu.Portal>
+                </Menu.Root>
             </div>
+            {adding && (
+                <AddToShelfDialog
+                    book={{ googleBooksId: book.id, title: book.title }}
+                    onClose={() => setAdding(false)}
+                    onAdded={() =>
+                        setShelfNotice('Livro adicionado à estante.')
+                    }
+                />
+            )}
+            {shelfNotice && <p role="status">{shelfNotice}</p>}
         </article>
     );
 }

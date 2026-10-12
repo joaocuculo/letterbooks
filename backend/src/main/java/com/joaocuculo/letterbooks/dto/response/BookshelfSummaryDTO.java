@@ -1,6 +1,7 @@
 package com.joaocuculo.letterbooks.dto.response;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public record BookshelfSummaryDTO(
         Long id,
@@ -9,6 +10,7 @@ public record BookshelfSummaryDTO(
         boolean isPublicShelf,
         Integer booksCount,
         LocalDateTime createdAt,
-        LocalDateTime updatedAt
+        LocalDateTime updatedAt,
+        List<BookSummaryDTO> previewBooks
 ) {
 }

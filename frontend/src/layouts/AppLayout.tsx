@@ -11,6 +11,8 @@ function AppLayout() {
         pathname === '/forgot-password' ||
         pathname === '/reset-password' ||
         pathname === '/profile' ||
+        pathname === '/my-books' ||
+        pathname === '/my-books/list' ||
         pathname === '/explore' ||
         pathname === '/search' ||
         /^\/books\/[^/]+\/?$/.test(pathname)

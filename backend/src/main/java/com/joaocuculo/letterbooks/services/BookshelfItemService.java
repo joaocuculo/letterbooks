@@ -1,5 +1,6 @@
 package com.joaocuculo.letterbooks.services;
 
+import org.springframework.transaction.annotation.Transactional;
 import com.joaocuculo.letterbooks.dto.request.BookshelfItemRequestDTO;
 import com.joaocuculo.letterbooks.entities.Book;
 import com.joaocuculo.letterbooks.entities.Bookshelf;
@@ -17,19 +18,23 @@ public class BookshelfItemService {
     private final BookshelfItemRepository bookshelfItemRepository;
     private final BookshelfService bookshelfService;
     private final BookService bookService;
+    private final UserBookService userBookService;
 
-    public BookshelfItemService(BookshelfItemRepository bookshelfItemRepository, BookshelfService bookshelfService, BookService bookService) {
+    public BookshelfItemService(BookshelfItemRepository bookshelfItemRepository, BookshelfService bookshelfService, BookService bookService, UserBookService userBookService) {
         this.bookshelfItemRepository = bookshelfItemRepository;
         this.bookshelfService = bookshelfService;
         this.bookService = bookService;
+        this.userBookService = userBookService;
     }
 
+    @Transactional
     public void add(Long bookshelfId, BookshelfItemRequestDTO dto, Long userId) {
         Bookshelf bookshelf = bookshelfService.getOwnedBookshelf(bookshelfId, userId);
         Book book = bookService.findOrCreateByGoogleBooksId(dto.googleBooksId());
         if (bookshelfItemRepository.existsByIdBookshelfIdAndIdBookId(bookshelfId, book.getId())) {
             throw new BusinessException("Este livro já está nesta estante.");
         }
+        userBookService.ensureInLibrary(userId, book);
         bookshelfItemRepository.save(new BookshelfItem(bookshelf, book));
     }
 

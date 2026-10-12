@@ -68,6 +68,13 @@ public class UserBookService {
         return UserBookMapper.toResponseDTO(userBook);
     }
 
+    public void ensureInLibrary(Long userId, Book book) {
+        if (!userBookRepository.existsByUserIdAndBookId(userId, book.getId())) {
+            var user = userService.getByIdOrThrow(userId);
+            userBookRepository.save(new UserBook(UserBookStatus.WANT_TO_READ, false, null, null, null, user, book));
+        }
+    }
+
     public void delete(Long id, Long userId) {
         UserBook userBook = userBookRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Relação não encontrada."));

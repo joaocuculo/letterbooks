@@ -29,7 +29,7 @@ function SiteHeader() {
             <div className="landing-account">
                 {isAuthenticated ? (
                     <>
-                        <Link to="/my-books">Meus livros</Link>
+                        <Link to="/my-books">Minha Biblioteca</Link>
                         <details className="landing-user-menu">
                             <summary>
                                 {user?.name?.split(' ')[0] ?? 'Minha conta'}

@@ -65,6 +65,10 @@ export async function createOrUpdate(
         return update(userBookId, data);
     }
 
+    // A relação pode ter sido criada ao adicionar o livro a uma estante.
+    const existing = await findByGoogleBooksId(googleBooksId);
+    if (existing) return update(existing.id, data);
+
     return create({
         googleBooksId,
         status: data.status,

@@ -18,7 +18,8 @@ public class BookshelfMapper {
                 bookshelf.isPublicShelf(),
                 bookshelf.getItems().size(), // pode vir ser um gargalo em caso de muitas requisições
                 bookshelf.getCreatedAt(),
-                bookshelf.getUpdatedAt()
+                bookshelf.getUpdatedAt(),
+                java.util.List.of()
         );
     }
 
