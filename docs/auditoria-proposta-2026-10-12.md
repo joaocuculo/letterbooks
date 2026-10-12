@@ -9,7 +9,7 @@ Data: 12/10/2026. Referência: proposta de TCC enviada pelo usuário, cinco pág
 - Dos **17 requisitos funcionais textuais**, 16 estão contemplados na implementação inspecionada e 1 diverge do intervalo de notas previsto. Não encontrei um requisito funcional textual inteiro ausente do frontend.
 - Os **4 requisitos não funcionais textuais** têm implementação identificável. Isso não é certificação de segurança, desempenho ou funcionamento em produção.
 - O diagrama acrescenta relatórios que não estão totalmente contemplados: média de avaliações ausente; livros por autor/categoria com atendimento parcial por filtros.
-- Há funcionalidades de backend ainda sem fluxo de frontend e uma inconsistência relevante no endpoint legado de alteração de e-mail.
+- Há funcionalidades de backend ainda sem fluxo de frontend. A inconsistência de alteração de e-mail identificada originalmente foi corrigida em 12/10/2026; veja a atualização ao final deste relatório.
 
 Os identificadores RF/RNF abaixo foram atribuídos nesta auditoria, na ordem do documento; a proposta original usa marcadores, sem esses códigos. “Atendido” significa que encontrei tela/ação e implementação correspondente, não que executei um teste real de todas as operações.
 
@@ -115,9 +115,11 @@ Endpoints antigos de detalhes e consultas individuais que foram substituídos po
 
 Essas regras foram identificadas por leitura. A execução de dezesseis testes selecionados nesta rodada não cobre todas elas; a confirmação de integridade real, concorrência e rollback em PostgreSQL exige uma rodada de integração isolada.
 
-### Inconsistência prioritária identificada
+### Inconsistência identificada originalmente — corrigida em 12/10/2026
 
-**Alterar e-mail tem dois caminhos com regras diferentes.** [updateProfile](C:/Projetos/letterbooks/backend/src/main/java/com/joaocuculo/letterbooks/services/UserService.java:108), usado por PATCH /users/me, exige senha atual quando o e-mail muda. Porém [update legado](C:/Projetos/letterbooks/backend/src/main/java/com/joaocuculo/letterbooks/services/UserService.java:81), usado por PUT /users/{id}, verifica propriedade/ADMIN e disponibilidade do e-mail, mas não confere a senha recebida. [UserRequestDTO](C:/Projetos/letterbooks/backend/src/main/java/com/joaocuculo/letterbooks/dto/request/UserRequestDTO.java) exige uma string de senha com mínimo de seis caracteres, que esse método não compara nem utiliza.
+O texto abaixo registra o achado antes da correção. A rota legada agora confirma a senha atual; não permanece um ponto aberto.
+
+**Alterar e-mail tem dois caminhos com regras diferentes.** [updateProfile](C:/Projetos/letterbooks/backend/src/main/java/com/joaocuculo/letterbooks/services/UserService.java:100), usado por PATCH /users/me, exige senha atual quando o e-mail muda. Porém [update legado](C:/Projetos/letterbooks/backend/src/main/java/com/joaocuculo/letterbooks/services/UserService.java:81), usado por PUT /users/{id}, verifica propriedade/ADMIN e disponibilidade do e-mail, mas não confere a senha recebida. [UserRequestDTO](C:/Projetos/letterbooks/backend/src/main/java/com/joaocuculo/letterbooks/dto/request/UserRequestDTO.java) exige uma string de senha com mínimo de seis caracteres, que esse método não compara nem utiliza.
 
 Pela leitura, um usuário autenticado pode usar a rota antiga para atualizar seu próprio e-mail sem provar conhecimento da senha atual. Não é ausência de JWT nem falha de unicidade; é um caminho alternativo que contorna a regra adotada no Perfil. Não fiz exploração em conta real. Recomendo unificar a política dos endpoints ou restringir/descontinuar o contrato legado com compatibilidade deliberada.
 
@@ -136,7 +138,7 @@ Também há capacidades além da proposta textual: confirmação e força de sen
 
 ## 7. Ordem recomendada para fechar a proposta
 
-1. **Corrigir a política de alteração de e-mail no endpoint legado.** É uma inconsistência de segurança da implementação atual; não foi corrigida nesta auditoria.
+1. **Política de alteração de e-mail no endpoint legado — concluída em 12/10/2026.** A correção compartilha validação com o Perfil e possui testes de regressão; as demais tarefas abaixo continuam pendentes.
 2. **Alinhar o intervalo de notas com o documento.** Registrar 0–5 como mudança aprovada ou aplicar 1–5 em frontend, DTOs e entidade. Se houver dados zero, definir seu tratamento antes da alteração.
 3. **Implementar a média das avaliações**, se o diagrama continuar fazendo parte da entrega. Calcular no backend sobre todas as avaliações; não calcular apenas os vinte comentários carregados.
 4. **Definir com o orientador o significado de livros por autor/categoria.** Se filtros forem suficientes, demonstrá-los e documentar. Se forem relatórios de catálogo, completar endpoints/consultas e apresentação correspondente.
@@ -147,4 +149,18 @@ Também há capacidades além da proposta textual: confirmação e força de sen
 
 ## Conclusão
 
-É defensável afirmar que o núcleo de cadastro, autenticação, busca, biblioteca, estantes, avaliações e recuperação de senha está implementado. **Ainda não é defensável afirmar que tudo o que aparece na proposta foi contemplado sem ressalvas.** As diferenças de notas, o relatório de média, o significado dos relatórios por autor/categoria, os fluxos de modelo ainda ausentes e a consistência da rota legada devem ser resolvidos ou formalmente registrados.
+É defensável afirmar que o núcleo de cadastro, autenticação, busca, biblioteca, estantes, avaliações e recuperação de senha está implementado. **Ainda não é defensável afirmar que tudo o que aparece na proposta foi contemplado sem ressalvas.** As diferenças de notas, o relatório de média, o significado dos relatórios por autor/categoria, e os fluxos de modelo ainda ausentes devem ser resolvidos ou formalmente registrados. A consistência da rota legada foi corrigida após este levantamento.
+
+
+## Atualização: correção da troca de e-mail (12/10/2026)
+
+`UserService.update` (PUT /users/{id}) e `updateProfile` (PATCH /users/me) agora usam a função privada `updateProfileData`, com normalização de nome/e-mail, confirmação de senha quando o e-mail muda e validação de disponibilidade antes de alterar qualquer campo.
+
+- No legado, o nome JSON `password` foi preservado por compatibilidade; seu significado é senha atual, não nova senha. O campo é opcional quando o e-mail não muda, como no Perfil. Não se aplica política de força de nova senha a uma confirmação de credencial existente.
+- Senha ausente, em branco ou incorreta impede a troca de e-mail e não salva nome/e-mail. Alterar apenas o nome não exige senha.
+- Um ADMIN editando outra conta confirma a própria senha; um ADMIN editando a própria conta não tem bypass. As permissões de proprietário/administrador foram preservadas.
+- A senha armazenada não é sobrescrita pelo campo de confirmação. Cadastro e alteração de senha mantêm seus DTOs e regras atuais; frontend não precisou mudar, pois já envia `currentPassword` para PATCH /users/me.
+
+Os testes novos reproduziram o bypass antes da correção (incluindo PUT HTTP aceitando senha arbitrária). Após a correção, **25 testes novos passaram**, cobrindo as duas rotas, confirmação ausente/incorreta, e-mail duplicado, normalização, alteração só de nome, proprietário/ADMIN e respostas HTTP via MockMvc. A execução conjunta com cadastro, JWT de registro e alteração de senha passou em **65 testes, zero falhas**. Foram usados repositories/encoder simulados e MockMvc standalone, sem banco ou contas reais; esses testes HTTP não exercitam o filtro JWT completo.
+
+Fontes: [UserService](C:/Projetos/letterbooks/backend/src/main/java/com/joaocuculo/letterbooks/services/UserService.java), [UserRequestDTO](C:/Projetos/letterbooks/backend/src/main/java/com/joaocuculo/letterbooks/dto/request/UserRequestDTO.java), [UserProfileUpdateTests](C:/Projetos/letterbooks/backend/src/test/java/com/joaocuculo/letterbooks/UserProfileUpdateTests.java).

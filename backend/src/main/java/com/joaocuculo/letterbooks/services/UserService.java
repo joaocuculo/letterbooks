@@ -83,15 +83,7 @@ public class UserService {
         if (!user.getId().equals(authUser.userId()) && authUser.role() != UserRole.ADMIN) {
             throw new ForbiddenException("Você não tem permissão para alterar este usuário.");
         }
-        if (!user.getEmail().equals(dto.email())) {
-            validateEmailAvailable(dto.email());
-        }
-
-        user.setName(dto.name());
-        user.setEmail(dto.email());
-        repository.save(user);
-
-        return UserMapper.toResponseDTO(user);
+        return updateProfileData(user, dto.name(), dto.email(), dto.password(), authUser.userId());
     }
 
     public UserResponseDTO updateRoleAndStatus(Long id, UserStatusUpdateDTO dto, Long authUserId) {
@@ -107,21 +99,30 @@ public class UserService {
 
     public UserResponseDTO updateProfile(Long userId, UserProfileUpdateDTO dto) {
         User user = getByIdOrThrow(userId);
-        String name = dto.name().trim();
-        String email = dto.email().trim();
+        return updateProfileData(user, dto.name(), dto.email(), dto.currentPassword(), userId);
+    }
 
-        if (!user.getEmail().equals(email)) {
-            if (dto.currentPassword() == null || dto.currentPassword().isBlank()) {
+    private UserResponseDTO updateProfileData(User user, String name, String email,
+            String currentPassword, Long authenticatedUserId) {
+        String normalizedName = name.trim();
+        String normalizedEmail = email.trim();
+
+        if (!user.getEmail().equals(normalizedEmail)) {
+            if (currentPassword == null || currentPassword.isBlank()) {
                 throw new BusinessException("Informe sua senha atual para alterar o e-mail.");
             }
-            if (!passwordEncoder.matches(dto.currentPassword(), user.getPassword())) {
+
+            // Administradores confirmam a própria senha ao editar outra conta.
+            User authenticatedUser = user.getId().equals(authenticatedUserId)
+                    ? user : getByIdOrThrow(authenticatedUserId);
+            if (!passwordEncoder.matches(currentPassword, authenticatedUser.getPassword())) {
                 throw new BusinessException("Senha atual incorreta.");
             }
-            validateEmailAvailable(email);
+            validateEmailAvailable(normalizedEmail);
         }
 
-        user.setName(name);
-        user.setEmail(email);
+        user.setName(normalizedName);
+        user.setEmail(normalizedEmail);
         repository.save(user);
 
         return UserMapper.toResponseDTO(user);
