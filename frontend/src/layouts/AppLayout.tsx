@@ -1,9 +1,16 @@
 import { Outlet, useLocation } from 'react-router-dom';
 import NavBar from '../components/NavBar';
 import Footer from '../components/Footer';
+import AdminShell from '../components/AdminShell';
 
 function AppLayout() {
     const { pathname } = useLocation();
+    if (/^\/admin\/(authors|categories)(\/[^/]+)?\/?$/.test(pathname))
+        return (
+            <AdminShell>
+                <Outlet />
+            </AdminShell>
+        );
     if (
         pathname === '/' ||
         pathname === '/login' ||
