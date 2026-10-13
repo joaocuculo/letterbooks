@@ -14,6 +14,7 @@ export default function AdminShell({
                 <nav className="admin-tabs" aria-label="Administração">
                     <NavLink to="/admin/authors">Autores</NavLink>
                     <NavLink to="/admin/categories">Categorias</NavLink>
+                    <NavLink to="/admin/users">Usuários</NavLink>
                 </nav>
                 {children}
             </main>

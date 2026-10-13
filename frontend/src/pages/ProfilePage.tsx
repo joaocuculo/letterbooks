@@ -7,18 +7,13 @@ import '../styles/profile.css';
 import axios from 'axios';
 import { useEffect, useState, type SubmitEvent } from 'react';
 import { changePassword, findMe, updateMe } from '../services/userService';
-import type { UserResponse, UserRole, UserStatus } from '../types/user';
+import type { UserResponse } from '../types/user';
+import {
+    roleLabels,
+    statusLabels,
+    formatRegistrationDate,
+} from '../utils/userPresentation';
 import { getApiErrorMessage } from '../utils/getApiErrorMessage.';
-
-const roleLabels: Record<UserRole, string> = {
-    ADMIN: 'Administrador',
-    USER: 'Usuário',
-};
-
-const statusLabels: Record<UserStatus, string> = {
-    ACTIVE: 'Ativa',
-    INACTIVE: 'Inativa',
-};
 
 interface ProfileFormErrors {
     name?: string;
@@ -30,14 +25,6 @@ interface PasswordFormErrors {
     currentPassword?: string;
     newPassword?: string;
     passwordConfirmation?: string;
-}
-
-function formatRegistrationDate(date: string): string {
-    return new Intl.DateTimeFormat('pt-BR', {
-        day: '2-digit',
-        month: 'long',
-        year: 'numeric',
-    }).format(new Date(date));
 }
 
 function validateProfileForm(

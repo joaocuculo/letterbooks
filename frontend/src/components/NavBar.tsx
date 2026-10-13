@@ -7,7 +7,7 @@ function NavBar() {
 
     function handleSignOut() {
         signOut();
-        navigate("/", { replace: true })
+        navigate('/', { replace: true });
     }
 
     return (
@@ -18,7 +18,6 @@ function NavBar() {
                 <nav className="flex items-center gap-2">
                     <NavLink to={'/'} end>
                         Início
-                        
                     </NavLink>
 
                     <NavLink to="/explore">Explorar</NavLink>
@@ -33,9 +32,7 @@ function NavBar() {
                                     <NavLink to="/my-books">
                                         Visão geral
                                     </NavLink>
-                                    <NavLink to="/my-books/list">
-                                        Todos
-                                    </NavLink>
+                                    <NavLink to="/my-books/list">Todos</NavLink>
                                     <NavLink to="/my-books/list?status=WANT_TO_READ">
                                         Quero ler
                                     </NavLink>
@@ -68,11 +65,20 @@ function NavBar() {
                                         <NavLink to="/admin/categories">
                                             Categorias
                                         </NavLink>
+                                        <NavLink to="/admin/users">
+                                            Usuários
+                                        </NavLink>
                                     </div>
                                 </details>
                             )}
 
-                            <button type="button" onClick={handleSignOut} className='cursor-pointer'>Sair</button>
+                            <button
+                                type="button"
+                                onClick={handleSignOut}
+                                className="cursor-pointer"
+                            >
+                                Sair
+                            </button>
                         </>
                     ) : (
                         <NavLink to={'/login'}>Entrar</NavLink>

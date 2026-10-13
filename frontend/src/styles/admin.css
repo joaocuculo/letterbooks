@@ -229,6 +229,7 @@
     font-weight: 650;
 }
 .admin-dialog input,
+.admin-dialog select,
 .admin-name-form input {
     min-height: 44px;
     width: 100%;
@@ -385,5 +386,65 @@
     }
     .admin-dialog-actions button {
         flex: 1;
+    }
+}
+
+/* Read-only users list: identity and account metadata. */
+.admin-users li {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+}
+.admin-user-actions {
+    grid-column: 1 / -1;
+}
+.admin-user-actions p {
+    color: #606565;
+    font-size: 12px;
+    margin: 6px 0 0;
+}
+.admin-user-identity {
+    overflow-wrap: anywhere;
+}
+.admin-user-metadata {
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+    gap: 24px;
+    margin: 0;
+}
+.admin-user-metadata dt {
+    color: #606565;
+    font-size: 12px;
+    margin-bottom: 5px;
+}
+.admin-user-metadata dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+@media (max-width: 1023px) {
+    .admin-users li {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 16px;
+    }
+    .admin-user-metadata {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+@media (max-width: 599px) {
+    .admin-user-metadata {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 10px;
+    }
+    .admin-user-metadata > div {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+    }
+    .admin-user-metadata dt {
+        margin: 0;
+        flex-shrink: 0;
+    }
+    .admin-user-metadata dd {
+        min-width: 0;
+        text-align: right;
     }
 }

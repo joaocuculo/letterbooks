@@ -5,7 +5,10 @@ import AdminShell from '../components/AdminShell';
 
 function AppLayout() {
     const { pathname } = useLocation();
-    if (/^\/admin\/(authors|categories)(\/[^/]+)?\/?$/.test(pathname))
+    if (
+        /^\/admin\/(authors|categories)(\/[^/]+)?\/?$/.test(pathname) ||
+        /^\/admin\/users\/?$/.test(pathname)
+    )
         return (
             <AdminShell>
                 <Outlet />

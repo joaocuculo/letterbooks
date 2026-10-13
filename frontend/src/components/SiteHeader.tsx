@@ -42,6 +42,7 @@ function SiteHeader() {
                                         <Link to="/admin/categories">
                                             Categorias
                                         </Link>
+                                        <Link to="/admin/users">Usuários</Link>
                                     </>
                                 )}
                                 <button type="button" onClick={signOut}>

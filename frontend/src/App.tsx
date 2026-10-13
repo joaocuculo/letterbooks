@@ -15,6 +15,7 @@ import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import AdminRoute from './components/AdminRoute';
 import AuthorsAdminPage from './pages/AuthorsAdminPage';
+import UsersAdminPage from './pages/UsersAdminPage';
 import AuthorAdminDetailsPage from './pages/AuthorAdminDetailsPage';
 import CategoriesAdminPage from './pages/CategoriesAdminPage';
 import CategoryAdminDetailsPage from './pages/CategoryAdminDetailsPage';
@@ -42,6 +43,10 @@ function App() {
                     <Route path="my-books" element={<MyBooksPage />} />
                     <Route path="my-books/list" element={<MyBooksListPage />} />
                     <Route element={<AdminRoute />}>
+                        <Route
+                            path="admin/users"
+                            element={<UsersAdminPage />}
+                        />
                         <Route
                             path="admin/authors"
                             element={<AuthorsAdminPage />}

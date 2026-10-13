@@ -87,7 +87,7 @@ Esta lista não significa que todos os itens abaixo são requisitos obrigatório
 
 | Capacidade | Backend existente | Situação no frontend | Relação com a proposta |
 |---|---|---|---|
-| Administração de usuários | GET /users; PUT /users/{id}/role-status; consultas/atualização por ID | Não há tela de listagem, alteração de papel ou ativação/inativação. Administração atual cobre autores/categorias. | Papel/status estão no modelo; o texto não exige painel administrativo de usuários. |
+| Administração de usuários | GET /users; PUT /users/{id}/role-status; consultas/atualização por ID | Atualização em 13/10/2026: listagem e alteração de papel/situação implementadas em /admin/users, restritas a ADMIN. A própria conta não pode ter permissões alteradas. Criação administrativa, edição de dados pessoais e exclusão continuam fora da interface. | Papel/status estão no modelo; o texto não exige painel administrativo completo de usuários. |
 | Excluir a própria conta | DELETE /users/{id}, proprietário ou ADMIN | Perfil não oferece exclusão. | Não é requisito funcional textual explícito. A exclusão com vínculos deve ser validada no banco antes de prometer suporte completo. |
 | Progresso e datas de leitura | POST/PATCH /user-books recebem currentPage, startedAt, finishedAt | Há tipos e exibição da página atual, mas não editor de progresso nem datas. | Campos previstos no modelo da página 4; funcionalidade de interface ainda ausente. |
 | Minhas avaliações em uma lista | GET /ratings/user, paginado | É possível editar a própria avaliação em cada livro, mas não consultar todas numa tela única. | Endpoint existente; o texto exige CRUD de avaliações, que já funciona por livro, não essa tela adicional. |
