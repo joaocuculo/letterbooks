@@ -50,7 +50,12 @@ class UserProfileUpdateTests {
     void configureService() {
         repository = mock(UserRepository.class);
         encoder = mock(PasswordEncoder.class);
-        service = new UserService(repository, encoder);
+        service = new UserService(repository, encoder,
+                mock(com.joaocuculo.letterbooks.repositories.BookshelfItemRepository.class),
+                mock(com.joaocuculo.letterbooks.repositories.BookshelfRepository.class),
+                mock(com.joaocuculo.letterbooks.repositories.RatingRepository.class),
+                mock(com.joaocuculo.letterbooks.repositories.UserBookRepository.class),
+                mock(com.joaocuculo.letterbooks.repositories.PasswordResetRepository.class));
         user = existingUser(1L, "original@example.com", "user-hash", UserRole.USER);
         caller = new JWTUserData(1L, user.getEmail(), UserRole.USER, 0);
         when(repository.findById(1L)).thenReturn(Optional.of(user));

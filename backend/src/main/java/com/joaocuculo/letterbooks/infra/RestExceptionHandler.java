@@ -14,6 +14,18 @@ import java.time.Instant;
 @ControllerAdvice
 public class RestExceptionHandler {
 
+    @ExceptionHandler(org.springframework.dao.ConcurrencyFailureException.class)
+    public ResponseEntity<StandardError> concurrentChange(Exception e, HttpServletRequest request) {
+        return errorBuilder(new BusinessException("A conta foi alterada por outra operação. Tente novamente."),
+                request, "Concurrent update.", HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(org.springframework.dao.DataAccessException.class)
+    public ResponseEntity<StandardError> dataAccess(Exception e, HttpServletRequest request) {
+        return errorBuilder(new DatabaseException("Não foi possível concluir a operação. Tente novamente."),
+                request, "Database error.", HttpStatus.CONFLICT);
+    }
+
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<StandardError> resourceNotFound(ResourceNotFoundException e, HttpServletRequest request) {
         return errorBuilder(e, request, "Resource not found.", HttpStatus.NOT_FOUND);

@@ -23,7 +23,11 @@ class BookshelfQueryTests {
             try(var factory=metadata.buildMetadata().buildSessionFactory();var session=factory.openSession()) {
                 for(var method:BookshelfItemRepository.class.getDeclaredMethods()) {
                     var query=method.getAnnotation(Query.class);
-                    if(query!=null){session.createQuery(query.value(),Object.class);if(!query.countQuery().isEmpty())session.createQuery(query.countQuery(),Long.class);}
+                    if(query!=null){
+                        if(method.isAnnotationPresent(org.springframework.data.jpa.repository.Modifying.class)) session.createMutationQuery(query.value());
+                        else session.createQuery(query.value(),Object.class);
+                        if(!query.countQuery().isEmpty())session.createQuery(query.countQuery(),Long.class);
+                    }
                 }
             }
         } finally {StandardServiceRegistryBuilder.destroy(registry);}

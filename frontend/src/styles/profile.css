@@ -104,6 +104,37 @@
     font-size: 14px;
     color: #606565;
 }
+.profile-delete p {
+    color: #606565;
+    font-size: 14px;
+    line-height: 1.7;
+}
+.profile-delete-button {
+    min-height: 44px;
+    border: 1px solid #b42318;
+    color: #b42318;
+    border-radius: 10px;
+    padding: 10px 16px;
+    background: #fff;
+    cursor: pointer;
+}
+.profile-delete-button:hover {
+    background: #fff3f1;
+}
+.profile-delete-button:disabled {
+    opacity: 0.55;
+    cursor: default;
+}
+.profile-delete-button:focus-visible {
+    outline: 2px solid #b42318;
+    outline-offset: 3px;
+}
+.admin-dialog.account-deletion-dialog .login-password-toggle {
+    width: 44px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+}
 .profile-page .landing-header {
     width: 100%;
 }

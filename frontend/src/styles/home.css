@@ -848,3 +848,13 @@
     }
 }
 
+.landing-account-notice {
+    position: relative;
+    z-index: 2;
+    max-width: 1080px;
+    margin: 16px auto;
+    padding: 12px 20px;
+    background: #f4f5f4;
+    border-radius: 10px;
+    font-size: 14px;
+}

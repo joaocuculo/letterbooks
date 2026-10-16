@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import SiteHeader from '../components/SiteHeader';
 import PasswordInput from '../components/PasswordInput';
+import AccountDeletion from '../components/AccountDeletion';
 import { useAuth } from '../hooks/useAuth';
 import { getPasswordError } from '../utils/getPasswordError';
 import '../styles/profile.css';
@@ -609,6 +610,10 @@ function ProfilePage() {
                             </button>
                         </form>
                     </section>
+                    <AccountDeletion
+                        userId={user.id}
+                        disabled={isUpdatingProfile || isChangingPassword}
+                    />
                 </div>
             </div>
         </ProfileShell>

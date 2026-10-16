@@ -1,6 +1,7 @@
 package com.joaocuculo.letterbooks.services;
 
 import com.joaocuculo.letterbooks.config.JWTUserData;
+import com.joaocuculo.letterbooks.dto.request.AccountDeletionRequestDTO;
 import com.joaocuculo.letterbooks.dto.request.PasswordChangeRequestDTO;
 import com.joaocuculo.letterbooks.dto.request.RegisterRequestDTO;
 import com.joaocuculo.letterbooks.dto.request.UserProfileUpdateDTO;
@@ -16,6 +17,13 @@ import com.joaocuculo.letterbooks.exceptions.ForbiddenException;
 import com.joaocuculo.letterbooks.exceptions.ResourceNotFoundException;
 import com.joaocuculo.letterbooks.mapper.UserMapper;
 import com.joaocuculo.letterbooks.repositories.UserRepository;
+import com.joaocuculo.letterbooks.repositories.BookshelfItemRepository;
+import com.joaocuculo.letterbooks.repositories.BookshelfRepository;
+import com.joaocuculo.letterbooks.repositories.RatingRepository;
+import com.joaocuculo.letterbooks.repositories.UserBookRepository;
+import com.joaocuculo.letterbooks.repositories.PasswordResetRepository;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,10 +37,23 @@ public class UserService {
 
     private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
+    private final BookshelfItemRepository bookshelfItemRepository;
+    private final BookshelfRepository bookshelfRepository;
+    private final RatingRepository ratingRepository;
+    private final UserBookRepository userBookRepository;
+    private final PasswordResetRepository passwordResetRepository;
 
-    public UserService(UserRepository repository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository repository, PasswordEncoder passwordEncoder,
+            BookshelfItemRepository bookshelfItemRepository, BookshelfRepository bookshelfRepository,
+            RatingRepository ratingRepository, UserBookRepository userBookRepository,
+            PasswordResetRepository passwordResetRepository) {
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
+        this.bookshelfItemRepository = bookshelfItemRepository;
+        this.bookshelfRepository = bookshelfRepository;
+        this.ratingRepository = ratingRepository;
+        this.userBookRepository = userBookRepository;
+        this.passwordResetRepository = passwordResetRepository;
     }
 
     public Page<UserResponseDTO> findAll(Pageable pageable) {
@@ -66,15 +87,34 @@ public class UserService {
         return user;
     }
 
-    public void delete(Long id, JWTUserData authUser) {
+    @Transactional(isolation = Isolation.SERIALIZABLE)
+    public void delete(Long id, AccountDeletionRequestDTO dto, JWTUserData authUser) {
+        User caller = getByIdOrThrow(authUser.userId());
+        validateActiveCaller(caller);
         User user = getByIdOrThrow(id);
-        if (!user.getId().equals(authUser.userId()) && authUser.role() != UserRole.ADMIN) {
+        boolean ownAccount = user.getId().equals(caller.getId());
+        if (!ownAccount && caller.getRole() != UserRole.ADMIN) {
             throw new ForbiddenException("Você não tem permissão para deletar este usuário.");
         }
+        if (ownAccount) {
+            if (dto == null || dto.currentPassword() == null || dto.currentPassword().isBlank()) {
+                throw new BusinessException("Informe sua senha atual.");
+            }
+            if (!passwordEncoder.matches(dto.currentPassword(), user.getPassword())) {
+                throw new BusinessException("Senha atual incorreta.");
+            }
+        }
+        validateRemainingActiveAdmin(user, false);
         try {
+            bookshelfItemRepository.deleteAllByUserId(id);
+            bookshelfRepository.deleteAllByUserId(id);
+            ratingRepository.deleteAllByUserId(id);
+            userBookRepository.deleteAllByUserId(id);
+            passwordResetRepository.deleteAllByUserId(id);
             repository.delete(user);
+            repository.flush();
         } catch (DataIntegrityViolationException e) {
-            throw new DatabaseException(e.getMessage());
+            throw new DatabaseException("Não foi possível excluir a conta. Tente novamente.");
         }
     }
 
@@ -86,15 +126,36 @@ public class UserService {
         return updateProfileData(user, dto.name(), dto.email(), dto.password(), authUser.userId());
     }
 
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public UserResponseDTO updateRoleAndStatus(Long id, UserStatusUpdateDTO dto, Long authUserId) {
+        User caller = getByIdOrThrow(authUserId);
+        validateActiveCaller(caller);
+        if (caller.getRole() != UserRole.ADMIN) {
+            throw new ForbiddenException("Você não tem permissão para alterar permissões de usuários.");
+        }
         User user = getByIdOrThrow(id);
         if (user.getId().equals(authUserId)) {
             throw new BusinessException("Você não pode alterar suas próprias permissões.");
         }
+        validateRemainingActiveAdmin(user, dto.role() == UserRole.ADMIN && dto.status() == UserStatus.ACTIVE);
         user.setRole(dto.role());
         user.setStatus(dto.status());
         repository.save(user);
         return UserMapper.toResponseDTO(user);
+    }
+
+    private void validateActiveCaller(User caller) {
+        if (caller.getStatus() != UserStatus.ACTIVE) {
+            throw new ForbiddenException("Esta conta não está ativa.");
+        }
+    }
+
+    private void validateRemainingActiveAdmin(User user, boolean remainsActiveAdmin) {
+        if (user.getRole() == UserRole.ADMIN && user.getStatus() == UserStatus.ACTIVE
+                && !remainsActiveAdmin
+                && repository.countByRoleAndStatusAndIdNot(UserRole.ADMIN, UserStatus.ACTIVE, user.getId()) == 0) {
+            throw new BusinessException("É necessário manter pelo menos um administrador ativo. Ative ou promova outro administrador antes de continuar.");
+        }
     }
 
     public UserResponseDTO updateProfile(Long userId, UserProfileUpdateDTO dto) {

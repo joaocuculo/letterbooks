@@ -1,5 +1,6 @@
 package com.joaocuculo.letterbooks.repositories;
 
+import org.springframework.data.jpa.repository.Modifying;
 import com.joaocuculo.letterbooks.entities.Bookshelf;
 import com.joaocuculo.letterbooks.dto.response.BookshelfMembershipDTO;
 import org.springframework.data.jpa.repository.Query;
@@ -13,6 +14,10 @@ import java.util.List;
 
 @Repository
 public interface BookshelfRepository extends JpaRepository<Bookshelf, Long> {
+    @Modifying
+    @Query("delete from Bookshelf s where s.user.id = :userId")
+    int deleteAllByUserId(@Param("userId") Long userId);
+
     Page<Bookshelf> findByUserId(Long userId, Pageable pageable);
     Page<Bookshelf> findByUserIdAndIsPublicShelfTrue(Long userId, Pageable pageable);
     boolean existsByUserIdAndName(Long userId, String name);

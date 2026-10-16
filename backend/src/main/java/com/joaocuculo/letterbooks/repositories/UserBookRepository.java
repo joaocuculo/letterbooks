@@ -1,5 +1,6 @@
 package com.joaocuculo.letterbooks.repositories;
 
+import org.springframework.data.jpa.repository.Modifying;
 import com.joaocuculo.letterbooks.entities.UserBook;
 import com.joaocuculo.letterbooks.entities.enums.UserBookStatus;
 import org.springframework.data.domain.Page;
@@ -15,6 +16,10 @@ import java.util.Optional;
 
 @Repository
 public interface UserBookRepository extends JpaRepository<UserBook, Long> {
+    @Modifying
+    @Query("delete from UserBook u where u.user.id = :userId")
+    int deleteAllByUserId(@Param("userId") Long userId);
+
     Page<UserBook> findByUserId(Long userId, Pageable pageable);
     Page<UserBook> findByUserIdAndStatus(Long userId, UserBookStatus status, Pageable pageable);
     Page<UserBook> findByUserIdAndIsFavorite(Long userId, boolean favorite, Pageable pageable);

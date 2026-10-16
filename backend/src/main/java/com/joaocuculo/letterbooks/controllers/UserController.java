@@ -1,6 +1,7 @@
 package com.joaocuculo.letterbooks.controllers;
 
 import com.joaocuculo.letterbooks.config.JWTUserData;
+import com.joaocuculo.letterbooks.dto.request.AccountDeletionRequestDTO;
 import com.joaocuculo.letterbooks.dto.request.PasswordChangeRequestDTO;
 import com.joaocuculo.letterbooks.dto.request.UserProfileUpdateDTO;
 import com.joaocuculo.letterbooks.dto.request.UserRequestDTO;
@@ -58,8 +59,10 @@ public class UserController {
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> delete(
-            @PathVariable Long id, @AuthenticationPrincipal JWTUserData authUser) {
-        service.delete(id, authUser);
+            @PathVariable Long id,
+            @RequestBody(required = false) @Valid AccountDeletionRequestDTO request,
+            @AuthenticationPrincipal JWTUserData authUser) {
+        service.delete(id, request, authUser);
         return ResponseEntity.noContent().build();
     }
 

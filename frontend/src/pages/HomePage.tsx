@@ -1,7 +1,7 @@
 import SiteHeader from '../components/SiteHeader';
 import { useEffect, useRef, useState } from 'react';
 import { ArrowLeft, ArrowRight, Pause, Play, Star } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import '../styles/home.css';
 import { homeBookColumns, type HomeBook } from '../data/homeBooks';
@@ -170,7 +170,20 @@ function ReviewStack() {
 }
 
 function HomePage() {
-    const { isAuthenticated } = useAuth();
+    const location = useLocation();
+    const navigate = useNavigate();
+    const { isAuthenticated, signOut } = useAuth();
+    const deletionRequested =
+        (location.state as { accountDeleted?: boolean } | null)
+            ?.accountDeleted === true;
+    const [accountDeleted] = useState(deletionRequested);
+    useEffect(() => {
+        if (deletionRequested) {
+            signOut();
+            // Consome a confirmação para o histórico não encerrar uma sessão futura.
+            navigate('/', { replace: true, state: null });
+        }
+    }, [deletionRequested, navigate, signOut]);
     const actionLink = isAuthenticated ? '/my-books' : '/register';
     const heroRef = useRef<HTMLElement>(null);
     const [paused, setPaused] = useState(false);
@@ -213,6 +226,11 @@ function HomePage() {
                 Pular para o conteúdo
             </a>
             <SiteHeader />
+            {accountDeleted && (
+                <p className="landing-account-notice" role="status">
+                    Sua conta foi excluída com sucesso.
+                </p>
+            )}
             <main id="home-content">
                 <section
                     className={`landing-hero ${motionPaused ? 'motion-paused' : ''}`}

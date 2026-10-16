@@ -6,6 +6,13 @@ import type {
 import { api } from './api';
 import type { PageResponse } from '../types/page';
 
+export async function deleteAccount(
+    id: number,
+    currentPassword: string
+): Promise<void> {
+    await api.delete(`/users/${id}`, { data: { currentPassword } });
+}
+
 export async function findUsers(
     page = 0,
     signal?: AbortSignal

@@ -69,3 +69,7 @@ Cada conta oferece “Alterar papel e situação”, abrindo um diálogo Base UI
 O backend não precisou mudar: o controller já exige ADMIN e UserService rejeita alterações na própria conta. SecurityFilter consulta papel e situação atuais do banco a cada requisição autenticada; a interface não altera os JWTs de outras pessoas.
 
 Testes com respostas simuladas cobriram promoção, rebaixamento, inativação, reativação, manutenção da página, ausência de envio ao cancelar, seleção preservada em falhas, bloqueio durante envio e foco. Diálogo revisado em desktop e 320px, com capturas `users-edit-desktop.png` e `users-edit-mobile.png` no mesmo diretório de evidências. Nenhuma conta real foi alterada; sem Impeccable, novas dependências ou migrações.
+
+## Proteção do último administrador ativo
+
+Na etapa de exclusão da própria conta, o backend passou a impedir exclusão, inativação e rebaixamento que removam o último ADMIN ativo. A regra é compartilhada por UserService e usa transações SERIALIZABLE; conflitos retornam 409 e mensagem para tentar novamente. A listagem administrativa já apresenta essas mensagens no diálogo de edição. Administradores inativos não contam para manter acesso administrativo. A exclusão da própria conta está no Perfil; exclusão administrativa de outras contas continua sem interface. Detalhes e testes em `docs/account-deletion.md`.

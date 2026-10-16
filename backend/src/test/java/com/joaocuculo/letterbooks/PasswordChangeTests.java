@@ -50,7 +50,12 @@ class PasswordChangeTests {
     void rejectsBcryptByteOverflowBeforeQueryingOrEncoding() {
         var repository = mock(UserRepository.class);
         var encoder = mock(PasswordEncoder.class);
-        var service = new UserService(repository, encoder);
+        var service = new UserService(repository, encoder,
+                mock(com.joaocuculo.letterbooks.repositories.BookshelfItemRepository.class),
+                mock(com.joaocuculo.letterbooks.repositories.BookshelfRepository.class),
+                mock(com.joaocuculo.letterbooks.repositories.RatingRepository.class),
+                mock(com.joaocuculo.letterbooks.repositories.UserBookRepository.class),
+                mock(com.joaocuculo.letterbooks.repositories.PasswordResetRepository.class));
         var error = assertThrows(BusinessException.class, () -> service.changePassword(
                 1L, new PasswordChangeRequestDTO("old", "Ab1!" + "á".repeat(35))));
         assertEquals("Senha muito longa. Use uma senha mais curta.", error.getMessage());
@@ -63,7 +68,12 @@ class PasswordChangeTests {
         var encoder = mock(PasswordEncoder.class);
         var user = new User("Leitor", "leitor@example.com", "old-hash", UserRole.USER, UserStatus.ACTIVE);
         when(repository.findById(1L)).thenReturn(Optional.of(user));
-        var error = assertThrows(BusinessException.class, () -> new UserService(repository, encoder)
+        var error = assertThrows(BusinessException.class, () -> new UserService(repository, encoder,
+                mock(com.joaocuculo.letterbooks.repositories.BookshelfItemRepository.class),
+                mock(com.joaocuculo.letterbooks.repositories.BookshelfRepository.class),
+                mock(com.joaocuculo.letterbooks.repositories.RatingRepository.class),
+                mock(com.joaocuculo.letterbooks.repositories.UserBookRepository.class),
+                mock(com.joaocuculo.letterbooks.repositories.PasswordResetRepository.class))
                 .changePassword(1L, new PasswordChangeRequestDTO("wrong", "Leitura1!")));
         assertEquals("Senha atual incorreta.", error.getMessage());
         verify(encoder, never()).encode(anyString());
@@ -77,7 +87,12 @@ class PasswordChangeTests {
         var user = new User("Leitor", "leitor@example.com", "old-hash", UserRole.USER, UserStatus.ACTIVE);
         when(repository.findById(1L)).thenReturn(Optional.of(user));
         when(encoder.matches("Leitura1!", "old-hash")).thenReturn(true);
-        var error = assertThrows(BusinessException.class, () -> new UserService(repository, encoder)
+        var error = assertThrows(BusinessException.class, () -> new UserService(repository, encoder,
+                mock(com.joaocuculo.letterbooks.repositories.BookshelfItemRepository.class),
+                mock(com.joaocuculo.letterbooks.repositories.BookshelfRepository.class),
+                mock(com.joaocuculo.letterbooks.repositories.RatingRepository.class),
+                mock(com.joaocuculo.letterbooks.repositories.UserBookRepository.class),
+                mock(com.joaocuculo.letterbooks.repositories.PasswordResetRepository.class))
                 .changePassword(1L, new PasswordChangeRequestDTO("Leitura1!", "Leitura1!")));
         assertEquals("A nova senha deve ser diferente da senha atual.", error.getMessage());
         verify(encoder, never()).encode(anyString());
@@ -93,7 +108,12 @@ class PasswordChangeTests {
         when(repository.findById(1L)).thenReturn(Optional.of(user));
         when(encoder.matches("old", "old-hash")).thenReturn(true);
         when(encoder.encode("Leitura1!")).thenReturn("new-hash");
-        new UserService(repository, encoder).changePassword(1L, new PasswordChangeRequestDTO("old", "Leitura1!"));
+        new UserService(repository, encoder,
+                mock(com.joaocuculo.letterbooks.repositories.BookshelfItemRepository.class),
+                mock(com.joaocuculo.letterbooks.repositories.BookshelfRepository.class),
+                mock(com.joaocuculo.letterbooks.repositories.RatingRepository.class),
+                mock(com.joaocuculo.letterbooks.repositories.UserBookRepository.class),
+                mock(com.joaocuculo.letterbooks.repositories.PasswordResetRepository.class)).changePassword(1L, new PasswordChangeRequestDTO("old", "Leitura1!"));
         assertEquals("new-hash", user.getPassword());
         assertEquals(originalVersion, user.getTokenVersion());
         verify(repository).save(user);

@@ -1,6 +1,8 @@
 package com.joaocuculo.letterbooks.repositories;
 
 import com.joaocuculo.letterbooks.entities.User;
+import com.joaocuculo.letterbooks.entities.enums.UserRole;
+import com.joaocuculo.letterbooks.entities.enums.UserStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Repository;
@@ -13,4 +15,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<UserDetails> findUserByEmail(String username);
     Optional<User> findByEmail(String email);
     boolean existsByEmail(String email);
+    long countByRoleAndStatusAndIdNot(UserRole role, UserStatus status, Long id);
 }

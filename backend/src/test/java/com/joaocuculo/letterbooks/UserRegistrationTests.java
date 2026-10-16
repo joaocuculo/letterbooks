@@ -30,7 +30,12 @@ class UserRegistrationTests {
     void configureService() {
         repository = mock(UserRepository.class);
         encoder = mock(PasswordEncoder.class);
-        service = new UserService(repository, encoder);
+        service = new UserService(repository, encoder,
+                mock(com.joaocuculo.letterbooks.repositories.BookshelfItemRepository.class),
+                mock(com.joaocuculo.letterbooks.repositories.BookshelfRepository.class),
+                mock(com.joaocuculo.letterbooks.repositories.RatingRepository.class),
+                mock(com.joaocuculo.letterbooks.repositories.UserBookRepository.class),
+                mock(com.joaocuculo.letterbooks.repositories.PasswordResetRepository.class));
     }
 
     @Test

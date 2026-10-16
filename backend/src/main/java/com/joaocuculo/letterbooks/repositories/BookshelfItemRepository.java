@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
 import java.util.List;
 import java.util.Collection;
+import org.springframework.data.jpa.repository.Modifying;
 import com.joaocuculo.letterbooks.entities.BookshelfItem;
 import com.joaocuculo.letterbooks.entities.pk.BookshelfItemPK;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,6 +16,10 @@ import java.util.Optional;
 
 @Repository
 public interface BookshelfItemRepository extends JpaRepository<BookshelfItem, BookshelfItemPK> {
+    @Modifying
+    @Query("delete from BookshelfItem i where i.id.bookshelf.id in (select s.id from Bookshelf s where s.user.id = :userId)")
+    int deleteAllByUserId(@Param("userId") Long userId);
+
     interface ShelfCount { Long getShelfId(); Long getBooksCount(); }
 
     @Query("""
