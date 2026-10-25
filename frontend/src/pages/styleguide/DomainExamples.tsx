@@ -1,3 +1,4 @@
+import RatingHistoryItem from '../../components/RatingHistoryItem';
 import { toast } from '../../components/ui/toast-manager';
 import { useState, type ReactNode } from 'react';
 import { AuthContext } from '../../contexts/AuthContext';
@@ -426,3 +427,46 @@ export function AdminExamples() {
     );
 }
 
+export function RatingHistoryExamples() {
+    return (
+        <div
+            onClickCapture={(event) => {
+                if ((event.target as Element).closest('a')) {
+                    event.preventDefault();
+                    toast.add({
+                        title: 'Navegação simulada para os detalhes do livro.',
+                    });
+                }
+            }}
+        >
+            <RatingHistoryItem
+                rating={{
+                    ...sampleRating,
+                    id: 801,
+                    updatedAt: '2026-02-01T12:00:00',
+                    book: {
+                        ...sampleRating.book,
+                        thumbnailUrl: cover,
+                        title: 'Um título extenso para conferir a apresentação do histórico de avaliações',
+                    },
+                    comment:
+                        'Uma impressão de leitura fictícia, com espaço para reler os detalhes que marcaram a experiência.\n'.repeat(
+                            14
+                        ),
+                }}
+            />
+            <RatingHistoryItem
+                rating={{
+                    ...sampleRating,
+                    id: 802,
+                    book: {
+                        ...sampleRating.book,
+                        title: 'Um livro avaliado sem comentário',
+                        thumbnailUrl: null,
+                    },
+                    comment: null,
+                }}
+            />
+        </div>
+    );
+}

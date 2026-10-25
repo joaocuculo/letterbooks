@@ -22,6 +22,7 @@ export default function AccountMenu({
             <DropdownMenuItem render={<Link to="/profile" />}>
                 Meu perfil
             </DropdownMenuItem>
+            <DropdownMenuItem render={<Link to="/my-ratings" />}>Minhas avaliações</DropdownMenuItem>
             {user?.role === 'ADMIN' && (
                 <>
                     <DropdownMenuItem render={<Link to="/admin/authors" />}>

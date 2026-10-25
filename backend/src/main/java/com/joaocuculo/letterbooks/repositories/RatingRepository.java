@@ -29,6 +29,11 @@ public interface RatingRepository extends JpaRepository<Rating, Long> {
     @Query("delete from Rating r where r.user.id = :userId")
     int deleteAllByUserId(@Param("userId") Long userId);
 
+    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"book", "user"})
+    @Query(value = "SELECT r FROM Rating r WHERE r.user.id = :userId AND LOWER(r.book.title) LIKE LOWER(:pattern) ESCAPE '!'",
+           countQuery = "SELECT COUNT(r) FROM Rating r WHERE r.user.id = :userId AND LOWER(r.book.title) LIKE LOWER(:pattern) ESCAPE '!'")
+    Page<Rating> searchByUserId(@Param("userId") Long userId, @Param("pattern") String pattern, Pageable pageable);
+
     Page<Rating> findByUserId(Long userId, Pageable pageable);
     Page<Rating> findByBookGoogleBooksId(String googleBooksId, Pageable pageable);
     Optional<Rating> findByUserIdAndBookGoogleBooksId(Long userId, String googleBooksId);

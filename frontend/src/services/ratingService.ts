@@ -51,3 +51,14 @@ export async function update(
 export async function remove(ratingId: number): Promise<void> {
     await api.delete(`/ratings/${ratingId}`);
 }
+
+export async function findMine(
+    params: { q: string; page: number; sort: string },
+    signal?: AbortSignal
+): Promise<PageResponse<RatingResponse>> {
+    const response = await api.get<PageResponse<RatingResponse>>(
+        '/ratings/user',
+        { params: { ...params, size: 20 }, signal }
+    );
+    return response.data;
+}

@@ -71,7 +71,7 @@ function Retry({ error, onRetry }: { error: string; onRetry: () => void }) {
 }
 
 function BookDetails({ googleBooksId }: { googleBooksId: string | undefined }) {
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, user } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
     const source = (location.state as { from?: unknown } | null)?.from;
@@ -234,6 +234,48 @@ function BookDetails({ googleBooksId }: { googleBooksId: string | undefined }) {
         void load();
         return () => controller.abort();
     }, [googleBooksId, isAuthenticated, shelvesRetry]);
+
+    const consumedRatingAction = useRef(false);
+    useEffect(() => {
+        const state = location.state as {
+            from?: unknown;
+            ratingAction?: unknown;
+            ratingId?: unknown;
+        } | null;
+        if (
+            consumedRatingAction.current ||
+            !state?.ratingAction ||
+            !user ||
+            userBusy ||
+            userError
+        )
+            return;
+        if (state.ratingAction !== 'edit' && state.ratingAction !== 'delete')
+            return;
+        consumedRatingAction.current = true;
+        // Remove the intent from history before opening UI; revisits must not replay it.
+        navigate(location.pathname + location.search + location.hash, {
+            replace: true,
+            state: { from: state.from },
+        });
+        if (!myRating || myRating.id !== state.ratingId) return;
+        const action = state.ratingAction;
+        queueMicrotask(() => {
+            if (action === 'edit') {
+                setRatingEditing(true);
+                requestAnimationFrame(() =>
+                    document
+                        .querySelector<HTMLInputElement>(
+                            '#book-rating-form input[type="radio"]'
+                        )
+                        ?.focus()
+                );
+            } else {
+                setDeleteError('');
+                setDeleteOpen(true);
+            }
+        });
+    }, [location, navigate, myRating, user, userBusy, userError]);
 
     async function deleteRating() {
         if (!myRating) return;

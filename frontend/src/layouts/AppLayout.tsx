@@ -26,6 +26,7 @@ function AppLayout() {
     else if (
         pathname === '/' ||
         pathname === '/profile' ||
+        pathname === '/my-ratings' ||
         pathname === '/my-books' ||
         pathname === '/my-books/list' ||
         pathname === '/explore' ||

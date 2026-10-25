@@ -11,6 +11,7 @@ import RegisterPage from './pages/RegisterPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import ProfilePage from './pages/ProfilePage';
 import MyBooksPage from './pages/MyBooksPage';
+import MyRatingsPage from './pages/MyRatingsPage';
 import MyBooksListPage from './pages/MyBooksListPage';
 import SearchPage from './pages/SearchPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
@@ -50,6 +51,7 @@ function App() {
                     element={<BookDetailsPage />}
                 />
                 <Route element={<ProtectedRoute />}>
+                    <Route path="my-ratings" element={<MyRatingsPage />} />
                     <Route path="profile" element={<ProfilePage />} />
                     <Route path="my-books" element={<MyBooksPage />} />
                     <Route path="my-books/list" element={<MyBooksListPage />} />

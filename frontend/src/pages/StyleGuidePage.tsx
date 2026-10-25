@@ -1,3 +1,4 @@
+import { RatingHistoryExamples } from './styleguide/DomainExamples';
 import ShelfPickerExample from './styleguide/ShelfPickerExample';
 import { Switch } from '../components/ui/switch';
 import { toast } from '../components/ui/toast-manager';
@@ -713,6 +714,8 @@ export default function StyleGuidePage() {
             </Section>
             <Section id="ratings" title="Avaliações">
                 <RatingExamples />
+                <h3 className="sg-spaced">Histórico — Minhas avaliações</h3>
+                <RatingHistoryExamples />
             </Section>
             <Section id="navigation" title="Navegação">
                 <NavigationExamples />

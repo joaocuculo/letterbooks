@@ -34,8 +34,10 @@ public class RatingController {
 
     @GetMapping(value = "/user")
     public ResponseEntity<Page<RatingResponseDTO>> findByUserId(
-            @AuthenticationPrincipal JWTUserData user, @PageableDefault(size = 20) Pageable pageable) {
-        Page<RatingResponseDTO> ratings = ratingService.findByUserId(user.userId(), pageable);
+            @AuthenticationPrincipal JWTUserData user,
+            @RequestParam(required = false) String q,
+            @PageableDefault(size = 20) Pageable pageable) {
+        Page<RatingResponseDTO> ratings = ratingService.findByUserId(user.userId(), q, pageable);
         return ResponseEntity.ok().body(ratings);
     }
 

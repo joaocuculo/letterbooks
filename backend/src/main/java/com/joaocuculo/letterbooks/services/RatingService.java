@@ -39,7 +39,21 @@ public class RatingService {
     }
 
     public Page<RatingResponseDTO> findByUserId(Long userId, Pageable pageable) {
-        Page<Rating> ratings = ratingRepository.findByUserId(userId, pageable);
+        return findByUserId(userId, null, pageable);
+    }
+
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    public Page<RatingResponseDTO> findByUserId(Long userId, String query, Pageable pageable) {
+        var sort = pageable.getSort().isSorted() ? pageable.getSort()
+                : org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "createdAt");
+        if (sort.getOrderFor("score") != null && sort.getOrderFor("createdAt") == null)
+            sort = sort.and(org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "createdAt"));
+        if (sort.getOrderFor("id") == null)
+            sort = sort.and(org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "id"));
+        var request = org.springframework.data.domain.PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+        String text = query == null ? "" : query.trim();
+        String pattern = "%" + text.replace("!", "!!").replace("%", "!%").replace("_", "!_") + "%";
+        Page<Rating> ratings = ratingRepository.searchByUserId(userId, pattern, request);
         return ratings.map(RatingMapper::toResponseDTO);
     }
 
