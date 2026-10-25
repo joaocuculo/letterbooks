@@ -14,6 +14,7 @@ colors:
   review-layer-front: "#ffffff80"
   review-layer-back: "#e4e6e680"
   login-input-border: "#858d89"
+  book-card-border: "#e5e5e5"
 typography:
   display:
     fontFamily: "Manrope, sans-serif"
@@ -277,3 +278,7 @@ Em Explorar, o controle SlidersHorizontal fica à esquerda de Pesquisar, sem bor
 As páginas com identidade Manrope usam texto base de 14px. Campos têm texto de 14px no desktop e 16px abaixo de 760px, preservando altura mínima de 44px e evitando zoom automático ao digitar no celular. Títulos: Home 34–56px (32–48px no celular), Explorar 26–36px, acesso 36px (32px no celular e 28px em telas baixas), Perfil 26–34px. Rótulos e textos auxiliares já pequenos foram preservados. O hero desktop passa a 650px mínimos; o conteúdo de Explorar chega a 1120px, com capas de até 180px e metadados alinhados à capa. Espaços entre seções e ações foram reduzidos mantendo a composição aprovada. Revisão visual com dados simulados em desktop e 320px, sem overflow horizontal em Explorar, cadastro e Perfil.
 
 Ajuste da Home: bloco de texto, ações e avaliações deslocado para 59% da largura no desktop, com largura de 41%; em telas intermediárias inicia em 55%. Celular mantém margem zero e largura automática.
+
+## Cards de livros
+
+Explorar, Minha Biblioteca e conteúdo de estantes compartilham cards shadcn/ui Base UI alinhados à referência enviada: capa até as bordas, fundo branco, borda #e5e5e5 de 1 px, raio de 16 px e sombra discreta. Informações têm padding de 16 px e título de duas linhas com tooltip. Coração circular apenas com ícone fica no canto superior esquerdo da capa; menu outline fica no canto superior direito, ambos com alvos de 44 px. Dropdown branco com borda fina, sombra discreta, separadores, ícones e ação destrutiva vermelha, seguindo o exemplo Button Group do shadcn. Detalhado mantém capa à esquerda a partir de 480 px; abaixo disso fica vertical. Tema isolado em .shadcn-surface e variáveis --ui-*. Especificação e validação: docs/book-cards.md.

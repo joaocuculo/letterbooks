@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="pt-BR">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Explorar — revisão de densidade com dados simulados</title>
+<div id="root"></div>
+<output id="review-requests" hidden></output>
+<script type="module">
+import React from 'react';
+import {createRoot} from 'react-dom/client';
+import {MemoryRouter, Routes, Route, useLocation} from 'react-router-dom';
+import {AxiosError} from 'axios';
+import ExplorePage from '/src/pages/ExplorePage.tsx';
+import SearchPage from '/src/pages/SearchPage.tsx';
+import {AuthContext} from '/src/contexts/AuthContext.ts';
+import {TooltipProvider} from '/src/components/ui/tooltip.tsx';
+import {api} from '/src/services/api.ts';
+import '/src/index.css';
+const args = new URLSearchParams(location.search);
+const mode = args.get('mode') || 'normal';
+const user = {id:42, name:'Clara Martins', role:'USER', email:'clara@example.com'};
+const names = ['Duna','O hobbit','Orgulho e preconceito','Crime e castigo','1984','Água viva','Noites brancas','Admirável mundo novo','Uma história extraordinariamente longa para testar os limites do título do livro','Jane Eyre','Frankenstein','Moby Dick'];
+const covers = ['9780441172719','9780547928227','9780141439518','9780140449136','9780451524935','9786555320213','9788573263350','9780060850524','9780143107637','9780141441146','9780141439471','9780142437247'];
+let books = Array.from({length:40},(_,i)=>({id:'book-'+i,title:mode==='edge' && i%4===0?'TítuloSemEspaços'.repeat(12):names[i%12],authors:i%7===6?null:[i%2===0?'Frank Herbert':'Uma autora com nome completo extenso'],publisher:i%5===0?null:'Companhia das Letras',publishedDate:i%5===0?null:'2024',thumbnailUrl:mode==='edge'&&i%4===2?null:mode==='edge'&&i%4===3?'/missing-cover.jpg':'/images/books/'+covers[i%12]+'.jpg',isFavorite:i===1,userBookId:i+1}));
+const requests=[];let failed=false;
+const page=(content,number=0,size=20)=>({content,page:{number,size,totalPages:2,totalElements:40}});
+api.defaults.adapter=async config=>{
+ requests.push({url:config.url,method:config.method,params:config.params,data:config.data});
+ document.querySelector('#review-requests').textContent=JSON.stringify(requests);
+ await new Promise(resolve=>setTimeout(resolve,config.method==='get'?80:500));
+ const fail=message=>{throw new AxiosError(message,'ERR_BAD_REQUEST',config,null,{status:400,statusText:'error',data:{message},headers:{},config});};
+ if(mode==='error'&&!failed){failed=true;fail('Não foi possível carregar os livros.');}
+ if(mode==='save-error'&&config.method!=='get')fail('Não foi possível atualizar o favorito.');
+ let data,status=200;
+ if(config.url==='books/discover') data={sections:[{key:'fiction',title:'Ficção',books:books.slice(0,12)},{key:'classics',title:'Clássicos',books:books.slice(12,24)}]};
+ else if(config.url==='books/search') data=page(config.params.freeText==='vazio'?[]:books.slice((config.params.page||0)*20,(config.params.page||0)*20+20),config.params.page||0);
+ else if(config.url.startsWith('/user-books/')&&config.method==='patch') {let id=Number(config.url.split('/').pop());books=books.map(b=>b.userBookId===id?{...b,...JSON.parse(config.data)}:b);data={id,...books.find(b=>b.userBookId===id)};}
+ else if(config.url.startsWith('/bookshelves/user/'))data=page([{id:1,name:'Para reler',booksCount:0,previewBooks:[]}],0);
+ else if(config.url.startsWith('/bookshelves/book/'))data=[];
+ else if(config.url==='/bookshelves/1/book'&&config.method==='post'){data=null;status=201;}
+ else throw new Error('Unexpected simulated request '+config.method+' '+config.url);
+ return {data,status,statusText:'OK',headers:{},config};
+};
+function Location(){const current=useLocation();return React.createElement('output',{id:'review-location',hidden:true},JSON.stringify({pathname:current.pathname,search:current.search,state:current.state}));}
+const auth={token:mode==='visitor'?null:'mock',user:mode==='visitor'?null:user,isAuthenticated:mode!=='visitor',isLoadingUser:false,userErrorMessage:null,signIn:()=>{},signOut:()=>{},refreshUser:()=>{}};
+createRoot(document.querySelector('#root')).render(
+ React.createElement(AuthContext,{value:auth},React.createElement(TooltipProvider,null,
+ React.createElement(MemoryRouter,{initialEntries:[args.get('route')||'/explore']},
+ React.createElement(Location),React.createElement(Routes,null,
+ React.createElement(Route,{path:'/explore',element:React.createElement(ExplorePage)}),
+ React.createElement(Route,{path:'/search',element:React.createElement(SearchPage)}),
+ React.createElement(Route,{path:'*',element:React.createElement('p',null,'Destino de navegação simulado')}))))));
+</script>
+</html>

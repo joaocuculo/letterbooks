@@ -46,3 +46,9 @@ Drift preexistente: frontmatter de DESIGN.md e título/narrativa do sidecar aind
 ## Refinamento aprovado — campo integrado e seções com 12 livros
 
 Referência do usuário: campo em cápsula com botão interno à direita. Aplicado no componente SearchControls para descoberta e pesquisa, com botão preto e sombra suave; em 320px o ícone é ocultado para reservar espaço ao texto. DiscoverService usa SECTION_SIZE=12 para Google e fallback local; pesquisa permanece com 20 por página. Build, lint e 22 testes pertinentes aprovados. Navegador com mocks conferiu 12 itens por seção, 20 na pesquisa enviada por Enter e ausência de overflow em 320px. Evidências explore-input-desktop.png e explore-input-mobile.png. Revisão independente do refinamento: SHIP, sem achados materiais no escopo; detector não executado.
+
+## Atualização dos cards
+
+O novo padrão aprovado adiciona borda cinza, título de duas linhas, tooltip e ações horizontais com componentes locais shadcn/ui Base Nova. A restrição anterior de não adicionar dependências foi substituída pela solicitação explícita de shadcn/ui. Metadados detalhados ficam identificados, e a composição fica vertical abaixo de 480 px. Ver docs/book-cards.md.
+
+Revisão pela referência enviada: capa até as bordas e controles verticais sobre a capa (coração apenas com ícone e menu abaixo), substituindo o rodapé de ações anterior. Card com raio de 16 px e sombra discreta; dropdown segue o exemplo Button Group do shadcn. Ver docs/book-cards.md.

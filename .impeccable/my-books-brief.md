@@ -25,3 +25,9 @@ Browser com adapter simulado validou criar estante privada/pública, nome duplic
 As seis capturas .impeccable/review/library-{books,shelves,add}-{desktop,mobile}.png estão completas e válidas, em desktop 1440×1000 e mobile 320×700. Tablet 768px e reflow 640×500 foram verificados por DOM, sem overflow; reflow não é zoom real. A revisão visual independente inicial identificou somente o link para Biblioteca com altura insuficiente. A correção elevou sua área para 44px; revisão final independente dessa correção concluiu ship, sem outros achados materiais na revisão inicial completa. Documentação consolidada em PRODUCT.md, seção específica de DESIGN.md e docs/my-books.md.
 
 Dados ilustrativos, nenhuma conta real alterada. Launcher Impeccable indisponível (cache_directory_failed), fallback manual declarado. Trabalho code-led no mundo visual existente, sem comp aprovada; detector Impeccable não executado. Frontmatter de DESIGN.md e .impeccable/design.json preservados; drift preexistente fora do escopo, sem reparo solicitado. As capturas e validações anteriores dos protótipos permanecem evidência histórica, sem reabrir a comparação.
+
+## Atualização dos cards
+
+Livros da biblioteca e conteúdo de estantes usam o mesmo BookCardFrame do Explorar: borda cinza, título de duas linhas com tooltip e rodapé de ações shadcn/ui Base UI. Controles têm área mínima de 44 px; em cards estreitos, favorito usa ícone com nome acessível. Menus e integrações existentes foram preservados. Ver docs/book-cards.md.
+
+Revisão pela referência enviada: capa até as bordas e controles verticais sobre a capa (coração apenas com ícone e menu abaixo), substituindo o rodapé de ações anterior. Card com raio de 16 px e sombra discreta; dropdown segue o exemplo Button Group do shadcn. Ver docs/book-cards.md.
