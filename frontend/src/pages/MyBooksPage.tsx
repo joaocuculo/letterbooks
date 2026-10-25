@@ -1,7 +1,25 @@
+import { toast } from '../components/ui/toast-manager';
+import PaginationControls from '../components/PaginationControls';
+import { Feedback } from '../components/ui/feedback';
+import {
+    Select,
+    SelectTrigger,
+    SelectValue,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+} from '../components/ui/select';
+import { Button } from '../components/ui/button';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { Dialog } from '@base-ui/react/dialog';
-import { ArrowLeft, ArrowRight, BookOpen, RefreshCw } from 'lucide-react';
+import {
+    Dialog,
+    DialogContent,
+    DialogTitle,
+    DialogDescription,
+    DialogClose,
+} from '../components/ui/dialog';
+import { ArrowRight, BookOpen, RefreshCw } from 'lucide-react';
 import SiteHeader from '../components/SiteHeader';
 import LibraryBookCard from '../components/LibraryBookCard';
 import ShelfManager from '../components/ShelfManager';
@@ -76,7 +94,7 @@ function LibraryEmpty({ summary = false }: { summary?: boolean }) {
 function LibraryContent() {
     const [params, setParams] = useSearchParams();
     const [adding, setAdding] = useState<BookSummary | null>(null);
-    const [shelfNotice, setShelfNotice] = useState('');
+
     const [removeTarget, setRemoveTarget] = useState<UserBookResponse | null>(
         null
     );
@@ -128,7 +146,7 @@ function LibraryContent() {
             }),
         [setParams]
     );
-    const { states, pending, errors, success, reload, mutate } = useMyBooks(
+    const { states, pending, errors, reload, mutate } = useMyBooks(
         queries,
         changePage
     );
@@ -166,21 +184,23 @@ function LibraryContent() {
         return (
             <>
                 {!matches || (state.busy && !data) ? (
-                    <p className="library-loading" role="status">
-                        Carregando livros...
-                    </p>
+                    <Feedback kind="loading" title="Carregando livros..." />
                 ) : state.error ? (
-                    <div className="library-error">
-                        <p role="alert">{state.error}</p>
-                        <button
-                            type="button"
-                            className="library-secondary"
-                            onClick={() => void reload(query.key)}
-                        >
-                            <RefreshCw size={15} aria-hidden="true" />
-                            Tentar novamente
-                        </button>
-                    </div>
+                    <Feedback
+                        kind="error"
+                        title={state.error}
+                        action={
+                            <Button
+                                variant="outline"
+                                type="button"
+                                className="library-secondary"
+                                onClick={() => void reload(query.key)}
+                            >
+                                <RefreshCw size={15} aria-hidden="true" />
+                                Tentar novamente
+                            </Button>
+                        }
+                    />
                 ) : data?.content.length ? (
                     renderBooks(data.content)
                 ) : (
@@ -204,7 +224,7 @@ function LibraryContent() {
             setRemoveTarget(null);
     }
     return (
-        <div className="landing library-page library-consolidated">
+        <div className="landing catalog-density library-page library-consolidated">
             <SiteHeader />
             <main className="library-content">
                 <header className="library-page-heading">
@@ -222,7 +242,8 @@ function LibraryContent() {
                     >
                         <div className="library-category-buttons">
                             {navigation.map((item) => (
-                                <button
+                                <Button
+                                    variant="outline"
                                     type="button"
                                     key={item.key}
                                     aria-current={
@@ -233,24 +254,39 @@ function LibraryContent() {
                                     onClick={() => choose(item.key)}
                                 >
                                     {item.label}
-                                </button>
+                                </Button>
                             ))}
                         </div>
                         <div className="library-category-select">
                             <label htmlFor="library-category">
                                 Agrupamento
                             </label>
-                            <select
-                                id="library-category"
+                            <Select
+                                items={navigation.map((item) => ({
+                                    value: item.key,
+                                    label: item.label,
+                                }))}
                                 value={selected}
-                                onChange={(event) => choose(event.target.value)}
+                                onValueChange={(value) => {
+                                    if (value !== null) choose(value);
+                                }}
                             >
-                                {navigation.map((item) => (
-                                    <option value={item.key} key={item.key}>
-                                        {item.label}
-                                    </option>
-                                ))}
-                            </select>
+                                <SelectTrigger id="library-category">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent alignItemWithTrigger={false}>
+                                    <SelectGroup>
+                                        {navigation.map((item) => (
+                                            <SelectItem
+                                                value={item.key}
+                                                key={item.key}
+                                            >
+                                                {item.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectGroup>
+                                </SelectContent>
+                            </Select>
                         </div>
                     </nav>
                     <div className="library-results">
@@ -265,16 +301,7 @@ function LibraryContent() {
                                 </span>
                             )}
                         </div>
-                        {shelfNotice && (
-                            <p className="library-success" role="status">
-                                {shelfNotice}
-                            </p>
-                        )}
-                        {success && (
-                            <p className="library-success" role="status">
-                                {success}
-                            </p>
-                        )}
+
                         {status && favorite && (
                             <div className="library-filter-tags">
                                 <span>
@@ -295,50 +322,14 @@ function LibraryContent() {
                                 {activeData &&
                                     !active?.error &&
                                     activeData.page.totalPages > 1 && (
-                                        <nav
+                                        <PaginationControls
                                             className="library-pagination"
-                                            aria-label="Paginação dos meus livros"
-                                        >
-                                            <button
-                                                type="button"
-                                                className="library-secondary"
-                                                onClick={() =>
-                                                    changePage(page - 1)
-                                                }
-                                                disabled={
-                                                    page === 0 || active.busy
-                                                }
-                                            >
-                                                <ArrowLeft
-                                                    size={15}
-                                                    aria-hidden="true"
-                                                />
-                                                Anterior
-                                            </button>
-                                            <span>
-                                                Página {page + 1} de{' '}
-                                                {activeData.page.totalPages}
-                                            </span>
-                                            <button
-                                                type="button"
-                                                className="library-secondary"
-                                                onClick={() =>
-                                                    changePage(page + 1)
-                                                }
-                                                disabled={
-                                                    page + 1 >=
-                                                        activeData.page
-                                                            .totalPages ||
-                                                    active.busy
-                                                }
-                                            >
-                                                Próxima
-                                                <ArrowRight
-                                                    size={15}
-                                                    aria-hidden="true"
-                                                />
-                                            </button>
-                                        </nav>
+                                            page={page}
+                                            total={activeData.page.totalPages}
+                                            busy={active.busy}
+                                            onChange={changePage}
+                                            label="Paginação dos meus livros"
+                                        />
                                     )}
                             </>
                         )}
@@ -350,60 +341,59 @@ function LibraryContent() {
                     book={adding}
                     onClose={() => setAdding(null)}
                     onAdded={() => {
-                        setShelfNotice('Livro adicionado à estante.');
+                        toast.add({
+                            title: 'Livro adicionado às estantes selecionadas.',
+                            type: 'success',
+                        });
                         void reload('active');
                     }}
                 />
             )}
-            <Dialog.Root
+            <Dialog
                 open={Boolean(removeTarget)}
                 onOpenChange={(open) => {
                     if (!open && !pending[removeTarget?.id ?? -1])
                         setRemoveTarget(null);
                 }}
             >
-                <Dialog.Portal>
-                    <Dialog.Backdrop className="library-dialog-overlay" />
-                    <Dialog.Popup
-                        className="landing library-remove-dialog"
-                        finalFocus={heading}
-                        aria-busy={Boolean(pending[removeTarget?.id ?? -1])}
-                    >
-                        <Dialog.Title>Remover da biblioteca?</Dialog.Title>
-                        <Dialog.Description>
-                            Você quer remover “{removeTarget?.book.title}” da
-                            sua biblioteca?
-                        </Dialog.Description>
-                        {errors[removeTarget?.id ?? -1] && (
-                            <p className="library-danger" role="alert">
-                                {errors[removeTarget!.id]}
-                            </p>
-                        )}
-                        <div className="library-dialog-actions">
-                            <Dialog.Close
-                                className="library-secondary"
-                                disabled={Boolean(
-                                    pending[removeTarget?.id ?? -1]
-                                )}
-                            >
-                                Cancelar
-                            </Dialog.Close>
-                            <button
-                                className="library-remove-confirm"
-                                type="button"
-                                disabled={Boolean(
-                                    pending[removeTarget?.id ?? -1]
-                                )}
-                                onClick={() => void confirmRemove()}
-                            >
-                                {pending[removeTarget?.id ?? -1]
-                                    ? 'Removendo...'
-                                    : 'Remover livro'}
-                            </button>
-                        </div>
-                    </Dialog.Popup>
-                </Dialog.Portal>
-            </Dialog.Root>
+                <DialogContent
+                    showCloseButton={false}
+                    className="domain-dialog"
+                    finalFocus={heading}
+                    aria-busy={Boolean(pending[removeTarget?.id ?? -1])}
+                >
+                    <DialogTitle>Remover da biblioteca?</DialogTitle>
+                    <DialogDescription>
+                        Você quer remover “{removeTarget?.book.title}” da sua
+                        biblioteca?
+                    </DialogDescription>
+                    {errors[removeTarget?.id ?? -1] && (
+                        <p className="library-danger" role="alert">
+                            {errors[removeTarget!.id]}
+                        </p>
+                    )}
+                    <div className="library-dialog-actions">
+                        <DialogClose
+                            render={<Button variant="outline" />}
+                            className="library-secondary"
+                            disabled={Boolean(pending[removeTarget?.id ?? -1])}
+                        >
+                            Cancelar
+                        </DialogClose>
+                        <Button
+                            variant="destructive"
+                            className="library-remove-confirm"
+                            type="button"
+                            disabled={Boolean(pending[removeTarget?.id ?? -1])}
+                            onClick={() => void confirmRemove()}
+                        >
+                            {pending[removeTarget?.id ?? -1]
+                                ? 'Removendo...'
+                                : 'Remover livro'}
+                        </Button>
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

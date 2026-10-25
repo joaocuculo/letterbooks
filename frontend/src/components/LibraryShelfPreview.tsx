@@ -1,4 +1,6 @@
+import { Button } from './ui/button';
 import { useState } from 'react';
+import { Feedback } from './ui/feedback';
 import { ArrowRight, BookOpen, RefreshCw } from 'lucide-react';
 import type { BookSummary } from '../types/book';
 
@@ -87,22 +89,26 @@ export default function LibraryShelfPreview({
                 </span>
             </button>
             {busy && (
-                <p className="library-loading" role="status">
-                    Carregando estante {label}...
-                </p>
+                <Feedback
+                    kind="loading"
+                    title={`Carregando estante ${label}...`}
+                />
             )}
             {error && (
-                <div className="library-error">
-                    <p role="alert">{error}</p>
-                    <button
-                        type="button"
-                        className="library-secondary"
-                        onClick={onRetry}
-                    >
-                        <RefreshCw size={15} aria-hidden="true" /> Tentar
-                        novamente
-                    </button>
-                </div>
+                <Feedback
+                    kind="error"
+                    title={error}
+                    action={
+                        <Button
+                            variant="outline"
+                            type="button"
+                            onClick={onRetry}
+                        >
+                            <RefreshCw size={15} aria-hidden="true" /> Tentar
+                            novamente
+                        </Button>
+                    }
+                />
             )}
         </section>
     );

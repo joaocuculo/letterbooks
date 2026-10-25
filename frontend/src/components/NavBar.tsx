@@ -1,5 +1,10 @@
+import NavigationMenu from './NavigationMenu';
+import { DropdownMenuItem } from './ui/dropdown-menu';
+import { Button } from './ui/button';
+import '../styles/domain-components.css';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import BrandLogo from './BrandLogo';
 
 function NavBar() {
     const { isAuthenticated, user, signOut } = useAuth();
@@ -11,9 +16,11 @@ function NavBar() {
     }
 
     return (
-        <header className="bg-sky-900">
-            <div className="mx-auto flex max-w-7xl items-center justify-between p-4 text-white">
-                <Link to={'/'}>LetterBooks</Link>
+        <header className="legacy-navigation">
+            <div className="legacy-navigation-inner">
+                <Link to="/" aria-label="LetterBooks, início">
+                    <BrandLogo />
+                </Link>
 
                 <nav className="flex items-center gap-2">
                     <NavLink to={'/'} end>
@@ -24,61 +31,86 @@ function NavBar() {
 
                     {isAuthenticated ? (
                         <>
-                            <details>
-                                <summary className="cursor-pointer">
-                                    Meus Livros
-                                </summary>
-                                <div className="flex flex-col gap-1 p-2">
-                                    <NavLink to="/my-books">
-                                        Visão geral
-                                    </NavLink>
-                                    <NavLink to="/my-books/list">Todos</NavLink>
-                                    <NavLink to="/my-books/list?status=WANT_TO_READ">
-                                        Quero ler
-                                    </NavLink>
-                                    <NavLink to="/my-books/list?status=READING">
-                                        Lendo
-                                    </NavLink>
-                                    <NavLink to="/my-books/list?status=COMPLETED">
-                                        Lidos
-                                    </NavLink>
-                                    <NavLink to="/my-books/list?status=ABANDONED">
-                                        Abandonados
-                                    </NavLink>
-                                    <NavLink to="/my-books/list?favorite=true">
-                                        Favoritos
-                                    </NavLink>
-                                </div>
-                            </details>
+                            <NavigationMenu label="Meus Livros">
+                                <DropdownMenuItem
+                                    render={<NavLink to="/my-books" />}
+                                >
+                                    Visão geral
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    render={<NavLink to="/my-books/list" />}
+                                >
+                                    Todos
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    render={
+                                        <NavLink to="/my-books/list?status=WANT_TO_READ" />
+                                    }
+                                >
+                                    Quero ler
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    render={
+                                        <NavLink to="/my-books/list?status=READING" />
+                                    }
+                                >
+                                    Lendo
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    render={
+                                        <NavLink to="/my-books/list?status=COMPLETED" />
+                                    }
+                                >
+                                    Lidos
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    render={
+                                        <NavLink to="/my-books/list?status=ABANDONED" />
+                                    }
+                                >
+                                    Abandonados
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    render={
+                                        <NavLink to="/my-books/list?favorite=true" />
+                                    }
+                                >
+                                    Favoritos
+                                </DropdownMenuItem>
+                            </NavigationMenu>
 
                             <NavLink to="/profile">Meu perfil</NavLink>
 
                             {user?.role === 'ADMIN' && (
-                                <details>
-                                    <summary className="cursor-pointer">
-                                        Administração
-                                    </summary>
-                                    <div className="flex flex-col gap-1 p-2">
-                                        <NavLink to="/admin/authors">
-                                            Autores
-                                        </NavLink>
-                                        <NavLink to="/admin/categories">
-                                            Categorias
-                                        </NavLink>
-                                        <NavLink to="/admin/users">
-                                            Usuários
-                                        </NavLink>
-                                    </div>
-                                </details>
+                                <NavigationMenu label="Administração">
+                                    <DropdownMenuItem
+                                        render={<NavLink to="/admin/authors" />}
+                                    >
+                                        Autores
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                        render={
+                                            <NavLink to="/admin/categories" />
+                                        }
+                                    >
+                                        Categorias
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                        render={<NavLink to="/admin/users" />}
+                                    >
+                                        Usuários
+                                    </DropdownMenuItem>
+                                </NavigationMenu>
                             )}
 
-                            <button
+                            <Button
+                                variant="ghost"
                                 type="button"
                                 onClick={handleSignOut}
                                 className="cursor-pointer"
                             >
                                 Sair
-                            </button>
+                            </Button>
                         </>
                     ) : (
                         <NavLink to={'/login'}>Entrar</NavLink>

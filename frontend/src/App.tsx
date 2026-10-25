@@ -1,4 +1,6 @@
 import { Route, Routes } from 'react-router-dom';
+import { lazy, Suspense } from 'react';
+import { AuthProvider } from './contexts/AuthProvider';
 import AppLayout from './layouts/AppLayout';
 import HomePage from './pages/HomePage';
 import ExplorePage from './pages/ExplorePage';
@@ -20,10 +22,19 @@ import AuthorAdminDetailsPage from './pages/AuthorAdminDetailsPage';
 import CategoriesAdminPage from './pages/CategoriesAdminPage';
 import CategoryAdminDetailsPage from './pages/CategoryAdminDetailsPage';
 
+const StyleGuidePage = import.meta.env.DEV
+    ? lazy(() => import('./pages/StyleGuidePage'))
+    : null;
+
 function App() {
     return (
         <Routes>
-            <Route element={<AppLayout />}>
+            {StyleGuidePage && <Route path="/styleguide" element={
+                <Suspense fallback={<p role="status">Carregando laboratório visual...</p>}>
+                    <StyleGuidePage />
+                </Suspense>
+            } />}
+            <Route element={<AuthProvider><AppLayout /></AuthProvider>}>
                 <Route index element={<HomePage />} />
                 <Route path="login" element={<LoginPage />} />
                 <Route path="register" element={<RegisterPage />} />

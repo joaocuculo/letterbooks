@@ -1,3 +1,5 @@
+import { Input } from '../components/ui/input';
+import { Button } from '../components/ui/button';
 import { useState, type SubmitEvent } from 'react';
 import { getApiErrorMessage } from '../utils/getApiErrorMessage.';
 import { register } from '../services/authService';
@@ -118,7 +120,7 @@ function RegisterPage() {
                     <div className="login-field">
                         <label htmlFor="name">Nome</label>
 
-                        <input
+                        <Input
                             className="w-full"
                             id="name"
                             name="name"
@@ -151,7 +153,7 @@ function RegisterPage() {
                     <div className="login-field">
                         <label htmlFor="email">E-mail</label>
 
-                        <input
+                        <Input
                             className="w-full"
                             id="email"
                             name="email"
@@ -251,13 +253,14 @@ function RegisterPage() {
                         </p>
                     )}
 
-                    <button
+                    <Button
+                        variant="default"
                         className="login-submit"
                         type="submit"
                         disabled={isSubmitting}
                     >
                         {isSubmitting ? 'Cadastrando...' : 'Cadastrar'}
-                    </button>
+                    </Button>
                 </form>
                 <p className="login-register">
                     Já possui uma conta? <Link to="/login">Entrar</Link>

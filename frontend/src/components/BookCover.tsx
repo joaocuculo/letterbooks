@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Dialog } from '@base-ui/react/dialog';
 import { BookOpen, X } from 'lucide-react';
+import { Button } from './ui/button';
 
 export default function BookCover({
     src,
@@ -32,6 +33,9 @@ export default function BookCover({
                                 Capa de {title}
                             </Dialog.Title>
                             <Dialog.Close
+                                render={
+                                    <Button variant="ghost" size="icon-lg" />
+                                }
                                 className="book-lightbox-close"
                                 aria-label="Fechar imagem"
                             >

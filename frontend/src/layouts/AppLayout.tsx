@@ -1,25 +1,30 @@
 import { Outlet, useLocation } from 'react-router-dom';
-import NavBar from '../components/NavBar';
+import SiteHeader from '../components/SiteHeader';
 import Footer from '../components/Footer';
 import AdminShell from '../components/AdminShell';
 
 function AppLayout() {
-    const { pathname } = useLocation();
+    const location = useLocation();
+    const pathname = location.pathname.replace(/\/+$/, '') || '/';
+    if (
+        ['/login', '/register', '/forgot-password', '/reset-password'].includes(
+            pathname
+        )
+    ) {
+        return <Outlet />;
+    }
+    let content;
     if (
         /^\/admin\/(authors|categories)(\/[^/]+)?\/?$/.test(pathname) ||
         /^\/admin\/users\/?$/.test(pathname)
     )
-        return (
+        content = (
             <AdminShell>
                 <Outlet />
             </AdminShell>
         );
-    if (
+    else if (
         pathname === '/' ||
-        pathname === '/login' ||
-        pathname === '/register' ||
-        pathname === '/forgot-password' ||
-        pathname === '/reset-password' ||
         pathname === '/profile' ||
         pathname === '/my-books' ||
         pathname === '/my-books/list' ||
@@ -27,16 +32,21 @@ function AppLayout() {
         pathname === '/search' ||
         /^\/books\/[^/]+\/?$/.test(pathname)
     ) {
-        return <Outlet />;
+        content = <Outlet />;
+    } else {
+        content = (
+            <div className="app-shell">
+                <SiteHeader />
+
+                <main className="flex-1">
+                    <Outlet />
+                </main>
+            </div>
+        );
     }
     return (
-        <div className="flex min-h-screen flex-col bg-slate-100 text-slate-900">
-            <NavBar />
-
-            <main className="flex-1">
-                <Outlet />
-            </main>
-
+        <div className="site-layout">
+            <div className="site-layout-content">{content}</div>
             <Footer />
         </div>
     );

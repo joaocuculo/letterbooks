@@ -1,6 +1,8 @@
-import { Link } from 'react-router-dom';
 import type { UserBookResponse } from '../types/userBook';
 import { userBookStatusLabels } from '../utils/userBookStatus';
+import { BookCardFrame, BookOptionsMenu } from './BookCardFrame';
+import { DropdownMenuItem } from './ui/dropdown-menu';
+import { Trash2 } from 'lucide-react';
 
 interface UserBookCardProps {
     userBook: UserBookResponse;
@@ -14,46 +16,36 @@ function UserBookCard({
     onRemove,
 }: UserBookCardProps) {
     const { book } = userBook;
-
     return (
-        <article className="flex w-44 flex-col gap-2">
-            <Link
-                className="flex flex-col gap-2"
-                to={`/books/${book.googleBooksId}`}
+        <div className="legacy-book-card">
+            <BookCardFrame
+                title={book.title}
+                googleBooksId={book.googleBooksId}
+                thumbnailUrl={book.thumbnailUrl}
+                busy={isRemoving}
+                actions={
+                    onRemove && (
+                        <BookOptionsMenu title={book.title} busy={isRemoving}>
+                            <DropdownMenuItem
+                                variant="destructive"
+                                onClick={() => onRemove(userBook)}
+                            >
+                                <Trash2 aria-hidden="true" />
+                                Remover da biblioteca
+                            </DropdownMenuItem>
+                        </BookOptionsMenu>
+                    )
+                }
             >
-                {book.thumbnailUrl ? (
-                    <img
-                        src={book.thumbnailUrl.replace(/^http:/, 'https:')}
-                        alt={`Capa do livro ${book.title}`}
-                        referrerPolicy="no-referrer"
-                        className="h-56 w-full object-contain"
-                    />
-                ) : (
-                    <div className="flex h-56 items-center justify-center">
-                        Sem capa disponível
-                    </div>
-                )}
-
-                <h3>{book.title}</h3>
-            </Link>
-
-            <p>Status: {userBookStatusLabels[userBook.status]}</p>
-            {userBook.isFavorite && <p>Favorito</p>}
-            {userBook.currentPage !== null && (
-                <p>Página atual: {userBook.currentPage}</p>
-            )}
-
-            {onRemove && (
-                <button
-                    type="button"
-                    onClick={() => onRemove(userBook)}
-                    disabled={isRemoving}
-                >
-                    {isRemoving ? 'Removendo...' : 'Remover da biblioteca'}
-                </button>
-            )}
-        </article>
+                <div className="book-item-reading">
+                    <p>Status: {userBookStatusLabels[userBook.status]}</p>
+                    {userBook.isFavorite && <p>Favorito</p>}
+                    {userBook.currentPage !== null && (
+                        <p>Página atual: {userBook.currentPage}</p>
+                    )}
+                </div>
+            </BookCardFrame>
+        </div>
     );
 }
-
 export default UserBookCard;

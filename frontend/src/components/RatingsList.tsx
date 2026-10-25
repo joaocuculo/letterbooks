@@ -1,5 +1,14 @@
+import type { ReactNode, Ref } from 'react';
+import UserAvatar from './UserAvatar';
 import { Ellipsis, Pencil, Trash2 } from 'lucide-react';
-import { Menu } from '@base-ui/react/menu';
+import { Button } from './ui/button';
+import {
+    DropdownMenu,
+    DropdownMenuTrigger,
+    DropdownMenuContent,
+    DropdownMenuItem,
+} from './ui/dropdown-menu';
+import { Feedback } from './ui/feedback';
 import { RatingStars } from './StarRating';
 import type { RatingResponse } from '../types/rating';
 
@@ -20,15 +29,7 @@ export function RatingEntry({
             className={`book-rating-entry${own ? ' book-own-rating' : ''}`}
         >
             <div className="book-rating-heading">
-                <div className="book-reader-avatar" aria-hidden="true">
-                    {rating.user.name
-                        .trim()
-                        .split(/\s+/)
-                        .slice(0, 2)
-                        .map((part) => part[0])
-                        .join('')
-                        .toUpperCase()}
-                </div>
+                <UserAvatar name={rating.user.name} />
                 <div>
                     <strong>{own ? 'Você' : rating.user.name}</strong>
                     {!Number.isNaN(date.getTime()) && (
@@ -41,31 +42,27 @@ export function RatingEntry({
                     <RatingStars score={rating.score} />
                 </div>
                 {own && onEdit && onDelete && (
-                    <Menu.Root>
-                        <Menu.Trigger
-                            className="book-icon-button"
+                    <DropdownMenu>
+                        <DropdownMenuTrigger
+                            render={<Button variant="ghost" size="icon" />}
                             aria-label="Opções da sua avaliação"
                         >
                             <Ellipsis size={20} aria-hidden="true" />
-                        </Menu.Trigger>
-                        <Menu.Portal>
-                            <Menu.Positioner sideOffset={6} align="end">
-                                <Menu.Popup className="book-rating-menu">
-                                    <Menu.Item onClick={onEdit}>
-                                        <Pencil size={15} aria-hidden="true" />
-                                        Editar avaliação
-                                    </Menu.Item>
-                                    <Menu.Item
-                                        onClick={onDelete}
-                                        className="book-danger"
-                                    >
-                                        <Trash2 size={15} aria-hidden="true" />
-                                        Excluir avaliação
-                                    </Menu.Item>
-                                </Menu.Popup>
-                            </Menu.Positioner>
-                        </Menu.Portal>
-                    </Menu.Root>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" sideOffset={6}>
+                            <DropdownMenuItem onClick={onEdit}>
+                                <Pencil size={15} aria-hidden="true" />
+                                Editar avaliação
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={onDelete}
+                                variant="destructive"
+                            >
+                                <Trash2 size={15} aria-hidden="true" />
+                                Excluir avaliação
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 )}
             </div>
             {rating.comment && (
@@ -75,22 +72,28 @@ export function RatingEntry({
     );
 }
 export default function RatingsList({
-    ratings,
+    ratings, ownRating, onEdit, onDelete, editor, feedback, headingRef,
 }: {
     ratings: RatingResponse[];
+    ownRating?: RatingResponse | null;
+    onEdit?: () => void;
+    onDelete?: () => void;
+    editor?: ReactNode;
+    feedback?: ReactNode;
+    headingRef?: Ref<HTMLHeadingElement>;
 }) {
+    const others = ratings.filter(rating => rating.id !== ownRating?.id);
     return (
         <section className="book-readers" aria-labelledby="book-readers-title">
-            <h2 id="book-readers-title">Avaliações dos leitores</h2>
-            {ratings.length ? (
-                ratings.map((rating) => (
-                    <RatingEntry key={rating.id} rating={rating} />
-                ))
-            ) : (
-                <p className="book-muted">
-                    Este livro ainda não possui avaliações.
-                </p>
+            <h2 id="book-readers-title" ref={headingRef} tabIndex={-1}>Avaliações</h2>
+            {editor ? <div className="book-my-rating">{editor}</div> : ownRating && (
+                <RatingEntry rating={ownRating} own onEdit={onEdit} onDelete={onDelete} />
             )}
+            {feedback || (others.length ? others.map(rating => (
+                <RatingEntry key={rating.id} rating={rating} />
+            )) : !ownRating && (
+                <Feedback kind="empty" title="Este livro ainda não possui avaliações." />
+            ))}
         </section>
     );
 }

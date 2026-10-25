@@ -1,3 +1,6 @@
+import { useToastMessage } from '../hooks/useToastMessage';
+import { Input } from '../components/ui/input';
+import { Button } from '../components/ui/button';
 import { useState } from 'react';
 import type { SubmitEvent } from 'react';
 import { getApiErrorMessage } from '../utils/getApiErrorMessage.';
@@ -48,6 +51,7 @@ function LoginPage() {
             : null
     );
 
+    useToastMessage(successMessage);
     const { signIn } = useAuth();
     const navigate = useNavigate();
 
@@ -118,7 +122,7 @@ function LoginPage() {
                     <div className="login-field">
                         <label htmlFor="email">E-mail</label>
 
-                        <input
+                        <Input
                             className="w-full"
                             type="email"
                             id="email"
@@ -191,19 +195,14 @@ function LoginPage() {
                         </p>
                     )}
 
-                    {successMessage && (
-                        <p className="login-message" role="status">
-                            {successMessage}
-                        </p>
-                    )}
-
-                    <button
+                    <Button
+                        variant="default"
                         className="login-submit"
                         type="submit"
                         disabled={isSubmitting}
                     >
                         {isSubmitting ? 'Entrando...' : 'Entrar'}
-                    </button>
+                    </Button>
                 </form>
 
                 <p className="login-register">

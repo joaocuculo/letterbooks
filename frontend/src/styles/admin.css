@@ -1,21 +1,21 @@
 /* Administrative catalog: neutral, compact, isolated from reader pages. */
 .admin-shell {
     min-height: 100svh;
-    background: #fff;
-    color: #202323;
-    font-family: Manrope, sans-serif;
+    background: var(--surface-background);
+    color: var(--text-primary);
+    font-family: var(--font-interface);
     font-size: 14px;
 }
 .admin-main {
-    max-width: 1120px;
+    max-width: var(--layout-admin-max);
     margin: 0 auto;
-    padding: 28px 20px 64px;
+    padding: var(--page-top) var(--page-gutter) var(--page-bottom);
 }
 .admin-tabs {
     display: flex;
     flex-wrap: wrap;
     gap: 24px;
-    border-bottom: 1px solid #e4e7e5;
+    border-bottom: 1px solid var(--border-subtle);
     margin-bottom: 36px;
 }
 .admin-tabs a {
@@ -24,12 +24,12 @@
     min-height: 44px;
     padding: 0 0 12px;
     text-decoration: none;
-    color: #606565;
+    color: var(--text-secondary);
     border-bottom: 2px solid transparent;
 }
 .admin-tabs a.active {
-    border-color: #202323;
-    color: #202323;
+    border-color: var(--text-primary);
+    color: var(--text-primary);
     font-weight: 700;
 }
 .admin-main h1 {
@@ -59,56 +59,56 @@
 }
 .admin-title-row p,
 .admin-detail-title p {
-    color: #606565;
+    color: var(--text-secondary);
 }
-.admin-main button,
+.admin-main button:not(.ui-button),
 .admin-main a,
-.admin-dialog button {
+.admin-dialog button:not(.ui-button) {
     cursor: pointer;
 }
-.admin-main button,
-.admin-dialog button {
+.admin-main button:not(.ui-button),
+.admin-dialog button:not(.ui-button) {
     min-height: 44px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    border: 1px solid #d5d8d7;
-    border-radius: 10px;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-control);
     padding: 10px 16px;
-    background: #fff;
-    color: #202323;
+    background: var(--surface-background);
+    color: var(--text-primary);
     font: inherit;
 }
-.admin-main button:hover,
-.admin-dialog button:hover {
-    background: #f5f6f5;
+.admin-main button:not(.ui-button):hover,
+.admin-dialog button:not(.ui-button):hover {
+    background: var(--surface-subtle);
 }
 .admin-main .admin-primary,
 .admin-dialog .admin-primary {
-    background: #202323;
-    color: #fff;
-    border-color: #202323;
+    background: var(--text-primary);
+    color: var(--surface-background);
+    border-color: var(--text-primary);
     font-weight: 700;
 }
 .admin-main .admin-primary:hover,
 .admin-dialog .admin-primary:hover {
-    background: #000;
+    background: var(--action-primary);
 }
-.admin-main button:disabled,
-.admin-dialog button:disabled {
+.admin-main button:not(.ui-button):disabled,
+.admin-dialog button:not(.ui-button):disabled {
     opacity: 0.55;
     cursor: default;
 }
 .admin-main :focus-visible,
 .admin-dialog :focus-visible {
-    outline: 2px solid #202323;
+    outline: 2px solid var(--text-primary);
     outline-offset: 3px;
 }
 .admin-main ::selection,
 .admin-dialog ::selection {
-    background: #202323;
-    color: #fff;
+    background: var(--text-primary);
+    color: var(--surface-background);
 }
 .admin-list-heading {
     display: flex;
@@ -118,7 +118,7 @@
     margin-bottom: 16px;
 }
 .admin-list-heading span {
-    color: #606565;
+    color: var(--text-secondary);
 }
 .admin-records {
     padding: 0;
@@ -131,7 +131,7 @@
     align-items: center;
     gap: 24px;
     padding: 16px 0;
-    border-bottom: 1px solid #e4e7e5;
+    border-bottom: 1px solid var(--border-subtle);
 }
 .admin-records strong {
     font-weight: 650;
@@ -143,7 +143,7 @@
 }
 .admin-records li > div:first-child > span {
     display: block;
-    color: #606565;
+    color: var(--text-secondary);
     font-size: 12px;
     margin-top: 5px;
 }
@@ -180,33 +180,32 @@
 }
 .admin-main .admin-error,
 .admin-dialog .admin-error {
-    color: #b42318;
+    color: var(--feedback-error);
 }
 .admin-success {
-    color: #202323;
+    color: var(--text-primary);
 }
 .admin-overlay {
     position: fixed;
     inset: 0;
-    background: #0008;
-    z-index: 100;
+    background: var(--overlay-dialog);
+    z-index: var(--layer-dialog-overlay);
 }
 .admin-dialog {
     position: fixed;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    z-index: 101;
+    z-index: var(--layer-dialog);
     width: min(440px, calc(100vw - 32px));
     max-height: calc(100svh - 32px);
     overflow-y: auto;
     padding: 24px;
-    border-radius: 16px;
-    background: #fff;
-    color: #202323;
+    border-radius: var(--radius-panel);
+    background: var(--surface-background);
+    color: var(--text-primary);
     font:
-        14px/1.6 Manrope,
-        sans-serif;
+        14px/1.6 var(--font-interface);
 }
 .admin-dialog h2 {
     font-size: 22px;
@@ -230,20 +229,20 @@
 }
 .admin-dialog input,
 .admin-dialog select,
-.admin-name-form input {
+.admin-name-form input:not(.ui-field) {
     min-height: 44px;
     width: 100%;
     min-width: 0;
-    border: 1px solid #858d89;
-    border-radius: 10px;
+    border: 1px solid var(--border-field);
+    border-radius: var(--radius-control);
     padding: 10px 12px;
     font: inherit;
-    background: #fff;
-    color: #202323;
-    caret-color: #202323;
+    background: var(--surface-background);
+    color: var(--text-primary);
+    caret-color: var(--text-primary);
 }
 .admin-dialog input::placeholder {
-    color: #606565;
+    color: var(--text-secondary);
 }
 .admin-dialog-actions {
     display: flex;
@@ -253,9 +252,9 @@
     margin-top: 16px;
 }
 .admin-dialog .admin-danger-button {
-    background: #b42318;
-    color: #fff;
-    border-color: #b42318;
+    background: var(--feedback-error);
+    color: var(--surface-background);
+    border-color: var(--feedback-error);
 }
 .admin-dialog .admin-danger-button:hover {
     background: #921c13;
@@ -266,7 +265,7 @@
 .admin-section {
     margin-top: 36px;
     padding-top: 28px;
-    border-top: 1px solid #e4e7e5;
+    border-top: 1px solid var(--border-subtle);
 }
 .admin-section h2 {
     margin-bottom: 16px;
@@ -285,7 +284,7 @@
     flex-shrink: 0;
 }
 .admin-main .admin-danger {
-    color: #b42318;
+    color: var(--feedback-error);
 }
 .admin-name-form {
     max-width: 600px;
@@ -317,8 +316,8 @@
 .admin-merge-summary {
     margin: 24px 0;
     padding: 12px 16px;
-    background: #f5f6f5;
-    border-radius: 10px;
+    background: var(--surface-subtle);
+    border-radius: var(--radius-control);
 }
 .admin-candidates {
     border: 0;
@@ -335,24 +334,24 @@
     gap: 12px;
     padding: 12px 0;
     min-height: 44px;
-    border-bottom: 1px solid #e4e7e5;
+    border-bottom: 1px solid var(--border-subtle);
     cursor: pointer;
     overflow-wrap: anywhere;
 }
 .admin-candidates input {
-    accent-color: #202323;
+    accent-color: var(--text-primary);
     flex-shrink: 0;
 }
 .admin-candidates small {
     display: block;
-    color: #606565;
+    color: var(--text-secondary);
 }
 .admin-merge > .admin-disclosure + div > .admin-primary {
     margin-top: 24px;
 }
 @media (max-width: 599px) {
     .admin-main {
-        padding: 20px 20px 48px;
+        padding: var(--page-top) var(--page-gutter) var(--page-bottom);
     }
     .admin-title-row {
         flex-direction: column;
@@ -398,7 +397,7 @@
     grid-column: 1 / -1;
 }
 .admin-user-actions p {
-    color: #606565;
+    color: var(--text-secondary);
     font-size: 12px;
     margin: 6px 0 0;
 }
@@ -412,7 +411,7 @@
     margin: 0;
 }
 .admin-user-metadata dt {
-    color: #606565;
+    color: var(--text-secondary);
     font-size: 12px;
     margin-bottom: 5px;
 }

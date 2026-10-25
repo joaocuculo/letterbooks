@@ -1,5 +1,20 @@
+import { toast } from '../components/ui/toast-manager';
+import {
+    Select,
+    SelectTrigger,
+    SelectValue,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+} from '../components/ui/select';
+import { Button } from '../components/ui/button';
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
-import { Dialog } from '@base-ui/react/dialog';
+import {
+    Dialog,
+    DialogContent,
+    DialogTitle,
+    DialogDescription,
+} from '../components/ui/dialog';
 import { useSearchParams } from 'react-router-dom';
 import { AdminFailure, AdminPager } from '../components/admin/AdminControls';
 import { useLibraryResource } from '../hooks/useLibraryResource';
@@ -21,7 +36,7 @@ export default function UsersAdminPage() {
     const [status, setStatus] = useState<UserStatus>('ACTIVE');
     const [saving, setSaving] = useState(false);
     const [saveError, setSaveError] = useState('');
-    const [success, setSuccess] = useState('');
+
     const roleId = useId();
     const statusId = useId();
     const errorId = useId();
@@ -73,11 +88,7 @@ export default function UsersAdminPage() {
                     <p>Consulte as contas cadastradas.</p>
                 </div>
             </div>
-            {success && (
-                <p className="admin-success" role="status">
-                    {success}
-                </p>
-            )}
+
             <div className="admin-list-heading">
                 <h2>Usuários cadastrados</h2>
                 {result && <span>{result.page.totalElements} registros</span>}
@@ -121,7 +132,8 @@ export default function UsersAdminPage() {
                                 </div>
                             </dl>
                             <div className="admin-user-actions">
-                                <button
+                                <Button
+                                    variant="outline"
                                     type="button"
                                     disabled={user.id === authenticatedUser?.id}
                                     aria-describedby={
@@ -137,11 +149,10 @@ export default function UsersAdminPage() {
                                         setRole(user.role);
                                         setStatus(user.status);
                                         setSaveError('');
-                                        setSuccess('');
                                     }}
                                 >
                                     Alterar papel e situação
-                                </button>
+                                </Button>
                                 {user.id === authenticatedUser?.id && (
                                     <p id={`own-account-${user.id}`}>
                                         Você não pode alterar suas próprias
@@ -154,133 +165,160 @@ export default function UsersAdminPage() {
                 </ul>
             )}
             {editingUser && (
-                <Dialog.Root
+                <Dialog
                     open
                     onOpenChange={(open) => {
                         if (!open && !saving) setEditingUser(null);
                     }}
                 >
-                    <Dialog.Portal>
-                        <Dialog.Backdrop className="admin-overlay" />
-                        <Dialog.Popup
-                            className="admin-dialog"
-                            finalFocus={editButton}
-                            aria-busy={saving}
+                    <DialogContent
+                        showCloseButton={false}
+                        className="domain-dialog"
+                        finalFocus={editButton}
+                        aria-busy={saving}
+                    >
+                        <DialogTitle>Alterar papel e situação</DialogTitle>
+                        <DialogDescription>
+                            Conta: {editingUser.name} ({editingUser.email}). O
+                            papel Administrador permite acessar as áreas
+                            administrativas. A situação Inativa impede novos
+                            acessos à conta.
+                        </DialogDescription>
+                        <form
+                            onSubmit={async (event) => {
+                                event.preventDefault();
+                                if (
+                                    saving ||
+                                    editingUser.id === authenticatedUser?.id ||
+                                    (role === editingUser.role &&
+                                        status === editingUser.status)
+                                )
+                                    return;
+                                setSaving(true);
+                                setSaveError('');
+                                try {
+                                    const updated =
+                                        await updateUserRoleAndStatus(
+                                            editingUser.id,
+                                            { role, status }
+                                        );
+                                    toast.add({
+                                        title: `Conta de ${updated.name} atualizada: ${roleLabels[updated.role]}, ${statusLabels[updated.status]}.`,
+                                        type: 'success',
+                                    });
+                                    editButton.current = titleRef.current;
+                                    setEditingUser(null);
+                                    setRevision((value) => value + 1);
+                                } catch (error) {
+                                    setSaveError(
+                                        getApiErrorMessage(
+                                            error,
+                                            'Não foi possível atualizar a conta. Tente novamente.'
+                                        )
+                                    );
+                                } finally {
+                                    setSaving(false);
+                                }
+                            }}
                         >
-                            <Dialog.Title>
-                                Alterar papel e situação
-                            </Dialog.Title>
-                            <Dialog.Description>
-                                Conta: {editingUser.name} ({editingUser.email}).
-                                O papel Administrador permite acessar as áreas
-                                administrativas. A situação Inativa impede novos
-                                acessos à conta.
-                            </Dialog.Description>
-                            <form
-                                onSubmit={async (event) => {
-                                    event.preventDefault();
-                                    if (
-                                        saving ||
-                                        editingUser.id ===
-                                            authenticatedUser?.id ||
-                                        (role === editingUser.role &&
-                                            status === editingUser.status)
-                                    )
-                                        return;
-                                    setSaving(true);
-                                    setSaveError('');
-                                    try {
-                                        const updated =
-                                            await updateUserRoleAndStatus(
-                                                editingUser.id,
-                                                { role, status }
-                                            );
-                                        setSuccess(
-                                            `Conta de ${updated.name} atualizada: ${roleLabels[updated.role]}, ${statusLabels[updated.status]}.`
-                                        );
-                                        editButton.current = titleRef.current;
-                                        setEditingUser(null);
-                                        setRevision((value) => value + 1);
-                                    } catch (error) {
-                                        setSaveError(
-                                            getApiErrorMessage(
-                                                error,
-                                                'Não foi possível atualizar a conta. Tente novamente.'
-                                            )
-                                        );
-                                    } finally {
-                                        setSaving(false);
-                                    }
+                            <label htmlFor={roleId}>Papel</label>
+                            <Select
+                                items={[
+                                    { value: 'USER', label: 'Usuário' },
+                                    { value: 'ADMIN', label: 'Administrador' },
+                                ]}
+                                value={role}
+                                disabled={saving}
+                                onValueChange={(value) => {
+                                    if (value !== null) setRole(value);
                                 }}
                             >
-                                <label htmlFor={roleId}>Papel</label>
-                                <select
+                                <SelectTrigger
                                     id={roleId}
-                                    value={role}
-                                    disabled={saving}
                                     aria-describedby={
                                         saveError ? errorId : undefined
                                     }
-                                    onChange={(event) =>
-                                        setRole(event.target.value as UserRole)
-                                    }
                                 >
-                                    <option value="USER">Usuário</option>
-                                    <option value="ADMIN">Administrador</option>
-                                </select>
-                                <label htmlFor={statusId}>
-                                    Situação da conta
-                                </label>
-                                <select
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent alignItemWithTrigger={false}>
+                                    <SelectGroup>
+                                        <SelectItem value="USER">
+                                            Usuário
+                                        </SelectItem>
+                                        <SelectItem value="ADMIN">
+                                            Administrador
+                                        </SelectItem>
+                                    </SelectGroup>
+                                </SelectContent>
+                            </Select>
+                            <label htmlFor={statusId}>Situação da conta</label>
+                            <Select
+                                items={[
+                                    { value: 'ACTIVE', label: 'Ativa' },
+                                    { value: 'INACTIVE', label: 'Inativa' },
+                                ]}
+                                value={status}
+                                disabled={saving}
+                                onValueChange={(value) => {
+                                    if (value !== null) setStatus(value);
+                                }}
+                            >
+                                <SelectTrigger
                                     id={statusId}
-                                    value={status}
-                                    disabled={saving}
                                     aria-describedby={
                                         saveError ? errorId : undefined
                                     }
-                                    onChange={(event) =>
-                                        setStatus(
-                                            event.target.value as UserStatus
-                                        )
+                                >
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent alignItemWithTrigger={false}>
+                                    <SelectGroup>
+                                        <SelectItem value="ACTIVE">
+                                            Ativa
+                                        </SelectItem>
+                                        <SelectItem value="INACTIVE">
+                                            Inativa
+                                        </SelectItem>
+                                    </SelectGroup>
+                                </SelectContent>
+                            </Select>
+                            {saveError && (
+                                <p
+                                    id={errorId}
+                                    className="admin-error"
+                                    role="alert"
+                                >
+                                    {saveError}
+                                </p>
+                            )}
+                            <div className="admin-dialog-actions">
+                                <Button
+                                    variant="outline"
+                                    type="button"
+                                    disabled={saving}
+                                    onClick={() => setEditingUser(null)}
+                                >
+                                    Cancelar
+                                </Button>
+                                <Button
+                                    variant="default"
+                                    type="submit"
+                                    className="admin-primary"
+                                    disabled={
+                                        saving ||
+                                        (role === editingUser.role &&
+                                            status === editingUser.status)
                                     }
                                 >
-                                    <option value="ACTIVE">Ativa</option>
-                                    <option value="INACTIVE">Inativa</option>
-                                </select>
-                                {saveError && (
-                                    <p
-                                        id={errorId}
-                                        className="admin-error"
-                                        role="alert"
-                                    >
-                                        {saveError}
-                                    </p>
-                                )}
-                                <div className="admin-dialog-actions">
-                                    <button
-                                        type="button"
-                                        disabled={saving}
-                                        onClick={() => setEditingUser(null)}
-                                    >
-                                        Cancelar
-                                    </button>
-                                    <button
-                                        className="admin-primary"
-                                        disabled={
-                                            saving ||
-                                            (role === editingUser.role &&
-                                                status === editingUser.status)
-                                        }
-                                    >
-                                        {saving
-                                            ? 'Salvando...'
-                                            : 'Salvar alterações'}
-                                    </button>
-                                </div>
-                            </form>
-                        </Dialog.Popup>
-                    </Dialog.Portal>
-                </Dialog.Root>
+                                    {saving
+                                        ? 'Salvando...'
+                                        : 'Salvar alterações'}
+                                </Button>
+                            </div>
+                        </form>
+                    </DialogContent>
+                </Dialog>
             )}
             {pagination && !resource.error && (
                 <AdminPager

@@ -1,3 +1,6 @@
+import { Feedback } from './ui/feedback';
+import { Button } from './ui/button';
+import { Textarea } from './ui/textarea';
 import { useState, type SubmitEvent } from 'react';
 import StarRating from './StarRating';
 import type { RatingResponse, RatingUpdate } from '../types/rating';
@@ -7,14 +10,14 @@ interface RatingFormProps {
     isSaving: boolean;
     errorMessage: string | null;
     onSave: (data: RatingUpdate) => void;
-    onCancel: () => void;
+    onCancelEditing?: () => void;
 }
 export default function RatingForm({
     rating,
     isSaving,
     errorMessage,
     onSave,
-    onCancel,
+    onCancelEditing,
 }: RatingFormProps) {
     const [score, setScore] = useState(rating ? String(rating.score) : '');
     const [comment, setComment] = useState(rating?.comment ?? '');
@@ -23,6 +26,7 @@ export default function RatingForm({
     );
     function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
         event.preventDefault();
+        if (isSaving) return;
         if (score === '') {
             setValidationMessage('Selecione uma nota.');
             return;
@@ -65,34 +69,33 @@ export default function RatingForm({
                 <label htmlFor="rating-comment">
                     Comentário <span className="book-muted">(opcional)</span>
                 </label>
-                <textarea
+                <Textarea
                     id="rating-comment"
                     value={comment}
                     onChange={(event) => setComment(event.target.value)}
                     disabled={isSaving}
                 />
             </div>
-            {errorMessage && (
-                <p className="book-error" role="alert">
-                    {errorMessage}
-                </p>
-            )}
+            {errorMessage && <Feedback kind="error" title={errorMessage} />}
             <div className="book-form-actions">
-                <button
-                    className="book-primary"
+                <Button
+                    loading={isSaving}
+                    variant="default"
                     type="submit"
-                    disabled={isSaving}
+                    disabled={isSaving || score === ''}
                 >
-                    {isSaving ? 'Salvando...' : 'Salvar avaliação'}
-                </button>
-                <button
-                    className="book-secondary"
-                    type="button"
-                    onClick={onCancel}
-                    disabled={isSaving}
-                >
-                    Cancelar
-                </button>
+                    {isSaving ? 'Publicando...' : 'Publicar avaliação'}
+                </Button>
+                {onCancelEditing && (
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        disabled={isSaving}
+                        onClick={onCancelEditing}
+                    >
+                        Cancelar edição
+                    </Button>
+                )}
             </div>
         </form>
     );

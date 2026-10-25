@@ -1,6 +1,15 @@
+import { useToastMessage } from '../../hooks/useToastMessage';
+import { Feedback } from '../ui/feedback';
+import { Input } from '../ui/input';
+import { Button } from '../ui/button';
 import { useCallback, useEffect, useId, useState } from 'react';
 import { Link, useLocation, useSearchParams } from 'react-router-dom';
-import { Dialog } from '@base-ui/react/dialog';
+import {
+    Dialog,
+    DialogContent,
+    DialogTitle,
+    DialogDescription,
+} from '../ui/dialog';
 import { ArrowRight, Plus } from 'lucide-react';
 import { useLibraryResource } from '../../hooks/useLibraryResource';
 import { getApiErrorMessage } from '../../utils/getApiErrorMessage.';
@@ -22,6 +31,7 @@ export default function CatalogList({ kind }: { kind: CatalogKind }) {
     const [success, setSuccess] = useState(
         typeof stateMessage === 'string' ? stateMessage : ''
     );
+    useToastMessage(success);
     const inputId = useId();
     const errorId = useId();
     const load = useCallback(
@@ -56,8 +66,9 @@ export default function CatalogList({ kind }: { kind: CatalogKind }) {
                     <h1>{c.title}</h1>
                     <p>{c.description}</p>
                 </div>
-                <button
-                    className="admin-primary"
+                <Button
+                    variant="default"
+                    type="button"
                     onClick={() => {
                         setName('');
                         setError('');
@@ -66,13 +77,8 @@ export default function CatalogList({ kind }: { kind: CatalogKind }) {
                 >
                     <Plus size={17} aria-hidden="true" />
                     {c.createLabel}
-                </button>
+                </Button>
             </div>
-            {success && (
-                <p className="admin-success" role="status">
-                    {success}
-                </p>
-            )}
             <div className="admin-list-heading">
                 <h2>
                     {c.title}{' '}
@@ -81,7 +87,7 @@ export default function CatalogList({ kind }: { kind: CatalogKind }) {
                 {result && <span>{result.page.totalElements} registros</span>}
             </div>
             {resource.busy ? (
-                <p role="status">Carregando {c.plural}...</p>
+                <Feedback kind="loading" title={`Carregando ${c.plural}...`} />
             ) : resource.error ? (
                 <AdminFailure
                     message={resource.error}
@@ -124,106 +130,107 @@ export default function CatalogList({ kind }: { kind: CatalogKind }) {
                 />
             )}
             {open && (
-                <Dialog.Root
+                <Dialog
                     open
                     onOpenChange={(value) => {
                         if (!value && !busy) setOpen(false);
                     }}
                 >
-                    <Dialog.Portal>
-                        <Dialog.Backdrop className="admin-overlay" />
-                        <Dialog.Popup className="admin-dialog" aria-busy={busy}>
-                            <Dialog.Title>{c.createLabel}</Dialog.Title>
-                            <Dialog.Description>
-                                {kind === 'authors'
-                                    ? 'Cadastre o nome principal do autor.'
-                                    : 'Use “/” para cadastrar categorias independentes em uma única operação.'}
-                            </Dialog.Description>
-                            <form
-                                onSubmit={async (event) => {
-                                    event.preventDefault();
-                                    if (busy) return;
-                                    const normalized = name.trim();
-                                    if (!normalized) {
-                                        setError(
-                                            kind === 'authors'
-                                                ? 'Informe o nome do autor.'
-                                                : 'Informe ao menos uma categoria.'
-                                        );
-                                        return;
-                                    }
-                                    setBusy(true);
-                                    setError('');
-                                    try {
-                                        const created =
-                                            await c.create(normalized);
-                                        setSuccess(
-                                            `Cadastro concluído: ${created.map((x) => x.name).join(', ')}.`
-                                        );
-                                        setOpen(false);
-                                        setRevision((v) => v + 1);
-                                    } catch (e) {
-                                        setError(
-                                            getApiErrorMessage(
-                                                e,
-                                                'Não foi possível criar. Tente novamente.'
-                                            )
-                                        );
-                                    } finally {
-                                        setBusy(false);
-                                    }
-                                }}
-                            >
-                                <label htmlFor={inputId}>{c.nameLabel}</label>
-                                <input
-                                    id={inputId}
-                                    value={name}
+                    <DialogContent
+                        showCloseButton={false}
+                        className="domain-dialog domain-admin-dialog"
+                        aria-busy={busy}
+                    >
+                        <DialogTitle>{c.createLabel}</DialogTitle>
+                        <DialogDescription>
+                            {kind === 'authors'
+                                ? 'Cadastre o nome principal do autor.'
+                                : 'Use “/” para cadastrar categorias independentes em uma única operação.'}
+                        </DialogDescription>
+                        <form
+                            onSubmit={async (event) => {
+                                event.preventDefault();
+                                if (busy) return;
+                                const normalized = name.trim();
+                                if (!normalized) {
+                                    setError(
+                                        kind === 'authors'
+                                            ? 'Informe o nome do autor.'
+                                            : 'Informe ao menos uma categoria.'
+                                    );
+                                    return;
+                                }
+                                setBusy(true);
+                                setError('');
+                                try {
+                                    const created = await c.create(normalized);
+                                    setSuccess(
+                                        `Cadastro concluído: ${created.map((x) => x.name).join(', ')}.`
+                                    );
+                                    setOpen(false);
+                                    setRevision((v) => v + 1);
+                                } catch (e) {
+                                    setError(
+                                        getApiErrorMessage(
+                                            e,
+                                            'Não foi possível criar. Tente novamente.'
+                                        )
+                                    );
+                                } finally {
+                                    setBusy(false);
+                                }
+                            }}
+                        >
+                            <label htmlFor={inputId}>{c.nameLabel}</label>
+                            <Input
+                                id={inputId}
+                                value={name}
+                                disabled={busy}
+                                onChange={(event) =>
+                                    setName(event.target.value)
+                                }
+                                aria-invalid={!!error}
+                                aria-describedby={error ? errorId : undefined}
+                                placeholder={
+                                    kind === 'categories'
+                                        ? 'Ex.: Fantasia / Aventura'
+                                        : undefined
+                                }
+                            />
+                            {error && (
+                                <p
+                                    id={errorId}
+                                    className="admin-error"
+                                    role="alert"
+                                >
+                                    {error}
+                                </p>
+                            )}
+                            <div className="admin-dialog-actions">
+                                <Button
+                                    variant="outline"
+                                    type="button"
                                     disabled={busy}
-                                    onChange={(event) =>
-                                        setName(event.target.value)
-                                    }
-                                    aria-invalid={!!error}
-                                    aria-describedby={
-                                        error ? errorId : undefined
-                                    }
-                                    placeholder={
-                                        kind === 'categories'
-                                            ? 'Ex.: Fantasia / Aventura'
-                                            : undefined
-                                    }
-                                />
-                                {error && (
-                                    <p
-                                        id={errorId}
-                                        className="admin-error"
-                                        role="alert"
-                                    >
-                                        {error}
-                                    </p>
-                                )}
-                                <div className="admin-dialog-actions">
-                                    <button
-                                        type="button"
-                                        disabled={busy}
-                                        onClick={() => setOpen(false)}
-                                    >
-                                        Cancelar
-                                    </button>
-                                    <button
-                                        className="admin-primary"
-                                        disabled={busy}
-                                    >
-                                        {busy
-                                            ? 'Criando...'
-                                            : kind === 'authors'
-                                              ? 'Criar autor'
-                                              : 'Criar categorias'}
-                                    </button>
-                                </div>
-                            </form>
-                        </Dialog.Popup>
-                    </Dialog.Portal>
-                </Dialog.Root>
+                                    onClick={() => setOpen(false)}
+                                >
+                                    Cancelar
+                                </Button>
+                                <Button
+                                    loading={busy}
+                                    variant="default"
+                                    type="submit"
+                                    disabled={busy}
+                                >
+                                    {busy
+                                        ? 'Criando...'
+                                        : kind === 'authors'
+                                          ? 'Criar autor'
+                                          : 'Criar categorias'}
+                                </Button>
+                            </div>
+                        </form>
+                    </DialogContent>
+                </Dialog>
             )}
         </section>
     );

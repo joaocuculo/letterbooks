@@ -1,18 +1,11 @@
 @import './auth-fields.css';
-@font-face {
-    font-family: Manrope;
-    src: url('/fonts/Manrope.ttf') format('truetype');
-    font-weight: 200 800;
-    font-display: swap;
-}
-
 .login-page {
     min-height: 100svh;
     display: flex;
     flex-direction: column;
-    background: #fff;
-    color: #202323;
-    font-family: Manrope, sans-serif;
+    background: var(--surface-background);
+    color: var(--text-primary);
+    font-family: var(--font-interface);
     font-size: 14px;
 }
 .login-page *,
@@ -21,8 +14,8 @@
     box-sizing: border-box;
 }
 .login-page ::selection {
-    background: #202323;
-    color: #fff;
+    background: var(--text-primary);
+    color: var(--surface-background);
 }
 .login-page a {
     color: inherit;
@@ -33,7 +26,7 @@
     text-underline-offset: 4px;
 }
 .login-page :focus-visible {
-    outline: 2px solid #202323;
+    outline: 2px solid var(--text-primary);
     outline-offset: 5px;
 }
 .login-skip {
@@ -42,7 +35,7 @@
     left: 20px;
     z-index: 2;
     padding: 12px;
-    background: #fff;
+    background: var(--surface-background);
 }
 .login-skip:focus {
     top: 12px;
@@ -51,9 +44,9 @@
     height: 68px;
     flex-shrink: 0;
     width: 100%;
-    max-width: 1440px;
+    max-width: var(--layout-catalog-max);
     margin: 0 auto;
-    padding: 0 5.5%;
+    padding: 0 var(--page-gutter);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -78,9 +71,9 @@
 .login-content {
     flex: 1;
     width: 100%;
-    max-width: 1280px;
+    max-width: var(--layout-catalog-max);
     margin: 0 auto;
-    padding: 20px 5.5% 24px;
+    padding: var(--space-5) var(--page-gutter) var(--space-6);
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
     align-items: center;
@@ -103,7 +96,7 @@
     margin: 10px 0 20px;
     font-size: 14px;
     line-height: 1.8;
-    color: #606565;
+    color: var(--text-secondary);
 }
 .login-forgot {
     align-self: flex-end;
@@ -115,19 +108,19 @@
 }
 .login-register {
     margin: 18px 0 0;
-    color: #606565;
+    color: var(--text-secondary);
     font-size: 12px;
     line-height: 1.9;
 }
 .login-register a {
     display: inline-block;
-    color: #202323;
+    color: var(--text-primary);
     font-weight: 750;
     padding: 8px 0;
 }
 .login-gallery {
     position: relative;
-    width: min(100%, 550px, calc((100svh - 180px) / 1.08));
+    width: min(90%, 550px, calc((100svh - 180px) / 1.08));
     aspect-ratio: 1 / 1.08;
     justify-self: center;
 }
@@ -172,13 +165,13 @@
     }
     .login-content {
         grid-template-columns: minmax(0, 1fr);
-        padding: 20px 24px 48px;
+        padding: var(--space-5) var(--page-gutter) var(--page-bottom);
         gap: 0;
     }
 }
 @media (max-width: 480px) {
     .login-header {
-        padding: 0 20px;
+        padding: 0 var(--page-gutter);
         gap: 12px;
     }
     .login-brand {

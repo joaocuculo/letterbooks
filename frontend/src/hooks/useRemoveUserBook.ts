@@ -1,3 +1,4 @@
+import { toast } from '../components/ui/toast-manager';
 import { useState } from 'react';
 import { remove } from '../services/userBookService';
 import type { UserBookResponse } from '../types/userBook';
@@ -7,15 +8,13 @@ interface UseRemoveUserBookOptions {
     onRemoved: (userBook: UserBookResponse) => void;
 }
 
-export function useRemoveUserBook({
-    onRemoved,
-}: UseRemoveUserBookOptions) {
-    const [removingUserBookId, setRemovingUserBookId] = useState<
-        number | null
-    >(null);
-    const [removeErrorMessage, setRemoveErrorMessage] = useState<
-        string | null
-    >(null);
+export function useRemoveUserBook({ onRemoved }: UseRemoveUserBookOptions) {
+    const [removingUserBookId, setRemovingUserBookId] = useState<number | null>(
+        null
+    );
+    const [removeErrorMessage, setRemoveErrorMessage] = useState<string | null>(
+        null
+    );
 
     async function removeFromLibrary(userBook: UserBookResponse) {
         const confirmed = window.confirm(
@@ -30,7 +29,15 @@ export function useRemoveUserBook({
             setRemovingUserBookId(userBook.id);
             setRemoveErrorMessage(null);
 
-            await remove(userBook.id);
+            await toast.promise(remove(userBook.id), {
+                loading: 'Removendo livro...',
+                success: 'Livro removido da biblioteca.',
+                error: (error) =>
+                    getApiErrorMessage(
+                        error,
+                        'Não foi possível remover o livro da sua biblioteca.'
+                    ),
+            });
             onRemoved(userBook);
         } catch (error) {
             setRemoveErrorMessage(

@@ -1,9 +1,19 @@
+import { toast } from '../components/ui/toast-manager';
+import { Feedback } from '../components/ui/feedback';
+import { Button } from '../components/ui/button';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, RefreshCw } from 'lucide-react';
 import axios from 'axios';
-import { Dialog } from '@base-ui/react/dialog';
+import {
+    Dialog,
+    DialogContent,
+    DialogTitle,
+    DialogDescription,
+    DialogClose,
+} from '../components/ui/dialog';
 import BookCover from '../components/BookCover';
+import AddToShelfDialog from '../components/AddToShelfDialog';
 import {
     findMineByGoogleBooksId,
     type BookshelfMembership,
@@ -13,7 +23,7 @@ import DOMPurify from 'dompurify';
 import SiteHeader from '../components/SiteHeader';
 import BookRelationshipControls from '../components/BookRelationshipControls';
 import RatingForm from '../components/RatingForm';
-import RatingsList, { RatingEntry } from '../components/RatingsList';
+import RatingsList from '../components/RatingsList';
 import { useAuth } from '../hooks/useAuth';
 import { useRemoveUserBook } from '../hooks/useRemoveUserBook';
 import { getBookById } from '../services/bookService';
@@ -42,15 +52,21 @@ import '../styles/book-details.css';
 
 function Retry({ error, onRetry }: { error: string; onRetry: () => void }) {
     return (
-        <div className="book-load-error">
-            <p className="book-error" role="alert">
-                {error}
-            </p>
-            <button className="book-secondary" type="button" onClick={onRetry}>
-                <RefreshCw size={15} aria-hidden="true" />
-                Tentar novamente
-            </button>
-        </div>
+        <Feedback
+            kind="error"
+            title={error}
+            action={
+                <Button
+                    variant="outline"
+                    className="book-secondary"
+                    type="button"
+                    onClick={onRetry}
+                >
+                    <RefreshCw size={15} aria-hidden="true" />
+                    Tentar novamente
+                </Button>
+            }
+        />
     );
 }
 
@@ -58,10 +74,19 @@ function BookDetails({ googleBooksId }: { googleBooksId: string | undefined }) {
     const { isAuthenticated } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
+    const source = (location.state as { from?: unknown } | null)?.from;
+    const backTo =
+        typeof source === 'string' &&
+        source.startsWith('/') &&
+        !source.startsWith('//')
+            ? source
+            : '/explore';
     const [shelves, setShelves] = useState<BookshelfMembership[]>([]);
     const [shelvesError, setShelvesError] = useState('');
     const [shelvesBusy, setShelvesBusy] = useState(isAuthenticated);
+    const [addingToShelf, setAddingToShelf] = useState(false);
     const [shelvesRetry, setShelvesRetry] = useState(0);
+    const [ratingEditing, setRatingEditing] = useState(false);
     const [deleteOpen, setDeleteOpen] = useState(false);
     const [deletingRating, setDeletingRating] = useState(false);
     const [deleteError, setDeleteError] = useState('');
@@ -81,8 +106,7 @@ function BookDetails({ googleBooksId }: { googleBooksId: string | undefined }) {
     const [userError, setUserError] = useState('');
     const [saveBookError, setSaveBookError] = useState('');
     const [saveRatingError, setSaveRatingError] = useState('');
-    const [ratingOpen, setRatingOpen] = useState(false);
-    const [ratingSuccess, setRatingSuccess] = useState('');
+
     const [bookRetry, setBookRetry] = useState(0);
     const [ratingsRetry, setRatingsRetry] = useState(0);
     const [userRetry, setUserRetry] = useState(0);
@@ -237,8 +261,12 @@ function BookDetails({ googleBooksId }: { googleBooksId: string | undefined }) {
                 };
             });
             setMyRating(null);
+            setRatingEditing(false);
             setDeleteOpen(false);
-            setRatingSuccess('Sua avaliação foi excluída.');
+            toast.add({
+                title: 'Sua avaliação foi excluída.',
+                type: 'success',
+            });
         } catch (error) {
             setDeleteError(
                 getApiErrorMessage(
@@ -276,20 +304,6 @@ function BookDetails({ googleBooksId }: { googleBooksId: string | undefined }) {
             },
         });
     }
-    function closeRating() {
-        setRatingOpen(false);
-        setSaveRatingError('');
-        requestAnimationFrame(() => ratingTitle.current?.focus());
-    }
-    function openRating() {
-        if (!isAuthenticated) {
-            login();
-            return;
-        }
-        setRatingSuccess('');
-        setSaveRatingError('');
-        setRatingOpen(true);
-    }
     async function saveRelation(data: UserBookUpdate) {
         if (!isAuthenticated) {
             login();
@@ -300,7 +314,18 @@ function BookDetails({ googleBooksId }: { googleBooksId: string | undefined }) {
         setSaveBookError('');
         try {
             setUserBook(
-                await createOrUpdate(googleBooksId, userBook?.id ?? null, data)
+                await toast.promise(
+                    createOrUpdate(googleBooksId, userBook?.id ?? null, data),
+                    {
+                        loading: 'Salvando livro...',
+                        success: 'Livro atualizado.',
+                        error: (error) =>
+                            getApiErrorMessage(
+                                error,
+                                'Não foi possível salvar o livro.'
+                            ),
+                    }
+                )
             );
         } catch (error) {
             setSaveBookError(
@@ -323,6 +348,7 @@ function BookDetails({ googleBooksId }: { googleBooksId: string | undefined }) {
                 ? await updateRating(myRating.id, data)
                 : await createRating({ ...data, googleBooksId });
             setMyRating(result);
+            setRatingEditing(false);
             setRatingsPage((previous) => {
                 if (!previous) return previous;
                 const listed = previous.content.some(
@@ -348,8 +374,7 @@ function BookDetails({ googleBooksId }: { googleBooksId: string | undefined }) {
                     },
                 };
             });
-            setRatingOpen(false);
-            setRatingSuccess('Sua avaliação foi salva.');
+            toast.add({ title: 'Sua avaliação foi salva.', type: 'success' });
             requestAnimationFrame(() => ratingTitle.current?.focus());
         } catch (error) {
             setSaveRatingError(
@@ -381,17 +406,15 @@ function BookDetails({ googleBooksId }: { googleBooksId: string | undefined }) {
             <SiteHeader />
             <main className="book-content" id="book-content">
                 <div className="book-topbar">
-                    <Link className="book-back" to="/explore">
+                    <Link className="book-back" to={backTo}>
                         <ArrowLeft size={16} aria-hidden="true" />
-                        Voltar ao Explorar
+                        Voltar
                     </Link>
                 </div>
                 {!googleBooksId ? (
                     <h1>Identificador inválido.</h1>
                 ) : bookBusy ? (
-                    <p className="book-state" role="status">
-                        Carregando livro...
-                    </p>
+                    <Feedback kind="loading" title="Carregando livro..." />
                 ) : bookError || !book ? (
                     <Retry
                         error={bookError || 'Livro não encontrado.'}
@@ -438,6 +461,10 @@ function BookDetails({ googleBooksId }: { googleBooksId: string | undefined }) {
                                         onStatusChange={(
                                             status: UserBookStatus
                                         ) => void saveRelation({ status })}
+                                        onAddToShelf={() => {
+                                            if (!isAuthenticated) login();
+                                            else setAddingToShelf(true);
+                                        }}
                                         onRemove={() => {
                                             if (userBook)
                                                 void removeFromLibrary(
@@ -561,141 +588,163 @@ function BookDetails({ googleBooksId }: { googleBooksId: string | undefined }) {
                                 ))}
                         </section>
                         <div className="book-opinions">
-                            <section
-                                className="book-my-rating"
-                                aria-labelledby="book-my-rating-title"
-                            >
-                                <h2
-                                    id="book-my-rating-title"
-                                    ref={ratingTitle}
-                                    tabIndex={-1}
-                                >
-                                    Sua avaliação
-                                </h2>
-                                {userBusy ? (
-                                    <p role="status">
-                                        Carregando sua avaliação...
-                                    </p>
-                                ) : userError ? (
-                                    <Retry
-                                        error={userError}
-                                        onRetry={() =>
-                                            setUserRetry((value) => value + 1)
-                                        }
-                                    />
-                                ) : ratingOpen ? (
-                                    <RatingForm
-                                        rating={myRating}
-                                        isSaving={savingRating}
-                                        errorMessage={saveRatingError}
-                                        onSave={(data) => void saveRating(data)}
-                                        onCancel={closeRating}
-                                    />
-                                ) : myRating ? (
-                                    <>
-                                        <RatingEntry
-                                            rating={myRating}
-                                            own
-                                            onEdit={openRating}
-                                            onDelete={() => {
-                                                setDeleteError('');
-                                                setDeleteOpen(true);
-                                            }}
-                                        />
-                                    </>
-                                ) : (
-                                    <>
-                                        <p className="book-muted">
-                                            {isAuthenticated
-                                                ? 'O que você achou desta leitura?'
-                                                : 'Entre para registrar sua nota e compartilhar sua opinião.'}
-                                        </p>
-                                        <button
-                                            type="button"
-                                            className="book-text-button"
-                                            onClick={openRating}
-                                        >
-                                            {isAuthenticated
-                                                ? 'Escrever uma avaliação'
-                                                : 'Entrar para avaliar'}
-                                        </button>
-                                    </>
-                                )}
-                                {ratingSuccess && (
-                                    <p className="book-success" role="status">
-                                        {ratingSuccess}
-                                    </p>
-                                )}
-                            </section>
-                            {ratingsBusy ? (
-                                <p role="status">
-                                    Carregando avaliações dos leitores...
-                                </p>
-                            ) : ratingsError ? (
-                                <section>
-                                    <h2>Avaliações dos leitores</h2>
-                                    <Retry
-                                        error={ratingsError}
-                                        onRetry={() =>
-                                            setRatingsRetry(
-                                                (value) => value + 1
+                            <RatingsList
+                                headingRef={ratingTitle}
+                                ratings={ratingsPage?.content ?? []}
+                                ownRating={isAuthenticated ? myRating : null}
+                                onEdit={() => {
+                                    setSaveRatingError('');
+                                    setRatingEditing(true);
+                                    requestAnimationFrame(() =>
+                                        document
+                                            .querySelector<HTMLInputElement>(
+                                                '#book-rating-form input[type="radio"]'
                                             )
-                                        }
-                                    />
-                                </section>
-                            ) : (
-                                <RatingsList
-                                    ratings={ratingsPage?.content ?? []}
-                                />
-                            )}
+                                            ?.focus()
+                                    );
+                                }}
+                                onDelete={() => {
+                                    setDeleteError('');
+                                    setDeleteOpen(true);
+                                }}
+                                editor={
+                                    isAuthenticated && userBusy ? (
+                                        <Feedback
+                                            kind="loading"
+                                            title="Carregando sua avaliação..."
+                                        />
+                                    ) : isAuthenticated && userError ? (
+                                        <Retry
+                                            error={userError}
+                                            onRetry={() =>
+                                                setUserRetry(
+                                                    (value) => value + 1
+                                                )
+                                            }
+                                        />
+                                    ) : !isAuthenticated ||
+                                      !myRating ||
+                                      ratingEditing ? (
+                                        <>
+                                            <RatingForm
+                                                key={myRating?.id ?? 'new'}
+                                                rating={
+                                                    isAuthenticated
+                                                        ? myRating
+                                                        : null
+                                                }
+                                                isSaving={savingRating}
+                                                errorMessage={saveRatingError}
+                                                onCancelEditing={
+                                                    isAuthenticated && myRating
+                                                        ? () => {
+                                                              setRatingEditing(
+                                                                  false
+                                                              );
+                                                              setSaveRatingError(
+                                                                  ''
+                                                              );
+                                                              requestAnimationFrame(
+                                                                  () =>
+                                                                      ratingTitle.current?.focus()
+                                                              );
+                                                          }
+                                                        : undefined
+                                                }
+                                                onSave={(data) => {
+                                                    if (!isAuthenticated)
+                                                        login();
+                                                    else void saveRating(data);
+                                                }}
+                                            />
+                                            {!isAuthenticated && (
+                                                <p className="book-muted">
+                                                    Entre para publicar sua
+                                                    avaliação.
+                                                </p>
+                                            )}
+                                        </>
+                                    ) : undefined
+                                }
+                                feedback={
+                                    ratingsBusy ? (
+                                        <Feedback
+                                            kind="loading"
+                                            title="Carregando avaliações..."
+                                        />
+                                    ) : ratingsError ? (
+                                        <Retry
+                                            error={ratingsError}
+                                            onRetry={() =>
+                                                setRatingsRetry(
+                                                    (value) => value + 1
+                                                )
+                                            }
+                                        />
+                                    ) : undefined
+                                }
+                            />
                         </div>
                     </article>
                 )}
             </main>
-            <Dialog.Root
+            {addingToShelf && isAuthenticated && googleBooksId && book && (
+                <AddToShelfDialog
+                    book={{ googleBooksId, title: book.title }}
+                    onClose={() => setAddingToShelf(false)}
+                    onAdded={() => {
+                        setShelvesRetry((value) => value + 1);
+                        toast.add({
+                            title: 'Livro adicionado às estantes selecionadas.',
+                            type: 'success',
+                        });
+                    }}
+                />
+            )}
+            <Dialog
                 open={deleteOpen}
                 onOpenChange={(open) => {
                     if (!deletingRating) setDeleteOpen(open);
                 }}
             >
-                <Dialog.Portal>
-                    <Dialog.Backdrop className="book-dialog-overlay" />
-                    <Dialog.Popup
-                        className="landing book-delete-dialog"
-                        finalFocus={ratingTitle}
-                        aria-busy={deletingRating}
-                    >
-                        <Dialog.Title>Excluir avaliação?</Dialog.Title>
-                        <Dialog.Description>
-                            Sua nota e seu comentário serão removidos. O livro
-                            continuará na sua biblioteca.
-                        </Dialog.Description>
-                        {deleteError && (
-                            <p className="book-error" role="alert">
-                                {deleteError}
-                            </p>
-                        )}
-                        <div className="book-form-actions">
-                            <Dialog.Close
-                                className="book-secondary"
-                                disabled={deletingRating}
-                            >
-                                Cancelar
-                            </Dialog.Close>
-                            <button
-                                type="button"
-                                className="book-delete-confirm"
-                                disabled={deletingRating}
-                                onClick={() => void deleteRating()}
-                            >
-                                {deletingRating
-                                    ? 'Excluindo...'
-                                    : 'Excluir avaliação'}
-                            </button>
-                        </div>
-                    </Dialog.Popup>
-                </Dialog.Portal>
-            </Dialog.Root>
+                <DialogContent
+                    showCloseButton={false}
+                    className="domain-dialog"
+                    finalFocus={ratingTitle}
+                    aria-busy={deletingRating}
+                >
+                    <DialogTitle>Excluir avaliação?</DialogTitle>
+                    <DialogDescription>
+                        Sua nota e seu comentário serão removidos. O livro
+                        continuará na sua biblioteca.
+                    </DialogDescription>
+                    {deleteError && (
+                        <p className="book-error" role="alert">
+                            {deleteError}
+                        </p>
+                    )}
+                    <div className="book-form-actions">
+                        <DialogClose
+                            render={<Button variant="outline" />}
+                            className="book-secondary"
+                            disabled={deletingRating}
+                        >
+                            Cancelar
+                        </DialogClose>
+                        <Button
+                            variant="destructive"
+                            type="button"
+                            className="book-delete-confirm"
+                            disabled={deletingRating}
+                            onClick={() => void deleteRating()}
+                        >
+                            {deletingRating
+                                ? 'Excluindo...'
+                                : 'Excluir avaliação'}
+                        </Button>
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

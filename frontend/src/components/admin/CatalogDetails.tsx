@@ -1,3 +1,6 @@
+import { toast } from '../ui/toast-manager';
+import { Input } from '../ui/input';
+import { Button } from '../ui/button';
 import { useCallback, useId, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, ChevronDown } from 'lucide-react';
@@ -25,7 +28,7 @@ export default function CatalogDetails({ kind }: { kind: CatalogKind }) {
     const [busy, setBusy] = useState('');
     const lock = useRef(false);
     const [error, setError] = useState('');
-    const [success, setSuccess] = useState('');
+
     const [confirm, setConfirm] = useState<
         | { type: 'remove'; name: AuthorNameResponse }
         | { type: 'merge'; source: AuthorResponse }
@@ -58,10 +61,10 @@ export default function CatalogDetails({ kind }: { kind: CatalogKind }) {
         lock.current = true;
         setBusy(action);
         setError('');
-        setSuccess('');
+
         try {
             await run();
-            setSuccess(message);
+            toast.add({ title: message, type: 'success' });
             setRevision((v) => v + 1);
         } catch (e) {
             setError(
@@ -135,7 +138,9 @@ export default function CatalogDetails({ kind }: { kind: CatalogKind }) {
                                 </span>
                             ) : (
                                 <div className="admin-row-actions">
-                                    <button
+                                    <Button
+                                        variant="outline"
+                                        type="button"
                                         disabled={operating}
                                         onClick={() =>
                                             void mutate(
@@ -148,9 +153,10 @@ export default function CatalogDetails({ kind }: { kind: CatalogKind }) {
                                         {busy === 'primary'
                                             ? 'Alterando...'
                                             : 'Tornar principal'}
-                                    </button>
-                                    <button
-                                        className="admin-danger"
+                                    </Button>
+                                    <Button
+                                        variant="destructive"
+                                        type="button"
                                         disabled={operating}
                                         onClick={() => {
                                             setConfirmError('');
@@ -161,7 +167,7 @@ export default function CatalogDetails({ kind }: { kind: CatalogKind }) {
                                         }}
                                     >
                                         Remover
-                                    </button>
+                                    </Button>
                                 </div>
                             )}
                         </li>
@@ -189,7 +195,7 @@ export default function CatalogDetails({ kind }: { kind: CatalogKind }) {
                 >
                     <label htmlFor={inputId}>Novo nome alternativo</label>
                     <div>
-                        <input
+                        <Input
                             id={inputId}
                             disabled={operating}
                             value={name}
@@ -197,21 +203,21 @@ export default function CatalogDetails({ kind }: { kind: CatalogKind }) {
                             aria-invalid={!!error}
                             aria-describedby={error ? errorId : undefined}
                         />
-                        <button className="admin-primary" disabled={operating}>
+                        <Button
+                            loading={busy === 'add'}
+                            variant="default"
+                            type="submit"
+                            disabled={operating}
+                        >
                             {busy === 'add'
                                 ? 'Adicionando...'
                                 : 'Adicionar nome'}
-                        </button>
+                        </Button>
                     </div>
                 </form>
                 {error && (
                     <p id={errorId} className="admin-error" role="alert">
                         {error}
-                    </p>
-                )}
-                {success && (
-                    <p className="admin-success" role="status">
-                        {success}
                     </p>
                 )}
             </section>
@@ -257,7 +263,10 @@ export default function CatalogDetails({ kind }: { kind: CatalogKind }) {
                                 if (confirm.type === 'remove') {
                                     await c.remove(id, confirm.name.id);
                                     setConfirm(null);
-                                    setSuccess('Nome removido com sucesso.');
+                                    toast.add({
+                                        title: 'Nome removido com sucesso.',
+                                        type: 'success',
+                                    });
                                     setRevision((v) => v + 1);
                                 } else {
                                     await c.merge(id, confirm.source.id);
@@ -315,7 +324,9 @@ function MergeSection({
     const candidates = result?.content.filter((x) => x.id !== entity.id) || [];
     return (
         <section className="admin-section admin-merge">
-            <button
+            <Button
+                variant="outline"
+                type="button"
                 className="admin-disclosure"
                 aria-expanded={open}
                 aria-controls="admin-merge-content"
@@ -324,7 +335,7 @@ function MergeSection({
             >
                 Unir {c.plural}
                 <ChevronDown size={18} aria-hidden="true" />
-            </button>
+            </Button>
             {open && (
                 <div id="admin-merge-content">
                     <p>
@@ -385,15 +396,16 @@ function MergeSection({
                             label={`Paginação das origens de ${c.plural}`}
                         />
                     )}
-                    <button
-                        className="admin-primary"
+                    <Button
+                        variant="default"
+                        type="button"
                         disabled={!selected || disabled || resource.busy}
                         onClick={() => {
                             if (selected) onConfirm(selected);
                         }}
                     >
                         Unir {c.plural}
-                    </button>
+                    </Button>
                 </div>
             )}
         </section>

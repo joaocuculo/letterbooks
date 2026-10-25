@@ -1,3 +1,4 @@
+import { Button } from '../components/ui/button';
 import { useState, type SubmitEvent } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { resetPassword } from '../services/authService';
@@ -205,13 +206,14 @@ function ResetPasswordPage() {
                         </p>
                     )}
 
-                    <button
+                    <Button
+                        variant="default"
                         className="login-submit"
                         type="submit"
                         disabled={isSubmitting}
                     >
                         {isSubmitting ? 'Redefinindo...' : 'Redefinir senha'}
-                    </button>
+                    </Button>
                 </form>
 
                 <p className="login-register">

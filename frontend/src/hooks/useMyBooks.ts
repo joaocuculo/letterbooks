@@ -1,3 +1,4 @@
+import { toast } from '../components/ui/toast-manager';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { findMine, update, remove } from '../services/userBookService';
@@ -32,7 +33,6 @@ export function useMyBooks(
     const [states, setStates] = useState<Record<string, LibraryState>>({});
     const [pending, setPending] = useState<Record<number, boolean>>({});
     const [errors, setErrors] = useState<Record<number, string>>({});
-    const [success, setSuccess] = useState('');
     const controllers = useRef(new Map<string, AbortController>());
     const generation = useRef(0);
     const queriesRef = useRef(queries);
@@ -126,11 +126,28 @@ export function useMyBooks(
         mutationLocks.current.add(book.id);
         setPending((previous) => ({ ...previous, [book.id]: true }));
         setErrors((previous) => ({ ...previous, [book.id]: '' }));
-        setSuccess('');
         try {
             let result: UserBookResponse | null = null;
-            if (change) result = await update(book.id, change);
-            else await remove(book.id);
+            if (change)
+                result = await toast.promise(update(book.id, change), {
+                    loading: 'Salvando livro...',
+                    success: 'Livro atualizado.',
+                    error: (error) =>
+                        getApiErrorMessage(
+                            error,
+                            'Não foi possível atualizar este livro.'
+                        ),
+                });
+            else
+                await toast.promise(remove(book.id), {
+                    loading: 'Removendo livro...',
+                    success: 'Livro removido da sua biblioteca.',
+                    error: (error) =>
+                        getApiErrorMessage(
+                            error,
+                            'Não foi possível remover este livro.'
+                        ),
+                });
             if (!mounted.current) return true;
             setStates((previous) =>
                 Object.fromEntries(
@@ -173,11 +190,6 @@ export function useMyBooks(
                     })
                 )
             );
-            setSuccess(
-                change
-                    ? 'Livro atualizado.'
-                    : 'Livro removido da sua biblioteca.'
-            );
             for (const query of queriesRef.current)
                 if (
                     query.key === 'active' ||
@@ -204,5 +216,5 @@ export function useMyBooks(
                 setPending((previous) => ({ ...previous, [book.id]: false }));
         }
     }
-    return { states, pending, errors, success, reload, mutate };
+    return { states, pending, errors, reload, mutate };
 }

@@ -12,6 +12,7 @@ export function RatingStars({ score }: { score: number }) {
                 <Star
                     key={value}
                     size={15}
+                    strokeWidth={1.6}
                     fill={value <= score ? 'currentColor' : 'none'}
                     aria-hidden="true"
                 />
@@ -66,6 +67,7 @@ export default function StarRating({
                         />
                         <Star
                             size={27}
+                            strokeWidth={1.6}
                             fill={star <= active ? 'currentColor' : 'none'}
                             aria-hidden="true"
                         />

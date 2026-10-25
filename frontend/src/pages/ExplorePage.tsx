@@ -1,7 +1,11 @@
+import ActiveSearchFilters from '../components/ActiveSearchFilters';
+import { toast } from '../components/ui/toast-manager';
+import PaginationControls from '../components/PaginationControls';
+import { Feedback } from '../components/ui/feedback';
+import { Input } from '../components/ui/input';
+import { Button } from '../components/ui/button';
 import axios from 'axios';
 import {
-    ArrowLeft,
-    ArrowRight,
     Grid2X2,
     LayoutGrid,
     Search,
@@ -109,7 +113,7 @@ function SearchControls({
                     </label>
                     <div className="explore-query-wrap">
                         <Search size={20} aria-hidden="true" />
-                        <input
+                        <Input
                             id="explore-query"
                             type="search"
                             value={draft.freeText || ''}
@@ -128,19 +132,17 @@ function SearchControls({
                         >
                             <SlidersHorizontal size={20} aria-hidden="true" />
                         </DrawerTrigger>
-                        <button type="submit" className="explore-primary">
-                            Pesquisar
-                        </button>
                     </div>
                     {active && (
-                        <button
+                        <Button
+                            variant="ghost"
                             className="explore-clear"
                             type="button"
                             onClick={onClear}
                         >
                             <X size={17} aria-hidden="true" />
                             Limpar pesquisa
-                        </button>
+                        </Button>
                     )}
                     {error && (
                         <p
@@ -152,8 +154,14 @@ function SearchControls({
                         </p>
                     )}
                 </div>
+                <ActiveSearchFilters
+                    items={filterFields.map(([key, label]) => ({
+                        label,
+                        value: filters[key],
+                    }))}
+                />
             </form>
-            <DrawerContent className="landing explore-drawer">
+            <DrawerContent className="landing catalog-density explore-drawer">
                 <div className="explore-drawer-heading">
                     <DrawerTitle>Pesquisa avançada</DrawerTitle>
                     <DrawerClose
@@ -179,7 +187,7 @@ function SearchControls({
                     {filterFields.map(([key, label]) => (
                         <div className="explore-field" key={key}>
                             <label htmlFor={`explore-${key}`}>{label}</label>
-                            <input
+                            <Input
                                 id={`explore-${key}`}
                                 value={draft[key] || ''}
                                 onChange={(e) =>
@@ -191,10 +199,15 @@ function SearchControls({
                             />
                         </div>
                     ))}
-                    <button type="submit" className="explore-primary">
+                    <Button
+                        variant="default"
+                        type="submit"
+                        className="explore-primary"
+                    >
                         Aplicar filtros
-                    </button>
-                    <button
+                    </Button>
+                    <Button
+                        variant="ghost"
                         type="button"
                         className="explore-text-button"
                         onClick={() => {
@@ -207,7 +220,7 @@ function SearchControls({
                         }}
                     >
                         Limpar filtros
-                    </button>
+                    </Button>
                 </form>
             </DrawerContent>
         </Drawer>
@@ -220,6 +233,9 @@ export default function ExplorePage() {
     const navigate = useNavigate();
     const { isAuthenticated, user } = useAuth();
     const searchKey = params.toString();
+    const requestParams = new URLSearchParams(params);
+    requestParams.delete('layout');
+    const requestKey = requestParams.toString();
     const filters = readFilters(params);
     const active = Object.values(filters).some(Boolean);
     const [sections, setSections] = useState<DiscoverSection[]>([]);
@@ -228,21 +244,30 @@ export default function ExplorePage() {
     );
     const [busy, setBusy] = useState(true);
     const [error, setError] = useState('');
-    const [favoriteError, setFavoriteError] = useState('');
     const [loadingBooks, setLoadingBooks] = useState<Record<string, boolean>>(
         {}
     );
-    const [detailed, setDetailed] = useState(false);
+    const detailed = params.get('layout') === 'detailed';
+    function setDetailed(value: boolean) {
+        setParams(
+            (previous) => {
+                const next = new URLSearchParams(previous);
+                if (value) next.set('layout', 'detailed');
+                else next.delete('layout');
+                return next;
+            },
+            { replace: true }
+        );
+    }
     const [retry, setRetry] = useState(0);
 
     useEffect(() => {
         const controller = new AbortController();
-        const current = new URLSearchParams(searchKey);
+        const current = new URLSearchParams(requestKey);
         const currentFilters = readFilters(current);
         async function load() {
             setBusy(true);
             setError('');
-            setFavoriteError('');
             setResult(null);
             setSections([]);
             try {
@@ -272,10 +297,11 @@ export default function ExplorePage() {
         }
         void load();
         return () => controller.abort();
-    }, [searchKey, retry, isAuthenticated, user?.id]);
+    }, [requestKey, retry, isAuthenticated, user?.id]);
 
     function search(next: BookSearchFilters) {
         const updated = new URLSearchParams();
+        if (detailed) updated.set('layout', 'detailed');
         keys.forEach((key) => {
             if (next[key]?.trim())
                 updated.set(key === 'freeText' ? 'q' : key, next[key]!.trim());
@@ -302,11 +328,21 @@ export default function ExplorePage() {
             return;
         }
         setLoadingBooks((previous) => ({ ...previous, [book.id]: true }));
-        setFavoriteError('');
         try {
-            const saved = await createOrUpdate(book.id, book.userBookId, {
-                isFavorite: !book.isFavorite,
-            });
+            const saved = await toast.promise(
+                createOrUpdate(book.id, book.userBookId, {
+                    isFavorite: !book.isFavorite,
+                }),
+                {
+                    loading: 'Salvando favorito...',
+                    success: 'Favorito atualizado.',
+                    error: (failure) =>
+                        getApiErrorMessage(
+                            failure,
+                            'Não foi possível atualizar o favorito.'
+                        ),
+                }
+            );
             const update = (current: BookCardResponse) =>
                 current.id === book.id
                     ? {
@@ -328,13 +364,8 @@ export default function ExplorePage() {
                     books: section.books.map(update),
                 }))
             );
-        } catch (failure) {
-            setFavoriteError(
-                getApiErrorMessage(
-                    failure,
-                    'Não foi possível atualizar o favorito.'
-                )
-            );
+        } catch {
+            // The promise toast presents the request error.
         } finally {
             setLoadingBooks((previous) => ({ ...previous, [book.id]: false }));
         }
@@ -357,7 +388,7 @@ export default function ExplorePage() {
         );
     }
     return (
-        <div className="landing explore-page">
+        <div className="landing catalog-density explore-page">
             <SiteHeader />
             <main
                 className={`explore-content${active ? ' explore-has-search' : ''}`}
@@ -393,108 +424,75 @@ export default function ExplorePage() {
                                 role="group"
                                 aria-label="Visualização dos livros"
                             >
-                                <button
+                                <Button
+                                    variant="outline"
                                     type="button"
                                     aria-label="Visualização compacta"
                                     aria-pressed={!detailed}
                                     onClick={() => setDetailed(false)}
                                 >
                                     <LayoutGrid size={20} aria-hidden="true" />
-                                </button>
-                                <button
+                                </Button>
+                                <Button
+                                    variant="outline"
                                     type="button"
                                     aria-label="Visualização detalhada"
                                     aria-pressed={detailed}
                                     onClick={() => setDetailed(true)}
                                 >
                                     <Grid2X2 size={20} aria-hidden="true" />
-                                </button>
+                                </Button>
                             </div>
                         </div>
                     )}
-                    {favoriteError && (
-                        <p role="alert" className="explore-error">
-                            {favoriteError}
-                        </p>
-                    )}
                     {busy ? (
-                        <p className="explore-state" role="status">
-                            {active
-                                ? 'Pesquisando livros...'
-                                : 'Carregando seleções...'}
-                        </p>
+                        <Feedback
+                            kind="loading"
+                            title={
+                                active
+                                    ? 'Pesquisando livros...'
+                                    : 'Carregando seleções...'
+                            }
+                        />
                     ) : error ? (
-                        <div className="explore-state">
-                            <p className="explore-error" role="alert">
-                                {error}
-                            </p>
-                            <button
-                                className="explore-primary"
-                                type="button"
-                                onClick={() => setRetry((value) => value + 1)}
-                            >
-                                Tentar novamente
-                            </button>
-                        </div>
+                        <Feedback
+                            kind="error"
+                            title={error}
+                            action={
+                                <Button
+                                    variant="default"
+                                    className="explore-primary"
+                                    type="button"
+                                    onClick={() =>
+                                        setRetry((value) => value + 1)
+                                    }
+                                >
+                                    Tentar novamente
+                                </Button>
+                            }
+                        />
                     ) : active ? (
                         result?.content.length ? (
                             <>
                                 {books(result.content, detailed)}
                                 {result.page.totalPages > 1 && (
-                                    <nav
+                                    <PaginationControls
                                         className="explore-pagination"
-                                        aria-label="Paginação da pesquisa"
-                                    >
-                                        <button
-                                            type="button"
-                                            disabled={
-                                                busy || result.page.number === 0
-                                            }
-                                            onClick={() =>
-                                                changePage(
-                                                    result.page.number - 1
-                                                )
-                                            }
-                                        >
-                                            <ArrowLeft
-                                                size={18}
-                                                aria-hidden="true"
-                                            />
-                                            Anterior
-                                        </button>
-                                        <span>
-                                            Página {result.page.number + 1} de{' '}
-                                            {result.page.totalPages}
-                                        </span>
-                                        <button
-                                            type="button"
-                                            disabled={
-                                                busy ||
-                                                result.page.number + 1 >=
-                                                    result.page.totalPages
-                                            }
-                                            onClick={() =>
-                                                changePage(
-                                                    result.page.number + 1
-                                                )
-                                            }
-                                        >
-                                            Próxima
-                                            <ArrowRight
-                                                size={18}
-                                                aria-hidden="true"
-                                            />
-                                        </button>
-                                    </nav>
+                                        page={result.page.number}
+                                        total={result.page.totalPages}
+                                        busy={busy}
+                                        onChange={changePage}
+                                        label="Paginação da pesquisa"
+                                    />
                                 )}
                             </>
                         ) : (
-                            <div className="explore-state" role="status">
-                                <h2>Nenhum livro encontrado.</h2>
-                                <p>
-                                    Tente outro termo ou remova alguns filtros.
-                                </p>
-                            </div>
+                            <Feedback
+                                kind="empty"
+                                title="Nenhum livro encontrado."
+                            >
+                                Tente outro termo ou remova alguns filtros.
+                            </Feedback>
                         )
                     ) : sections.length ? (
                         sections.map((section) => (

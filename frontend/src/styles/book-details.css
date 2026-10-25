@@ -4,9 +4,9 @@
     overflow: visible;
 }
 .book-content {
-    max-width: 1120px;
+    max-width: var(--layout-reading-max);
     margin: auto;
-    padding: 32px 40px 72px;
+    padding: var(--page-top) var(--page-gutter) var(--page-bottom);
 }
 .book-topbar {
     display: flex;
@@ -73,8 +73,8 @@
     justify-content: center;
     aspect-ratio: 2 / 3;
     border-radius: 8px;
-    background: #f5f6f5;
-    color: #606565;
+    background: var(--surface-subtle);
+    color: var(--text-secondary);
     font-size: 12px;
 }
 .book-identity {
@@ -82,7 +82,7 @@
 }
 .book-subtitle {
     font-size: 17px;
-    color: #606565;
+    color: var(--text-secondary);
     margin: 12px 0 0;
     line-height: 1.6;
 }
@@ -116,30 +116,28 @@
     margin-bottom: 6px;
     font-weight: 650;
 }
-.book-page select,
-.book-page textarea {
+.book-page select:not(.ui-field),
+.book-page textarea:not(.ui-field) {
     font: inherit;
-    border: 1px solid #858d89;
-    border-radius: 10px;
-    background: white;
-    color: #202323;
-    caret-color: #202323;
+    border: 1px solid var(--border-field);
+    border-radius: var(--radius-control);
+    background: var(--surface-background);
+    color: var(--text-primary);
+    caret-color: var(--text-primary);
 }
-.book-page select {
+.book-page select:not(.ui-field) {
     min-height: 44px;
     padding: 8px 12px;
     width: 100%;
 }
-.book-page textarea {
+.book-page textarea:not(.ui-field) {
     min-height: 140px;
     width: 100%;
     padding: 12px;
     resize: vertical;
     line-height: 1.7;
 }
-.book-primary,
-.book-secondary,
-.book-text-button {
+.book-primary {
     display: inline-flex;
     justify-content: center;
     align-items: center;
@@ -150,42 +148,18 @@
 }
 .book-primary {
     background: black;
-    color: white;
+    color: var(--surface-background);
     border: 0;
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     padding: 10px 20px;
     font-weight: 750 !important;
 }
 .book-primary:hover:not(:disabled) {
     background: #303333;
 }
-.book-secondary {
-    background: white;
-    border: 1px solid #d5d8d7;
-    border-radius: 10px;
-    padding: 10px 16px;
-}
-.book-secondary:hover:not(:disabled) {
-    background: #f5f6f5;
-}
-.book-secondary[aria-pressed='true'] {
-    background: #f5f6f5;
-    border-color: #202323;
-}
-.book-text-button {
-    padding: 8px 0;
-    background: transparent;
-    border: 0;
-    justify-content: flex-start;
-    font-size: 12px !important;
-}
-.book-text-button:hover:not(:disabled) {
-    text-decoration: underline;
-    text-underline-offset: 4px;
-}
 .book-page button:disabled,
-.book-page select:disabled,
-.book-page textarea:disabled {
+.book-page select:not(.ui-field):disabled,
+.book-page textarea:not(.ui-field):disabled {
     opacity: 0.6;
     cursor: default;
 }
@@ -222,7 +196,7 @@
 }
 .book-metadata {
     grid-area: metadata;
-    border-top: 1px solid #e4e7e5;
+    border-top: 1px solid var(--border-subtle);
     padding-top: 28px;
 }
 .book-metadata dl {
@@ -231,7 +205,7 @@
     gap: 20px 28px;
 }
 .book-metadata dt {
-    color: #606565;
+    color: var(--text-secondary);
     font-size: 12px;
     margin-bottom: 6px;
 }
@@ -247,9 +221,6 @@
 .book-my-rating {
     margin-bottom: 36px;
 }
-.book-my-rating > .book-text-button {
-    margin-top: 6px;
-}
 .book-rating-form {
     max-width: 540px;
 }
@@ -259,7 +230,7 @@
     gap: 12px;
 }
 .book-rating-entry {
-    border-top: 1px solid #e4e7e5;
+    border-top: 1px solid var(--border-subtle);
     padding: 20px 0;
 }
 .book-own-rating {
@@ -271,17 +242,6 @@
     align-items: center;
     gap: 10px;
 }
-.book-reader-avatar {
-    display: grid;
-    place-items: center;
-    width: 34px;
-    height: 34px;
-    background: #f0f2f0;
-    border-radius: 50%;
-    font-size: 10px;
-    font-weight: 750;
-    flex-shrink: 0;
-}
 .book-rating-heading > div:nth-child(2) {
     min-width: 0;
     overflow-wrap: anywhere;
@@ -292,7 +252,7 @@
 .book-rating-heading time {
     display: block;
     font-size: 11px;
-    color: #606565;
+    color: var(--text-secondary);
     margin-top: 2px;
 }
 .book-rating-score {
@@ -311,11 +271,11 @@
     overflow-wrap: anywhere;
 }
 .book-muted {
-    color: #606565;
+    color: var(--text-secondary);
     line-height: 1.7;
 }
 .book-error {
-    color: #b42318;
+    color: var(--feedback-error);
     font-size: 13px;
     line-height: 1.7;
 }
@@ -331,7 +291,7 @@
 }
 .book-state {
     padding-block: 48px;
-    color: #606565;
+    color: var(--text-secondary);
 }
 .book-layout-library {
     grid-template-columns: 240px minmax(0, 1fr);
@@ -354,7 +314,7 @@
 @media (max-width: 1023px) {
     .book-content {
         max-width: 720px;
-        padding: 24px 28px 56px;
+        padding: var(--page-top) var(--page-gutter) var(--page-bottom);
     }
     .book-topbar {
         flex-wrap: wrap;
@@ -380,14 +340,14 @@
     .book-layout-library .book-actions .book-primary {
         width: auto;
     }
-    .book-page select,
-    .book-page textarea {
+    .book-page select:not(.ui-field),
+    .book-page textarea:not(.ui-field) {
         font-size: 16px;
     }
 }
 @media (max-width: 479px) {
     .book-content {
-        padding: 20px 20px 48px;
+        padding: var(--page-top) var(--page-gutter) var(--page-bottom);
     }
     .book-layout h1 {
         font-size: 28px;
@@ -413,30 +373,18 @@
 }
 .book-relationship-row {
     padding: 16px;
-    background: #f5f6f5;
+    background: var(--surface-subtle);
     border-radius: 14px;
-}
-.book-relationship-row .book-secondary {
-    order: 2;
-    border-color: #d5d8d7;
-    background: white;
 }
 .book-status-field {
     width: 100%;
 }
-.book-relationship > .book-text-button {
-    color: #606565;
-    font-size: 11px !important;
-}
 .book-rating-entry {
-    background: #f3f4f3;
+    background: var(--surface-muted);
     border: 0;
     padding: 20px;
     border-radius: 14px;
     margin-bottom: 14px;
-}
-.book-reader-avatar {
-    background: #e5e8e6;
 }
 .book-rating-heading {
     flex-wrap: wrap;
@@ -444,7 +392,7 @@
 .book-stars {
     display: inline-flex;
     gap: 3px;
-    color: #202323;
+    color: var(--text-primary);
 }
 .book-icon-button {
     display: grid;
@@ -460,32 +408,8 @@
 .book-icon-button:hover {
     background: #e3e6e4;
 }
-.book-rating-menu {
-    min-width: 180px;
-    padding: 6px;
-    border-radius: 12px;
-    background: white;
-    box-shadow: 0 8px 24px #0002;
-    z-index: 80;
-    font:
-        13px Manrope,
-        sans-serif;
-}
-.book-rating-menu [role='menuitem'] {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    min-height: 44px;
-    padding: 8px 12px;
-    border-radius: 8px;
-    cursor: pointer;
-    outline: none;
-}
-.book-rating-menu [data-highlighted] {
-    background: #f1f3f1;
-}
 .book-danger {
-    color: #b42318;
+    color: var(--feedback-error);
 }
 .book-star-field {
     border: 0;
@@ -511,13 +435,13 @@
     cursor: pointer;
     position: relative;
     border-radius: 8px;
-    color: #202323;
+    color: var(--text-primary);
 }
 .book-star-option:hover {
-    background: #ecefed;
+    background: var(--surface-hover);
 }
 .book-star-option:has(input:focus-visible) {
-    outline: 2px solid #202323;
+    outline: 2px solid var(--text-primary);
     outline-offset: 2px;
 }
 .book-star-field:disabled .book-star-option {
@@ -534,7 +458,7 @@
     cursor: pointer;
 }
 .book-zero-rating input {
-    accent-color: #202323;
+    accent-color: var(--text-primary);
 }
 .book-visually-hidden {
     position: absolute;
@@ -548,7 +472,7 @@
     border: 0;
 }
 .book-shelves {
-    background: #f3f4f3;
+    background: var(--surface-muted);
     padding: 20px;
     border-radius: 14px;
     margin-top: 28px;
@@ -571,7 +495,7 @@
     gap: 8px;
 }
 .book-shelf-names span {
-    background: white;
+    background: var(--surface-background);
     border-radius: 7px;
     padding: 6px 10px;
     font-size: 12px;
@@ -582,13 +506,13 @@
 .book-dialog-overlay {
     position: fixed;
     inset: 0;
-    z-index: 100;
-    background: #000d;
+    z-index: var(--layer-dialog-overlay);
+    background: var(--overlay-lightbox);
 }
 .book-lightbox {
     position: fixed;
     inset: 0;
-    z-index: 101;
+    z-index: var(--layer-dialog);
     display: grid;
     place-items: center;
     pointer-events: none;
@@ -614,25 +538,25 @@
     place-items: center;
     width: 44px;
     height: 44px;
-    color: white;
+    color: var(--surface-background);
     background: transparent;
     border: 0;
     border-radius: 50%;
     cursor: pointer;
 }
 .book-dialog-overlay {
-    background: #0008;
+    background: var(--overlay-dialog);
 }
 .book-delete-dialog {
     position: fixed;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    z-index: 101;
+    z-index: var(--layer-dialog);
     width: min(420px, calc(100vw - 32px));
     padding: 24px;
-    border-radius: 16px;
-    background: white;
+    border-radius: var(--radius-panel);
+    background: var(--surface-background);
 }
 .book-delete-dialog h2 {
     font-size: 20px;
@@ -641,19 +565,6 @@
 .book-delete-dialog p {
     line-height: 1.7;
     margin-bottom: 20px;
-}
-.book-delete-confirm {
-    border: 0;
-    border-radius: 10px;
-    background: #b42318;
-    color: white;
-    font-size: 13px;
-    min-height: 44px;
-    padding: 10px 16px;
-    cursor: pointer;
-}
-.book-delete-confirm:hover:not(:disabled) {
-    background: #8e1b12;
 }
 .book-delete-dialog button:disabled {
     opacity: 0.6;

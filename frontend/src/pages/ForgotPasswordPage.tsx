@@ -1,3 +1,6 @@
+import { useToastMessage } from '../hooks/useToastMessage';
+import { Input } from '../components/ui/input';
+import { Button } from '../components/ui/button';
 import { useState, type SubmitEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { requestPasswordReset } from '../services/authService';
@@ -28,6 +31,7 @@ function ForgotPasswordPage() {
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
+    useToastMessage(successMessage);
     async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
         event.preventDefault();
 
@@ -84,7 +88,7 @@ function ForgotPasswordPage() {
                 >
                     <div className="login-field">
                         <label htmlFor="recovery-email">E-mail</label>
-                        <input
+                        <Input
                             className="w-full"
                             id="recovery-email"
                             name="email"
@@ -119,19 +123,15 @@ function ForgotPasswordPage() {
                             {errorMessage}
                         </p>
                     )}
-                    {successMessage && (
-                        <p className="login-message" role="status">
-                            {successMessage}
-                        </p>
-                    )}
 
-                    <button
+                    <Button
+                        variant="default"
                         className="login-submit"
                         type="submit"
                         disabled={isSubmitting}
                     >
                         {isSubmitting ? 'Enviando...' : 'Enviar instruções'}
-                    </button>
+                    </Button>
                 </form>
 
                 <p className="login-register">

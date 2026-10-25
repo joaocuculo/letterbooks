@@ -1,10 +1,12 @@
-import { ArrowRight, BookOpen } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
+import { ArrowRight } from 'lucide-react';
+import BrandLogo from './BrandLogo';
+import AccountMenu from './AccountMenu';
+import { Button } from './ui/button';
+import { Link, NavLink } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import '../styles/home.css';
 function SiteHeader() {
     const { isAuthenticated, user, signOut } = useAuth();
-    const { pathname } = useLocation();
     return (
         <header className="landing-header">
             <Link
@@ -12,53 +14,28 @@ function SiteHeader() {
                 className="landing-brand"
                 aria-label="LetterBooks, início"
             >
-                <BookOpen size={28} strokeWidth={1.7} aria-hidden="true" />
-                LetterBooks<span className="brand-dot">.</span>
+                <BrandLogo />
             </Link>
             <nav aria-label="Navegação principal" className="landing-nav">
-                <Link to="/explore">Explorar</Link>
-                <a
-                    href={
-                        pathname === '/' ? '#possibilities' : '/#possibilities'
-                    }
-                    className="landing-about-link"
-                >
-                    Como funciona
-                </a>
+                <NavLink to="/" end>
+                    Início
+                </NavLink>
+                <NavLink to="/explore">Explorar</NavLink>
+                <NavLink to="/my-books">Minha Biblioteca</NavLink>
             </nav>
             <div className="landing-account">
                 {isAuthenticated ? (
                     <>
-                        <Link to="/my-books">Minha Biblioteca</Link>
-                        <details className="landing-user-menu">
-                            <summary>
-                                {user?.name?.split(' ')[0] ?? 'Minha conta'}
-                            </summary>
-                            <div>
-                                <Link to="/profile">Meu perfil</Link>
-                                {user?.role === 'ADMIN' && (
-                                    <>
-                                        <Link to="/admin/authors">Autores</Link>
-                                        <Link to="/admin/categories">
-                                            Categorias
-                                        </Link>
-                                        <Link to="/admin/users">Usuários</Link>
-                                    </>
-                                )}
-                                <button type="button" onClick={signOut}>
-                                    Sair
-                                </button>
-                            </div>
-                        </details>
+                        <AccountMenu user={user} onSignOut={signOut} />
                     </>
                 ) : (
                     <>
                         <Link to="/login" className="landing-login">
                             Entrar
                         </Link>
-                        <Link
-                            to="/register"
-                            className="landing-button landing-button-small"
+                        <Button
+                            nativeButton={false}
+                            render={<Link to="/register" />}
                         >
                             Criar conta{' '}
                             <ArrowRight
@@ -66,7 +43,7 @@ function SiteHeader() {
                                 strokeWidth={1.7}
                                 aria-hidden="true"
                             />
-                        </Link>
+                        </Button>
                     </>
                 )}
             </div>

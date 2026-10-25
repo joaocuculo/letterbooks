@@ -4,10 +4,10 @@ body:has(.drawer-popup) {
 .drawer-overlay {
     position: fixed;
     inset: 0;
-    z-index: 60;
-    background: #20232355;
+    z-index: var(--layer-drawer-overlay);
+    background: var(--overlay-drawer);
     opacity: calc(1 - var(--drawer-swipe-progress, 0));
-    transition: opacity 250ms ease-out;
+    transition: opacity var(--duration-overlay) ease-out;
 }
 .drawer-overlay[data-starting-style],
 .drawer-overlay[data-ending-style] {
@@ -16,17 +16,17 @@ body:has(.drawer-popup) {
 .drawer-viewport {
     position: fixed;
     inset: 0;
-    z-index: 61;
+    z-index: var(--layer-drawer);
     display: flex;
     justify-content: flex-end;
 }
 .drawer-popup {
     width: min(400px, 100%);
     height: 100dvh;
-    background: white;
-    color: #202323;
+    background: var(--surface-background);
+    color: var(--text-primary);
     transform: translateX(var(--drawer-swipe-movement-x, 0px));
-    transition: transform 350ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition: transform var(--duration-drawer) var(--ease-drawer);
     overflow-y: auto;
     overscroll-behavior: contain;
     scrollbar-width: thin;

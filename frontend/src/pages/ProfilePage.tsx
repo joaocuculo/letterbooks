@@ -1,3 +1,6 @@
+import { toast } from '../components/ui/toast-manager';
+import { Input } from '../components/ui/input';
+import { Button } from '../components/ui/button';
 import type { ReactNode } from 'react';
 import SiteHeader from '../components/SiteHeader';
 import PasswordInput from '../components/PasswordInput';
@@ -112,9 +115,6 @@ function ProfilePage() {
     const [profileErrorMessage, setProfileErrorMessage] = useState<
         string | null
     >(null);
-    const [profileSuccessMessage, setProfileSuccessMessage] = useState<
-        string | null
-    >(null);
 
     const [passwordCurrentPassword, setPasswordCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
@@ -123,9 +123,6 @@ function ProfilePage() {
         useState<PasswordFormErrors>({});
     const [isChangingPassword, setIsChangingPassword] = useState(false);
     const [passwordErrorMessage, setPasswordErrorMessage] = useState<
-        string | null
-    >(null);
-    const [passwordSuccessMessage, setPasswordSuccessMessage] = useState<
         string | null
     >(null);
 
@@ -183,7 +180,7 @@ function ProfilePage() {
         if (Object.keys(validationErrors).length > 0) {
             setProfileFormErrors(validationErrors);
             setProfileErrorMessage(null);
-            setProfileSuccessMessage(null);
+
             return;
         }
 
@@ -191,7 +188,6 @@ function ProfilePage() {
             setIsUpdatingProfile(true);
             setProfileFormErrors({});
             setProfileErrorMessage(null);
-            setProfileSuccessMessage(null);
 
             const updatedUser = await updateMe({
                 name: normalizedName,
@@ -204,7 +200,10 @@ function ProfilePage() {
             setName(updatedUser.name);
             setEmail(updatedUser.email);
             setProfileCurrentPassword('');
-            setProfileSuccessMessage('Dados atualizados com sucesso.');
+            toast.add({
+                title: 'Dados atualizados com sucesso.',
+                type: 'success',
+            });
         } catch (error) {
             setProfileErrorMessage(
                 getApiErrorMessage(
@@ -229,7 +228,7 @@ function ProfilePage() {
         if (Object.keys(validationErrors).length > 0) {
             setPasswordFormErrors(validationErrors);
             setPasswordErrorMessage(null);
-            setPasswordSuccessMessage(null);
+
             return;
         }
 
@@ -237,7 +236,6 @@ function ProfilePage() {
             setIsChangingPassword(true);
             setPasswordFormErrors({});
             setPasswordErrorMessage(null);
-            setPasswordSuccessMessage(null);
 
             await changePassword({
                 currentPassword: passwordCurrentPassword,
@@ -247,7 +245,10 @@ function ProfilePage() {
             setPasswordCurrentPassword('');
             setNewPassword('');
             setPasswordConfirmation('');
-            setPasswordSuccessMessage('Senha alterada com sucesso.');
+            toast.add({
+                title: 'Senha alterada com sucesso.',
+                type: 'success',
+            });
         } catch (error) {
             setPasswordErrorMessage(
                 getApiErrorMessage(error, 'Não foi possível alterar sua senha.')
@@ -274,12 +275,13 @@ function ProfilePage() {
                         {loadErrorMessage ??
                             'Não foi possível carregar seu perfil.'}
                     </p>
-                    <button
+                    <Button
+                        variant="default"
                         className="login-submit"
                         onClick={() => setLoadAttempt((value) => value + 1)}
                     >
                         Tentar novamente
-                    </button>
+                    </Button>
                 </div>
             </ProfileShell>
         );
@@ -340,7 +342,7 @@ function ProfilePage() {
                         >
                             <div className="login-field">
                                 <label htmlFor="profile-name">Nome</label>
-                                <input
+                                <Input
                                     className="w-full"
                                     id="profile-name"
                                     name="name"
@@ -373,7 +375,7 @@ function ProfilePage() {
 
                             <div className="login-field">
                                 <label htmlFor="profile-email">E-mail</label>
-                                <input
+                                <Input
                                     className="w-full"
                                     id="profile-email"
                                     name="email"
@@ -451,13 +453,9 @@ function ProfilePage() {
                                     {profileErrorMessage}
                                 </p>
                             )}
-                            {profileSuccessMessage && (
-                                <p className="login-message" role="status">
-                                    {profileSuccessMessage}
-                                </p>
-                            )}
 
-                            <button
+                            <Button
+                                variant="default"
                                 className="login-submit profile-submit"
                                 type="submit"
                                 disabled={isUpdatingProfile}
@@ -465,7 +463,7 @@ function ProfilePage() {
                                 {isUpdatingProfile
                                     ? 'Salvando...'
                                     : 'Salvar alterações'}
-                            </button>
+                            </Button>
                         </form>
                     </section>
 
@@ -593,13 +591,9 @@ function ProfilePage() {
                                     {passwordErrorMessage}
                                 </p>
                             )}
-                            {passwordSuccessMessage && (
-                                <p className="login-message" role="status">
-                                    {passwordSuccessMessage}
-                                </p>
-                            )}
 
-                            <button
+                            <Button
+                                variant="default"
                                 className="login-submit profile-submit"
                                 type="submit"
                                 disabled={isChangingPassword}
@@ -607,7 +601,7 @@ function ProfilePage() {
                                 {isChangingPassword
                                     ? 'Alterando...'
                                     : 'Alterar senha'}
-                            </button>
+                            </Button>
                         </form>
                     </section>
                     <AccountDeletion

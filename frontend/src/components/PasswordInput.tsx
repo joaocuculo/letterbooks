@@ -1,5 +1,6 @@
 import { useState, type ComponentProps } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
+import { Input } from './ui/input';
 
 type PasswordInputProps = Omit<ComponentProps<'input'>, 'type'> & {
     visibilityLabel: string;
@@ -10,7 +11,7 @@ function PasswordInput({ visibilityLabel, ...props }: PasswordInputProps) {
 
     return (
         <div className="login-password-input">
-            <input {...props} type={isVisible ? 'text' : 'password'} />
+            <Input {...props} type={isVisible ? 'text' : 'password'} />
             <button
                 className="login-password-toggle"
                 type="button"

@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
-import { ArrowLeft, BookOpen } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
+import BrandLogo from '../components/BrandLogo';
 import { Link } from 'react-router-dom';
 import '../styles/login.css';
 import '../styles/recovery.css';
@@ -40,8 +41,7 @@ function AuthGalleryLayout({
                     to="/"
                     aria-label="LetterBooks, início"
                 >
-                    <BookOpen size={27} strokeWidth={1.6} aria-hidden="true" />
-                    <span>LetterBooks.</span>
+                    <BrandLogo />
                 </Link>
                 <Link className="login-back" to="/">
                     <ArrowLeft size={18} strokeWidth={1.7} aria-hidden="true" />

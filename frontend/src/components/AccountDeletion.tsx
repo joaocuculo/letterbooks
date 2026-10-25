@@ -1,4 +1,10 @@
-import { Dialog } from '@base-ui/react/dialog';
+import {
+    Dialog,
+    DialogContent,
+    DialogTitle,
+    DialogDescription,
+} from './ui/dialog';
+import { Button } from './ui/button';
 import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PasswordInput from './PasswordInput';
@@ -35,7 +41,8 @@ export default function AccountDeletion({
                 A exclusão é definitiva. Suas avaliações, estantes e livros
                 salvos serão removidos.
             </p>
-            <button
+            <Button
+                variant="destructive"
                 type="button"
                 className="profile-delete-button"
                 ref={trigger}
@@ -43,114 +50,112 @@ export default function AccountDeletion({
                 onClick={() => setOpen(true)}
             >
                 Excluir minha conta
-            </button>
+            </Button>
             {open && (
-                <Dialog.Root
+                <Dialog
                     open
                     onOpenChange={(value) => {
                         if (!value) close();
                     }}
                 >
-                    <Dialog.Portal>
-                        <Dialog.Backdrop className="admin-overlay" />
-                        <Dialog.Popup
-                            className="admin-dialog account-deletion-dialog"
-                            finalFocus={trigger}
-                            aria-busy={busy}
+                    <DialogContent
+                        showCloseButton={false}
+                        className="domain-dialog account-deletion-dialog"
+                        finalFocus={trigger}
+                        aria-busy={busy}
+                    >
+                        <DialogTitle>Excluir minha conta</DialogTitle>
+                        <DialogDescription>
+                            Esta ação não pode ser desfeita. Seus dados
+                            pessoais, avaliações, estantes, livros salvos e
+                            tokens de recuperação serão excluídos. Os livros,
+                            autores e categorias do catálogo permanecem. Informe
+                            sua senha atual para confirmar.
+                        </DialogDescription>
+                        <form
+                            noValidate
+                            onSubmit={async (event) => {
+                                event.preventDefault();
+                                if (busy) return;
+                                if (!password.trim()) {
+                                    setError('Informe sua senha atual.');
+                                    return;
+                                }
+                                setBusy(true);
+                                setError('');
+                                try {
+                                    await deleteAccount(userId, password);
+                                    setPassword('');
+                                    // Remove a credencial imediatamente; a Home encerra o contexto
+                                    // após a navegação para evitar o redirecionamento da rota protegida.
+                                    removeToken();
+                                    navigate('/', {
+                                        replace: true,
+                                        state: { accountDeleted: true },
+                                    });
+                                } catch (failure) {
+                                    setError(
+                                        getApiErrorMessage(
+                                            failure,
+                                            'Não foi possível excluir sua conta. Tente novamente.'
+                                        )
+                                    );
+                                } finally {
+                                    setBusy(false);
+                                }
+                            }}
                         >
-                            <Dialog.Title>Excluir minha conta</Dialog.Title>
-                            <Dialog.Description>
-                                Esta ação não pode ser desfeita. Seus dados
-                                pessoais, avaliações, estantes, livros salvos e
-                                tokens de recuperação serão excluídos. Os
-                                livros, autores e categorias do catálogo
-                                permanecem. Informe sua senha atual para
-                                confirmar.
-                            </Dialog.Description>
-                            <form
-                                noValidate
-                                onSubmit={async (event) => {
-                                    event.preventDefault();
-                                    if (busy) return;
-                                    if (!password.trim()) {
-                                        setError('Informe sua senha atual.');
-                                        return;
-                                    }
-                                    setBusy(true);
+                            <label htmlFor="delete-account-password">
+                                Senha atual
+                            </label>
+                            <PasswordInput
+                                id="delete-account-password"
+                                name="currentPassword"
+                                autoComplete="current-password"
+                                visibilityLabel="senha atual"
+                                value={password}
+                                disabled={busy}
+                                aria-invalid={!!error}
+                                aria-describedby={
+                                    error ? 'delete-account-error' : undefined
+                                }
+                                onChange={(event) => {
+                                    setPassword(event.target.value);
                                     setError('');
-                                    try {
-                                        await deleteAccount(userId, password);
-                                        setPassword('');
-                                        // Remove a credencial imediatamente; a Home encerra o contexto
-                                        // após a navegação para evitar o redirecionamento da rota protegida.
-                                        removeToken();
-                                        navigate('/', {
-                                            replace: true,
-                                            state: { accountDeleted: true },
-                                        });
-                                    } catch (failure) {
-                                        setError(
-                                            getApiErrorMessage(
-                                                failure,
-                                                'Não foi possível excluir sua conta. Tente novamente.'
-                                            )
-                                        );
-                                    } finally {
-                                        setBusy(false);
-                                    }
                                 }}
-                            >
-                                <label htmlFor="delete-account-password">
-                                    Senha atual
-                                </label>
-                                <PasswordInput
-                                    id="delete-account-password"
-                                    name="currentPassword"
-                                    autoComplete="current-password"
-                                    visibilityLabel="senha atual"
-                                    value={password}
+                            />
+                            {error && (
+                                <p
+                                    id="delete-account-error"
+                                    className="admin-error"
+                                    role="alert"
+                                >
+                                    {error}
+                                </p>
+                            )}
+                            <div className="admin-dialog-actions">
+                                <Button
+                                    variant="outline"
+                                    type="button"
                                     disabled={busy}
-                                    aria-invalid={!!error}
-                                    aria-describedby={
-                                        error
-                                            ? 'delete-account-error'
-                                            : undefined
-                                    }
-                                    onChange={(event) => {
-                                        setPassword(event.target.value);
-                                        setError('');
-                                    }}
-                                />
-                                {error && (
-                                    <p
-                                        id="delete-account-error"
-                                        className="admin-error"
-                                        role="alert"
-                                    >
-                                        {error}
-                                    </p>
-                                )}
-                                <div className="admin-dialog-actions">
-                                    <button
-                                        type="button"
-                                        disabled={busy}
-                                        onClick={close}
-                                    >
-                                        Cancelar
-                                    </button>
-                                    <button
-                                        className="admin-danger-button"
-                                        disabled={busy}
-                                    >
-                                        {busy
-                                            ? 'Excluindo...'
-                                            : 'Excluir definitivamente'}
-                                    </button>
-                                </div>
-                            </form>
-                        </Dialog.Popup>
-                    </Dialog.Portal>
-                </Dialog.Root>
+                                    onClick={close}
+                                >
+                                    Cancelar
+                                </Button>
+                                <Button
+                                    variant="destructive"
+                                    type="submit"
+                                    className="admin-danger-button"
+                                    disabled={busy}
+                                >
+                                    {busy
+                                        ? 'Excluindo...'
+                                        : 'Excluir definitivamente'}
+                                </Button>
+                            </div>
+                        </form>
+                    </DialogContent>
+                </Dialog>
             )}
         </section>
     );

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import type { UserBookResponse } from '../types/userBook';
 import UserBookCard from './UserBookCard';
+import { Feedback } from './ui/feedback';
 
 interface MyBooksSectionProps {
     title: string;
@@ -22,7 +23,7 @@ function MyBooksSection({
             <h2 className="mb-3">{title}</h2>
 
             {books.length === 0 ? (
-                <p>Nenhum livro nesta seção.</p>
+                <Feedback kind="empty" title="Nenhum livro nesta seção." />
             ) : (
                 <div className="flex flex-wrap gap-6">
                     {books.map((userBook) => (

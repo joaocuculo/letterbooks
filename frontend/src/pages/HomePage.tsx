@@ -1,3 +1,5 @@
+import { useToastMessage } from '../hooks/useToastMessage';
+import { Button } from '../components/ui/button';
 import SiteHeader from '../components/SiteHeader';
 import { useEffect, useRef, useState } from 'react';
 import { ArrowLeft, ArrowRight, Pause, Play, Star } from 'lucide-react';
@@ -142,7 +144,8 @@ function ReviewStack() {
             <div className="review-controls">
                 <small>Avaliações ilustrativas</small>
                 <div>
-                    <button
+                    <Button
+                        variant="ghost"
                         type="button"
                         aria-label="Avaliação anterior"
                         onClick={() =>
@@ -152,17 +155,18 @@ function ReviewStack() {
                         }
                     >
                         <Arrow back />
-                    </button>
+                    </Button>
                     <span>
                         {active + 1} / {reviews.length}
                     </span>
-                    <button
+                    <Button
+                        variant="ghost"
                         type="button"
                         aria-label="Próxima avaliação"
                         onClick={() => setActive((active + 1) % reviews.length)}
                     >
                         <Arrow />
-                    </button>
+                    </Button>
                 </div>
             </div>
         </div>
@@ -217,6 +221,9 @@ function HomePage() {
         };
     }, []);
 
+    useToastMessage(
+        accountDeleted ? 'Sua conta foi excluída com sucesso.' : null
+    );
     const motionPaused =
         paused || !heroVisible || !pageVisible || reducedMotion;
 
@@ -226,11 +233,6 @@ function HomePage() {
                 Pular para o conteúdo
             </a>
             <SiteHeader />
-            {accountDeleted && (
-                <p className="landing-account-notice" role="status">
-                    Sua conta foi excluída com sucesso.
-                </p>
-            )}
             <main id="home-content">
                 <section
                     className={`landing-hero ${motionPaused ? 'motion-paused' : ''}`}
@@ -299,7 +301,8 @@ function HomePage() {
                         <ReviewStack />
                     </div>
                     {!reducedMotion && (
-                        <button
+                        <Button
+                            variant="ghost"
                             type="button"
                             className="motion-toggle"
                             onClick={() => setPaused(!paused)}
@@ -319,7 +322,7 @@ function HomePage() {
                                 />
                             )}
                             {paused ? 'Retomar movimento' : 'Pausar movimento'}
-                        </button>
+                        </Button>
                     )}
                 </section>
                 <section
@@ -426,15 +429,6 @@ function HomePage() {
                     </Link>
                 </section>
             </main>
-            <footer className="landing-footer">
-                <Link to="/" className="landing-brand">
-                    LetterBooks.
-                </Link>
-                <span>Um lugar para cada leitura.</span>
-                <Link to="/explore">
-                    Encontre sua próxima história <Arrow />
-                </Link>
-            </footer>
         </div>
     );
 }

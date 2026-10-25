@@ -5,9 +5,9 @@
     overflow: visible;
 }
 .profile-content {
-    max-width: 1120px;
+    max-width: var(--layout-reading-max);
     margin: 0 auto;
-    padding: 40px 40px 64px;
+    padding: var(--page-top) var(--page-gutter) var(--page-bottom);
 }
 .profile-content h1 {
     margin: 0 0 36px;
@@ -24,9 +24,9 @@
 }
 .profile-summary {
     padding: 26px 22px;
-    border: 1px solid #d5d8d7;
-    border-radius: 16px;
-    background: #f5f6f5;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-panel);
+    background: var(--surface-subtle);
     text-align: center;
     overflow-wrap: anywhere;
 }
@@ -37,7 +37,7 @@
     height: 80px;
     margin: 0 auto 20px;
     border-radius: 50%;
-    background: #e5e8e6;
+    background: var(--surface-avatar);
     font-size: 26px;
     font-weight: 700;
     letter-spacing: -0.03em;
@@ -53,18 +53,18 @@
     margin: 7px 0 28px;
     font-size: 13px;
     line-height: 1.7;
-    color: #606565;
+    color: var(--text-secondary);
 }
 .profile-summary dl {
     display: grid;
     gap: 19px;
-    border-top: 1px solid #d5d8d7;
+    border-top: 1px solid var(--border-default);
     padding-top: 24px;
     text-align: left;
 }
 .profile-summary dt {
     font-size: 12px;
-    color: #606565;
+    color: var(--text-secondary);
     margin-bottom: 4px;
 }
 .profile-summary dd {
@@ -76,7 +76,7 @@
     min-width: 0;
 }
 .profile-section + .profile-section {
-    border-top: 1px solid #d5d8d7;
+    border-top: 1px solid var(--border-default);
     margin-top: 32px;
     padding-top: 32px;
 }
@@ -102,32 +102,12 @@
 }
 .profile-loading {
     font-size: 14px;
-    color: #606565;
+    color: var(--text-secondary);
 }
 .profile-delete p {
-    color: #606565;
+    color: var(--text-secondary);
     font-size: 14px;
     line-height: 1.7;
-}
-.profile-delete-button {
-    min-height: 44px;
-    border: 1px solid #b42318;
-    color: #b42318;
-    border-radius: 10px;
-    padding: 10px 16px;
-    background: #fff;
-    cursor: pointer;
-}
-.profile-delete-button:hover {
-    background: #fff3f1;
-}
-.profile-delete-button:disabled {
-    opacity: 0.55;
-    cursor: default;
-}
-.profile-delete-button:focus-visible {
-    outline: 2px solid #b42318;
-    outline-offset: 3px;
 }
 .admin-dialog.account-deletion-dialog .login-password-toggle {
     width: 44px;
@@ -138,14 +118,10 @@
 .profile-page .landing-header {
     width: 100%;
 }
-.profile-page .landing-user-menu summary {
-    max-width: 150px;
-    overflow-wrap: anywhere;
-}
 @media (max-width: 1023px) {
     .profile-content {
         max-width: 680px;
-        padding: 32px 24px 56px;
+        padding: var(--page-top) var(--page-gutter) var(--page-bottom);
     }
     .profile-grid {
         grid-template-columns: minmax(0, 1fr);
@@ -161,7 +137,7 @@
 }
 @media (max-width: 480px) {
     .profile-content {
-        padding: 28px 20px 40px;
+        padding: var(--page-top) var(--page-gutter) var(--page-bottom);
     }
     .profile-content h1 {
         margin-bottom: 24px;
@@ -171,11 +147,5 @@
     }
     .profile-page .profile-submit {
         width: 100%;
-    }
-    .profile-page .landing-user-menu summary {
-        max-width: 70px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
     }
 }
