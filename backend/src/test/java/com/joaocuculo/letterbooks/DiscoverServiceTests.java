@@ -7,6 +7,7 @@ import com.joaocuculo.letterbooks.entities.UserBook;
 import com.joaocuculo.letterbooks.repositories.BookRepository;
 import com.joaocuculo.letterbooks.repositories.UserBookRepository;
 import com.joaocuculo.letterbooks.services.DiscoverService;
+import com.joaocuculo.letterbooks.services.RatingSummaryService;
 import com.joaocuculo.letterbooks.services.GoogleBooksService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,7 +39,7 @@ class DiscoverServiceTests {
         google = mock(GoogleBooksService.class);
         books = mock(BookRepository.class);
         userBooks = mock(UserBookRepository.class);
-        service = new DiscoverService(google, userBooks, books);
+        service = new DiscoverService(google, userBooks, books, mock(RatingSummaryService.class));
     }
 
     @Test

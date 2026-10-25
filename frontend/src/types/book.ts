@@ -9,6 +9,7 @@ export interface BookCardResponse {
     thumbnailUrl: string | null;
     isFavorite: boolean;
     userBookId: number | null;
+    averageRating: number | null;
 }
 
 export interface BookResponse {

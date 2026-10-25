@@ -42,13 +42,15 @@ public class BookService {
     private final CategoryService categoryService;
     private final GoogleBooksService googleBooksService;
     private final UserBookRepository userBookRepository;
+    private final RatingSummaryService ratingSummaryService;
 
-    public BookService(BookRepository bookRepository, GoogleBooksService googleBooksService, AuthorService authorService, CategoryService categoryService, UserBookRepository userBookRepository) {
+    public BookService(BookRepository bookRepository, GoogleBooksService googleBooksService, AuthorService authorService, CategoryService categoryService, UserBookRepository userBookRepository, RatingSummaryService ratingSummaryService) {
         this.bookRepository = bookRepository;
         this.authorService = authorService;
         this.categoryService = categoryService;
         this.googleBooksService = googleBooksService;
         this.userBookRepository = userBookRepository;
+        this.ratingSummaryService = ratingSummaryService;
     }
 
     public BookResponseDTO findByGoogleBooksId(String googleBooksId) {
@@ -84,15 +86,16 @@ public class BookService {
                 .map(GoogleBooksResponseDTO::googleBooksId)
                 .toList();
         Map<String, UserBook> userBooksByGoogleId = resolveUserBooks(userId, googleBooksIds);
+        Map<String, Double> averages = ratingSummaryService.averagesFor(googleBooksIds);
 
         List<BookCardResponseDTO> content = items.stream()
                 .map(item -> {
                     UserBook userBook = userBooksByGoogleId.get(item.googleBooksId());
-                    return BookMapper.toCardResponseDTO(
+                    return BookMapper.withAverageRating(BookMapper.toCardResponseDTO(
                             item,
                             userBook != null && userBook.isFavorite(),
                             userBook != null ? userBook.getId() : null
-                    );
+                    ), averages.get(item.googleBooksId()));
                 })
                 .toList();
 
@@ -107,15 +110,16 @@ public class BookService {
                 .toList();
 
         Map<String, UserBook> userBooksByGoogleId = resolveUserBooks(userId, googleBooksIds);
+        Map<String, Double> averages = ratingSummaryService.averagesFor(googleBooksIds);
 
         return books.map(book -> {
             UserBook userBook = userBooksByGoogleId.get(book.getGoogleBooksId());
 
-            return BookMapper.toCardResponseDTO(
+            return BookMapper.withAverageRating(BookMapper.toCardResponseDTO(
                     book,
                     userBook != null && userBook.isFavorite(),
                     userBook != null ? userBook.getId() : null
-            );
+            ), averages.get(book.getGoogleBooksId()));
         });
     }
 

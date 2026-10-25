@@ -98,7 +98,8 @@ public class BookMapper {
                 book.getPublishedDate(),
                 book.getThumbnailUrl(),
                 isFavorite,
-                userBookId
+                userBookId,
+                null
         );
     }
 
@@ -111,8 +112,14 @@ public class BookMapper {
                 dto.volumeInfo().publishedDate(),
                 dto.getThumbnailUrl(),
                 isFavorite,
-                userBookId
+                userBookId,
+                null
         );
+    }
+
+    public static BookCardResponseDTO withAverageRating(BookCardResponseDTO card, Double averageRating) {
+        return new BookCardResponseDTO(card.id(), card.title(), card.authors(), card.publisher(),
+                card.publishedDate(), card.thumbnailUrl(), card.isFavorite(), card.userBookId(), averageRating);
     }
 
     private static Integer extractedPublishedYear(String publishedDate) {

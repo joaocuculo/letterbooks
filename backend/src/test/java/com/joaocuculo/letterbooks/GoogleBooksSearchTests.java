@@ -6,6 +6,7 @@ import com.joaocuculo.letterbooks.dto.request.BookSearchRequestDTO;
 import com.joaocuculo.letterbooks.repositories.BookRepository;
 import com.joaocuculo.letterbooks.services.BookService;
 import com.joaocuculo.letterbooks.services.DiscoverService;
+import com.joaocuculo.letterbooks.services.RatingSummaryService;
 import com.joaocuculo.letterbooks.services.GoogleBooksService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -55,7 +56,7 @@ class GoogleBooksSearchTests {
         GoogleBooksService googleBooksService = mock(GoogleBooksService.class);
         BookRepository bookRepository = mock(BookRepository.class);
         when(googleBooksService.search("duna", 20, 20)).thenReturn(new GoogleBooksSearchResponseDTO(0, null));
-        BookService service = new BookService(bookRepository, googleBooksService, null, null, null);
+        BookService service = new BookService(bookRepository, googleBooksService, null, null, null, mock(RatingSummaryService.class));
 
         service.search(new BookSearchRequestDTO(null, null, null, null, null, "duna"), PageRequest.of(1, 20), null);
 
@@ -112,7 +113,7 @@ class GoogleBooksSearchTests {
         BookRepository bookRepository = mock(BookRepository.class);
         when(googleBooksService.search(anyString(), anyInt(), anyInt()))
                 .thenReturn(new GoogleBooksSearchResponseDTO(0, null));
-        BookService service = new BookService(bookRepository, googleBooksService, null, null, null);
+        BookService service = new BookService(bookRepository, googleBooksService, null, null, null, mock(RatingSummaryService.class));
         BookSearchRequestDTO request = new BookSearchRequestDTO(null, null, null, null, null, "fiction");
 
         assertTrue(service.search(request, PageRequest.of(0, 10), null).isEmpty());
@@ -129,7 +130,7 @@ class GoogleBooksSearchTests {
         BookRepository bookRepository = mock(BookRepository.class);
         when(bookRepository.findAll(any(Specification.class), any(PageRequest.class))).thenReturn(Page.empty());
         when(bookRepository.findAll(any(PageRequest.class))).thenReturn(Page.empty());
-        assertTrue(new DiscoverService(googleBooksService, null, bookRepository).discover(null).sections().isEmpty());
+        assertTrue(new DiscoverService(googleBooksService, null, bookRepository, mock(RatingSummaryService.class)).discover(null).sections().isEmpty());
         verify(googleBooksService, times(3)).search(anyString(), eq(12), eq(0));
     }
 

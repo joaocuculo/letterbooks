@@ -10,6 +10,7 @@ public record BookCardResponseDTO(
         String publishedDate,
         String thumbnailUrl,
         boolean isFavorite,
-        Long userBookId
+        Long userBookId,
+        Double averageRating
 ) {
 }

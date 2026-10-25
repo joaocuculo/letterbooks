@@ -31,6 +31,7 @@ public class DiscoverService {
     private final GoogleBooksService googleBooksService;
     private final UserBookRepository userBookRepository;
     private final BookRepository bookRepository;
+    private final RatingSummaryService ratingSummaryService;
     // Buscas temáticas em texto livre: os filtros subject retornaram zero resultados no diagnóstico.
     private static final List<SectionDefinition> SECTIONS = List.of(
             new SectionDefinition("fiction", "Ficção", "fiction", List.of("fiction", "ficção", "ficcao")),
@@ -38,10 +39,11 @@ public class DiscoverService {
             new SectionDefinition("biographies", "Biografias", "biographies", List.of("biograph", "biograf"))
     );
 
-    public DiscoverService(GoogleBooksService googleBooksService, UserBookRepository userBookRepository, BookRepository bookRepository) {
+    public DiscoverService(GoogleBooksService googleBooksService, UserBookRepository userBookRepository, BookRepository bookRepository, RatingSummaryService ratingSummaryService) {
         this.googleBooksService = googleBooksService;
         this.userBookRepository = userBookRepository;
         this.bookRepository = bookRepository;
+        this.ratingSummaryService = ratingSummaryService;
     }
 
     @Transactional(readOnly = true)
@@ -53,9 +55,14 @@ public class DiscoverService {
         if (sections.isEmpty()) {
             // Livros sem uma categoria correspondente não devem receber um rótulo incorreto.
             List<Book> books = bookRepository.findAll(sectionPage()).getContent();
-            return new DiscoverResponseDTO(toLocalSection("catalog", "Do nosso catálogo", books, userId).stream().toList());
+            sections = toLocalSection("catalog", "Do nosso catálogo", books, userId).stream().toList();
         }
-        return new DiscoverResponseDTO(sections);
+        Map<String, Double> averages = ratingSummaryService.averagesFor(sections.stream()
+                .flatMap(section -> section.books().stream()).map(BookCardResponseDTO::id).toList());
+        return new DiscoverResponseDTO(sections.stream()
+                .map(section -> new DiscoverSectionDTO(section.key(), section.title(), section.books().stream()
+                        .map(card -> BookMapper.withAverageRating(card, averages.get(card.id()))).toList()))
+                .toList());
     }
 
     private Optional<DiscoverSectionDTO> loadSection(SectionDefinition definition, Long userId) {
