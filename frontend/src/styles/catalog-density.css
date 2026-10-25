@@ -1,0 +1,83 @@
+/* Reusable compact scale. Opt in at the page root and at portaled panels.
+   Shared components retain their existing defaults on other pages. */
+.catalog-density {
+    --catalog-max-width: var(--layout-catalog-max);
+    --catalog-page-inset: var(--page-gutter);
+    --catalog-page-bottom: var(--space-10);
+    --catalog-title-size: 30px;
+    --catalog-section-size: 20px;
+    --catalog-body-size: 14px;
+    --catalog-label-size: 13px;
+    --catalog-control-height: var(--control-height-compact);
+    --catalog-search-height: 48px;
+    --catalog-layout-gap: var(--space-6);
+    --catalog-section-gap: var(--space-8);
+    --catalog-grid-gap: 18px;
+    --catalog-book-min-width: 170px;
+    --catalog-detail-min-width: 320px;
+    --catalog-detail-media-width: 120px;
+    --ui-control-height: var(--catalog-control-height);
+
+    --site-header-height: 64px;
+    --site-header-max-width: var(--catalog-max-width);
+    --site-header-padding: 0 var(--catalog-page-inset);
+    --site-header-control-height: var(--catalog-control-height);
+    --site-header-link-padding: 8px 0;
+    --site-header-button-padding: 8px 16px;
+    --site-header-button-gap: 8px;
+    --brand-logo-width: 180px;
+
+    --catalog-book-detail-padding: var(--space-3);
+    --book-title-size: 14px;
+    --book-title-leading: 1.4;
+    --book-description-size: 13px;
+    --book-description-leading: 1.45;
+    --book-metadata-gap: 8px;
+    --book-detail-media-width: var(--catalog-detail-media-width);
+    --book-detail-gap: 12px;
+    --book-mobile-detail-layout: grid;
+    --book-mobile-detail-content-padding: var(--catalog-book-detail-padding) var(--catalog-book-detail-padding) var(--catalog-book-detail-padding) 0;
+    --book-mobile-detail-media-radius: 11px 0 0 11px;
+}
+
+@media (max-width: 1023px) {
+    .catalog-density {
+        --catalog-layout-gap: 20px;
+        --catalog-book-min-width: 150px;
+    }
+}
+
+@media (max-width: 760px) {
+    .catalog-density {
+        --catalog-page-inset: var(--space-4);
+        --catalog-title-size: 26px;
+        --catalog-grid-gap: var(--space-4);
+        --catalog-control-height: var(--control-height-default);
+        --site-header-mobile-padding: 0 var(--catalog-page-inset);
+        --site-header-mobile-gap: 0 8px;
+        --site-header-mobile-label-size: 12px;
+    }
+}
+
+@media (max-width: 639px) {
+    .catalog-density {
+        --catalog-book-min-width: 128px;
+        --catalog-detail-min-width: 260px;
+        --catalog-section-gap: var(--space-6);
+        --catalog-grid-gap: var(--space-3);
+        --catalog-book-detail-padding: 10px;
+    }
+}
+
+@media (max-width: 359px) {
+    .catalog-density {
+        --brand-logo-mobile-width: 120px;
+        --site-header-mobile-gap: 0 4px;
+    }
+}
+
+@media (pointer: coarse) {
+    .catalog-density { --catalog-control-height: var(--control-height-default); }
+}
+
+.catalog-density .library-books { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--catalog-book-min-width)), 1fr)); gap: var(--catalog-grid-gap); }

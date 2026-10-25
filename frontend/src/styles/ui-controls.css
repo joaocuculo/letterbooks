@@ -1,0 +1,93 @@
+/* Shared compact finish for the shadcn/Base UI primitives. */
+.ui-button {
+    border-radius: var(--radius-control);
+    font-family: var(--font-interface);
+    font-size: 13px;
+    line-height: 20px;
+    transition-duration: var(--duration-control);
+}
+.ui-button[data-size='xs'], .ui-button[data-size='icon-xs'] { font-size: 12px; }
+.ui-button:disabled { cursor: not-allowed; }
+.ui-field {
+    min-height: var(--control-height-compact);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-control);
+    background: var(--surface-background);
+    color: var(--text-primary);
+    font-family: var(--font-interface);
+    font-size: 14px;
+    line-height: 20px;
+    transition: border-color var(--duration-control), box-shadow var(--duration-control);
+}
+textarea.ui-field { min-height: 88px; resize: vertical; }
+.ui-field:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+}
+.ui-field:disabled { background: var(--surface-muted); color: var(--text-secondary); }
+.ui-field[aria-invalid='true'] { border-color: var(--feedback-error); }
+.ui-dialog-overlay {
+    z-index: var(--layer-dialog-overlay);
+    background: var(--overlay-dialog);
+}
+.ui-dialog-content {
+    z-index: var(--layer-dialog);
+    width: min(400px, calc(100vw - 32px));
+    max-height: calc(100dvh - 32px);
+    overflow-y: auto;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-panel);
+    padding: var(--space-5);
+    gap: var(--space-4);
+    box-shadow: var(--shadow-floating);
+}
+.ui-dialog-header { padding-right: var(--space-8); }
+.ui-dialog-footer {
+    margin: 0;
+    padding: var(--space-4) 0 0;
+    background: transparent;
+    border-color: var(--border-subtle);
+}
+.ui-feedback {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-menu);
+    background: var(--surface-subtle);
+    color: var(--text-primary);
+    font: 13px/1.6 var(--font-interface);
+    overflow-wrap: anywhere;
+}
+.ui-feedback > svg { width: 18px; height: 18px; margin-top: 2px; flex-shrink: 0; }
+.ui-feedback p { margin: 0; color: var(--text-secondary); }
+.ui-feedback strong { font-weight: 600; }
+.ui-feedback-action { margin-top: var(--space-2); }
+.ui-spinner { animation: ui-spin 900ms linear infinite; }
+@keyframes ui-spin { to { transform: rotate(360deg); } }
+@media (max-width: 760px) {
+    .ui-field { font-size: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .ui-button, .ui-field, .ui-dialog-overlay, .ui-dialog-content,
+    .shadcn-surface[data-slot='dropdown-menu-content'],
+    .shadcn-surface[data-slot='tooltip-content'] { transition: none; animation: none; }
+    .ui-spinner { animation: none; }
+}
+
+.ui-select-trigger[data-size='sm'] { min-height: 32px; }
+.ui-select-trigger[data-disabled] { background: var(--surface-muted); color: var(--text-secondary); }
+.ui-select-content { border-radius: var(--radius-menu); box-shadow: var(--shadow-floating); font-family: var(--font-interface); }
+.ui-select-content [data-slot='select-item'] { min-height: var(--control-height-compact); font-size: 13px; }
+@media (prefers-reduced-motion: reduce) { .ui-select-content { animation: none; transition: none; } }
+
+.ui-switch { padding: 0; }
+.shadcn-surface.ui-switch[data-checked] { background: var(--action-primary); }
+.shadcn-surface.ui-switch[data-unchecked] { background: var(--border-default); }
+.ui-dialog-content :is(.library-dialog-actions, .admin-dialog-actions, .book-form-actions, .ui-dialog-footer) { display: flex; flex-direction: row; flex-wrap: wrap; justify-content: flex-end; gap: var(--space-2); }
+.ui-dialog-content :is(.library-dialog-actions, .admin-dialog-actions, .book-form-actions, .ui-dialog-footer) > button { flex: 0 1 auto; max-width: 100%; white-space: normal; }
+[data-slot='toast-viewport'] { z-index: var(--layer-toast); font-family: var(--font-interface); }
+[data-slot='toast'] { border-color: var(--border-default); border-radius: var(--radius-panel); box-shadow: var(--shadow-floating); }
+[data-slot='toast-title'], [data-slot='toast-description'] { overflow-wrap: anywhere; }
+@media (prefers-reduced-motion: reduce) { .ui-switch, [data-slot='switch-thumb'], [data-slot='toast'], [data-slot='toast-content'] { transition: none; animation: none; } [data-slot='toast-icon'] .animate-spin { animation: none; } }

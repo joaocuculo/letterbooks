@@ -7,17 +7,22 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "check:styleguide-production": "node scripts/verify-styleguide-production.mjs",
+    "check:styleguide-isolation": "node scripts/verify-styleguide-isolation.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
     "@tailwindcss/vite": "^4.3.3",
     "axios": "^1.19.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "dompurify": "^3.4.14",
     "lucide-react": "^1.52.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-router-dom": "^7.18.2",
+    "tailwind-merge": "^3.7.0",
     "tailwindcss": "^4.3.3"
   },
   "devDependencies": {

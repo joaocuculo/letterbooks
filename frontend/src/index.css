@@ -1,12 +1,17 @@
 @import "tailwindcss";
+@import "./styles/tokens.css";
+@import "./styles/shadcn.css";
+@import "./styles/catalog-density.css";
+@import "./styles/ui-controls.css";
+@import "./styles/domain-components.css";
 
 @layer base {
     button,
     input,
     select,
     textarea {
-        border: 1px solid #a1a1aa;
-        border-radius: 0.375rem;
+        border: 1px solid var(--border-native);
+        border-radius: var(--radius-native);
     }
 
     button {
@@ -15,7 +20,7 @@
     }
 
     button:hover:not(:disabled) {
-        background-color: #f4f4f5;
+        background-color: var(--surface-native-hover);
     }
 
     button:disabled {
@@ -33,7 +38,7 @@
     input:focus,
     select:focus,
     textarea:focus {
-        outline: 2px solid #71717a;
+        outline: 2px solid var(--focus-native);
         outline-offset: 1px;
     }
 
@@ -41,3 +46,13 @@
         resize: vertical;
     }
 }
+
+@layer base {
+    body { font-family: var(--font-interface); color: var(--text-primary); background: var(--surface-background); }
+    #root { min-width: 0; }
+}
+.app-shell { min-height: 100svh; display: flex; flex-direction: column; background: var(--surface-background); color: var(--text-primary); }
+.app-shell > main { flex: 1; min-width: 0; }
+.not-found { width: 100%; max-width: var(--layout-reading-max); margin: auto; padding: var(--page-top) var(--page-gutter) var(--page-bottom); display: grid; justify-items: start; gap: var(--space-4); }
+.not-found h1 { font-size: clamp(26px, 4vw, 34px); font-weight: 700; line-height: 1.2; overflow-wrap: anywhere; }
+.not-found p { color: var(--text-secondary); line-height: 1.6; }

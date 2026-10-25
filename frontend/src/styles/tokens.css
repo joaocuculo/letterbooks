@@ -1,0 +1,104 @@
+/* Stage 1: shared foundations. Preserve existing values before migrating components.
+   Defined at the root so Base UI portals receive the same theme as page content. */
+@font-face {
+    font-family: Manrope;
+    src: url('/fonts/Manrope.ttf') format('truetype');
+    font-weight: 200 800;
+    font-style: normal;
+    font-display: swap;
+}
+
+:root {
+    --layout-catalog-max: 1280px;
+    --layout-reading-max: 1120px;
+    --layout-admin-max: 1120px;
+    --page-gutter: var(--space-6);
+    --page-top: var(--space-8);
+    --page-bottom: 64px;
+    --section-gap: var(--space-8);
+    --font-interface: Manrope, sans-serif;
+    --font-editorial: Georgia, serif;
+
+    --surface-background: #fff;
+    --surface-muted: #f3f4f3;
+    --surface-subtle: #f5f6f5;
+    --surface-hover: #f0f2f0;
+    --surface-avatar: #e5e8e6;
+    --text-primary: #202323;
+    --text-secondary: #606565;
+    --action-primary: #000;
+    --action-primary-foreground: #fff;
+    --border-default: #d5d8d7;
+    --border-subtle: #e4e7e5;
+    --border-menu: #e5e5e5;
+    --border-field: #858d89;
+    --focus-ring: var(--text-primary);
+
+    /* Existing error feedback is retained; these are not brand/accent colors. */
+    --feedback-error: #b42318;
+    --feedback-destructive: #ef4444;
+    --feedback-error-hover: #b4231810;
+
+    /* Transitional native-control values: keep their current appearance. */
+    --border-native: #a1a1aa;
+    --surface-native-hover: #f4f4f5;
+    --focus-native: #71717a;
+
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 24px;
+    --space-8: 32px;
+    --space-10: 40px;
+    --radius-native: 0.375rem;
+    --radius-control: 10px;
+    --radius-menu: 12px;
+    --radius-panel: 16px;
+    --radius-book: 18px;
+    --radius-pill: 999px;
+    --control-height-compact: 36px;
+    --control-height-default: 44px;
+    --control-size-book: 38px;
+    --icon-size-book: 18px;
+    --book-content-padding: 13px;
+    --book-content-min-height: 118px;
+    --book-title-author-gap: 5px;
+
+    --border-book: color-mix(in srgb, var(--border-default) 65%, transparent);
+    --surface-cover-control: color-mix(in srgb, var(--surface-background) 78%, transparent);
+    --shadow-control: 0 1px 2px #0000000d;
+    --shadow-menu: 0 2px 6px #00000014;
+    --shadow-floating: 0 8px 24px #0002;
+    --shadow-book: 0 2px 6px color-mix(in srgb, var(--text-primary) 5%, transparent);
+    --shadow-book-menu: 0 4px 16px color-mix(in srgb, var(--text-primary) 10%, transparent);
+    --overlay-drawer: #20232355;
+    --overlay-dialog: #0008;
+    --overlay-lightbox: #000d;
+    --duration-control: 160ms;
+    --duration-overlay: 250ms;
+    --duration-drawer: 350ms;
+    --ease-drawer: cubic-bezier(0.22, 1, 0.36, 1);
+    --layer-drawer-overlay: 60;
+    --layer-drawer: 61;
+    --layer-floating: 80;
+    --layer-dialog-overlay: 100;
+    --layer-dialog: 101;
+    --layer-toast: 120;
+
+    /* Compatibility aliases for the existing shadcn/Base UI components. */
+    --ui-background: var(--surface-background);
+    --ui-foreground: var(--text-primary);
+    --ui-primary: var(--action-primary);
+    --ui-muted: var(--surface-muted);
+    --ui-muted-foreground: var(--text-secondary);
+    --ui-border: var(--border-default);
+    --ui-destructive: var(--feedback-destructive);
+}
+
+@theme inline {
+    --font-sans: var(--font-interface);
+}
+
+@media (max-width: 760px) { :root { --page-gutter: var(--space-4); --page-top: var(--space-6); --page-bottom: var(--space-10); } }

@@ -1,0 +1,66 @@
+/* shadcn/ui Base Nova tokens: values are scoped to the new components,
+   including menus/tooltips rendered through portals. No global theme reset. */
+@theme inline {
+    --color-background: var(--ui-background);
+    --color-foreground: var(--ui-foreground);
+    --color-card: var(--ui-background);
+    --color-card-foreground: var(--ui-foreground);
+    --color-popover: var(--ui-background);
+    --color-popover-foreground: var(--ui-foreground);
+    --color-primary: var(--ui-primary);
+    --color-primary-foreground: var(--ui-background);
+    --color-secondary: var(--ui-muted);
+    --color-secondary-foreground: var(--ui-foreground);
+    --color-muted: var(--ui-muted);
+    --color-muted-foreground: var(--ui-muted-foreground);
+    --color-accent: var(--ui-muted);
+    --color-accent-foreground: var(--ui-foreground);
+    --color-border: var(--ui-border);
+    --color-input: var(--ui-border);
+    --color-ring: var(--ui-foreground);
+    --color-destructive: var(--ui-destructive);
+}
+
+.shadcn-surface {
+    font-family: var(--font-interface);
+}
+
+.shadcn-surface:is([data-slot='button'], [data-slot='dropdown-menu-trigger']) {
+    gap: 8px;
+    cursor: pointer;
+}
+
+.shadcn-surface[data-slot='button']:disabled {
+    cursor: not-allowed;
+}
+
+.shadcn-surface[data-slot='dropdown-menu-content'] {
+    width: max-content;
+    max-width: calc(100vw - 32px);
+    min-width: 208px;
+    border: 1px solid var(--border-menu);
+    border-radius: var(--radius-menu);
+    box-shadow: var(--shadow-menu);
+    --tw-ring-shadow: 0 0 #0000;
+}
+
+.shadcn-surface [data-slot='dropdown-menu-item'] {
+    min-height: var(--control-height-compact);
+    gap: 10px;
+    padding: 6px 10px;
+    cursor: pointer;
+}
+
+.shadcn-surface [data-slot='dropdown-menu-item'][data-highlighted] {
+    background: var(--ui-muted);
+}
+
+.shadcn-surface [data-slot='dropdown-menu-item'][data-variant='destructive'][data-highlighted] {
+    background: var(--feedback-error-hover);
+}
+
+.shadcn-surface[data-slot='tooltip-content'] {
+    max-width: min(320px, calc(100vw - 32px));
+    overflow-wrap: anywhere;
+    line-height: 1.6;
+}
