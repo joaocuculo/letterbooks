@@ -1,0 +1,13 @@
+LETTERBOOKS — KIT DE LOGO (PROPOSTA 05)
+
+Pastas:
+svg/ - ícone isolado, logo horizontal, wordmark e compacto em preto e branco.
+png/ - arquivos rasterizados de cada versão, em fundo transparente; e versões demonstrativas com fundo branco/preto.
+favicon/ - .ico, .svg e PNG em tamanhos usuais.
+referencias/ - imagens originais geradas na fase de exploração visual.
+
+NOTA IMPORTANTE:
+O ícone vetorial foi reconstruído/traçado a partir da imagem de referência gerada.
+A tipografia em SVG é editável (texto) e utiliza fontes substitutas do sistema, portanto é uma aproximação da imagem original, NÃO um redesenho tipográfico exato. Se a fonte escolhida não estiver instalada, o navegador usa uma alternativa. Para resultados idênticos em qualquer ambiente, converta texto em contornos com um editor vetorial após definir a fonte definitiva.
+SVGs e PNGs com sufixo branco possuem fundo transparente e são apropriados a áreas escuras.
+As versões com fundo indicado incluem cor de fundo opaca.

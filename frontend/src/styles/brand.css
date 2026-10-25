@@ -1,0 +1,13 @@
+.brand-logo {
+    display: block;
+    width: var(--brand-logo-width, 200px);
+    height: auto;
+    flex-shrink: 0;
+    object-fit: contain;
+}
+
+@media (max-width: 760px) {
+    .brand-logo {
+        width: var(--brand-logo-mobile-width, 150px);
+    }
+}
