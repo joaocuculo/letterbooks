@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { SESSION_ERROR_CODE } from './session';
 import type { ApiErrorResponse } from '../types/apiError';
 
 type StatusMessageOverrides = Partial<Record<number, string>>;
@@ -11,6 +12,8 @@ export function getApiErrorMessage(
     if (!axios.isAxiosError<ApiErrorResponse>(error)) {
         return fallbackMessage;
     }
+
+    if (error.code === SESSION_ERROR_CODE) return '';
 
     if (error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT') {
         return 'A API demorou muito para responder. Tente novamente.';
