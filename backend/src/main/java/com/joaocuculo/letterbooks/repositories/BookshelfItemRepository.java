@@ -40,6 +40,9 @@ public interface BookshelfItemRepository extends JpaRepository<BookshelfItem, Bo
     @Query(value = "select i from BookshelfItem i join fetch i.id.book where i.id.bookshelf.id = :id order by i.id.book.id",
         countQuery = "select count(i) from BookshelfItem i where i.id.bookshelf.id = :id")
     Page<BookshelfItem> findBooks(@Param("id") Long id, Pageable pageable);
+    @Query("select i.id.bookshelf.id from BookshelfItem i where i.id.book.id = :bookId and i.id.bookshelf.id in :ids")
+    List<Long> findShelfIdsContainingBook(@Param("ids") Collection<Long> ids, @Param("bookId") Long bookId);
+
     Optional<BookshelfItem> findByIdBookshelfIdAndIdBookId(Long bookshelfId, Long bookId);
     boolean existsByIdBookshelfIdAndIdBookId(Long bookshelfId, Long bookId);
 }

@@ -85,3 +85,10 @@ export async function findMineByGoogleBooksId(
     );
     return response.data;
 }
+
+export async function addBookToShelves(
+    googleBooksId: string,
+    bookshelfIds: number[]
+) {
+    await api.post('/bookshelves/book/batch', { googleBooksId, bookshelfIds });
+}

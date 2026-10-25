@@ -1,6 +1,9 @@
 package com.joaocuculo.letterbooks.services;
 
 import org.springframework.transaction.annotation.Transactional;
+import com.joaocuculo.letterbooks.dto.request.BookshelfBatchItemRequestDTO;
+import java.util.LinkedHashSet;
+import java.util.HashSet;
 import com.joaocuculo.letterbooks.dto.request.BookshelfItemRequestDTO;
 import com.joaocuculo.letterbooks.entities.Book;
 import com.joaocuculo.letterbooks.entities.Bookshelf;
@@ -36,6 +39,18 @@ public class BookshelfItemService {
         }
         userBookService.ensureInLibrary(userId, book);
         bookshelfItemRepository.save(new BookshelfItem(bookshelf, book));
+    }
+
+    @Transactional
+    public void addToShelves(BookshelfBatchItemRequestDTO dto, Long userId) {
+        var ids = new LinkedHashSet<>(dto.bookshelfIds());
+        var shelves = bookshelfService.getOwnedBookshelves(ids, userId);
+        Book book = bookService.findOrCreateByGoogleBooksId(dto.googleBooksId());
+        var existing = new HashSet<>(bookshelfItemRepository.findShelfIdsContainingBook(ids, book.getId()));
+        userBookService.ensureInLibrary(userId, book);
+        var additions = shelves.stream().filter(shelf -> !existing.contains(shelf.getId()))
+                .map(shelf -> new BookshelfItem(shelf, book)).toList();
+        bookshelfItemRepository.saveAll(additions);
     }
 
     public void remove(Long bookshelfId, Long bookId, Long userId) {

@@ -10,6 +10,7 @@ import com.joaocuculo.letterbooks.dto.response.BookshelfSummaryDTO;
 import com.joaocuculo.letterbooks.services.BookshelfItemService;
 import com.joaocuculo.letterbooks.services.BookshelfService;
 import jakarta.validation.Valid;
+import com.joaocuculo.letterbooks.dto.request.BookshelfBatchItemRequestDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -89,6 +90,14 @@ public class BookshelfController {
             @PathVariable Long id, @RequestBody @Valid BookshelfUpdateDTO request, @AuthenticationPrincipal JWTUserData user) {
         BookshelfResponseDTO bookshelf = bookshelfService.update(id, request, user.userId());
         return ResponseEntity.ok().body(bookshelf);
+    }
+
+    @PostMapping("/book/batch")
+    public ResponseEntity<Void> addToShelves(
+            @RequestBody @Valid BookshelfBatchItemRequestDTO request,
+            @AuthenticationPrincipal JWTUserData user) {
+        bookshelfItemService.addToShelves(request, user.userId());
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     // itens da estante

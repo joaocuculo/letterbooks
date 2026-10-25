@@ -2,6 +2,7 @@ package com.joaocuculo.letterbooks.services;
 
 import org.springframework.transaction.annotation.Transactional;
 import java.util.Map;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.ArrayList;
 import com.joaocuculo.letterbooks.repositories.UserBookRepository;
@@ -145,6 +146,17 @@ public class BookshelfService {
         }
         BookshelfMapper.updateEntity(bookshelf, dto);
         return BookshelfMapper.toResponseDTO(bookshelfRepository.save(bookshelf));
+    }
+
+    public List<Bookshelf> getOwnedBookshelves(Collection<Long> ids, Long userId) {
+        var shelves = bookshelfRepository.findAllById(ids);
+        if (shelves.size() != ids.size()) throw new ResourceNotFoundException("Estante não encontrada.");
+        for (var shelf : shelves) {
+            if (!shelf.getUser().getId().equals(userId)) {
+                throw new ForbiddenException("Você não tem permissão para acessar esta estante.");
+            }
+        }
+        return shelves;
     }
 
     public Bookshelf getOwnedBookshelf(Long id, Long userId) {
