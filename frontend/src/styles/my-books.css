@@ -492,9 +492,14 @@
     text-underline-offset: 4px;
 }
 .library-books {
+    --book-content-min-height: 0px;
     display: grid;
+    align-items: start;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 28px;
+}
+.library-books .book-item-card[data-slot='card'] {
+    height: auto;
 }
 .library-error > p,
 .library-danger {
