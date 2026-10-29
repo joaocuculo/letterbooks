@@ -1,7 +1,12 @@
 import { toast } from './ui/toast-manager';
 import { Button } from './ui/button';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import {
+    useSearchParams,
+    useLocation,
+    useNavigate,
+    Link,
+} from 'react-router-dom';
 import ShelfActionsMenu from './ShelfActionsMenu';
 import { Feedback } from './ui/feedback';
 import {
@@ -27,14 +32,71 @@ import AddToShelfDialog from './AddToShelfDialog';
 type Target =
     | { shelf: service.BookshelfSummary }
     | { record: service.BookshelfBook; detach: boolean };
+
+// History state keeps list context without changing shared library URLs.
+type ShelfListOrigin = { page: number; scrollY: number; shelfId: number };
+type ShelfNavigationState = {
+    shelfOrigin?: ShelfListOrigin;
+    restoreShelfList?: ShelfListOrigin;
+};
+
+function ShelfDescription({ text }: { text: string }) {
+    const paragraph = useRef<HTMLParagraphElement>(null);
+    const [expanded, setExpanded] = useState(false);
+    const [overflows, setOverflows] = useState(false);
+    useEffect(() => {
+        const element = paragraph.current;
+        if (!element) return;
+        const measure = () => {
+            const lineHeight = Number.parseFloat(
+                getComputedStyle(element).lineHeight
+            );
+            setOverflows(element.scrollHeight > lineHeight * 3 + 1);
+        };
+        const frame = requestAnimationFrame(measure);
+        const observer = new ResizeObserver(measure);
+        observer.observe(element);
+        return () => {
+            cancelAnimationFrame(frame);
+            observer.disconnect();
+        };
+    }, []);
+    return (
+        <div className="shelf-description">
+            <p
+                ref={paragraph}
+                className={expanded ? undefined : 'shelf-description-clamped'}
+            >
+                {text}
+            </p>
+            {overflows && (
+                <Button
+                    variant="ghost"
+                    type="button"
+                    aria-expanded={expanded}
+                    onClick={() => setExpanded((value) => !value)}
+                >
+                    {expanded ? 'Ver menos' : 'Ver mais'}
+                </Button>
+            )}
+        </div>
+    );
+}
+
 export default function ShelfManager({
     page,
     changePage,
 }: {
     page: number;
-    changePage: (page: number) => void;
+    changePage: (page: number, preserveNavigationState?: boolean) => void;
 }) {
-    const [params, setParams] = useSearchParams();
+    const [params] = useSearchParams();
+    const location = useLocation();
+    const navigate = useNavigate();
+    const navigationState = location.state as ShelfNavigationState | null;
+    const heading = useRef<HTMLHeadingElement>(null);
+    const focusedShelf = useRef<number | null>(null);
+    const restoredLocation = useRef<string | null>(null);
     const rawId = Number(params.get('shelfId'));
     const id = Number.isSafeInteger(rawId) && rawId > 0 ? rawId : null;
     const { user } = useAuth();
@@ -73,13 +135,87 @@ export default function ShelfManager({
     const data = state.data;
     const pagination = data?.books?.page ?? data?.list?.page;
     useEffect(() => {
+        if (!id) {
+            focusedShelf.current = null;
+            return;
+        }
+        if (data?.summary && focusedShelf.current !== id) {
+            heading.current?.focus({ preventScroll: true });
+            window.scrollTo({ top: 0, behavior: 'instant' });
+            focusedShelf.current = id;
+        }
+    }, [id, data?.summary]);
+    useEffect(() => {
+        const origin = navigationState?.restoreShelfList;
+        if (
+            id ||
+            !origin ||
+            !data?.list ||
+            state.busy ||
+            state.error ||
+            restoredLocation.current === location.key ||
+            (page > 0 && page >= data.list.page.totalPages)
+        )
+            return;
+        const frame = requestAnimationFrame(() => {
+            document
+                .getElementById(`shelf-${origin.shelfId}`)
+                ?.querySelector<HTMLButtonElement>('.library-shelf-open')
+                ?.focus({ preventScroll: true });
+            window.scrollTo({ top: origin.scrollY, behavior: 'instant' });
+            restoredLocation.current = location.key;
+        });
+        return () => cancelAnimationFrame(frame);
+    }, [
+        id,
+        navigationState,
+        data?.list,
+        state.busy,
+        state.error,
+        location.key,
+        page,
+    ]);
+    function openShelf(shelfId: number) {
+        const origin = { page, scrollY: window.scrollY, shelfId };
+        // Also mark the current list entry so the browser Back button restores it.
+        navigate(
+            { pathname: '/my-books', search: location.search },
+            {
+                replace: true,
+                state: { restoreShelfList: origin },
+            }
+        );
+        navigate(
+            {
+                pathname: '/my-books',
+                search: `?view=shelves&shelfId=${shelfId}`,
+            },
+            {
+                state: { shelfOrigin: origin },
+            }
+        );
+        window.scrollTo({ top: 0, behavior: 'instant' });
+    }
+    function returnToShelves() {
+        const origin = navigationState?.shelfOrigin;
+        const next = new URLSearchParams({ view: 'shelves' });
+        if (origin?.page) next.set('page', String(origin.page));
+        navigate(
+            { pathname: '/my-books', search: `?${next}` },
+            {
+                state: origin ? { restoreShelfList: origin } : null,
+            }
+        );
+        if (!origin) window.scrollTo({ top: 0, behavior: 'instant' });
+    }
+    useEffect(() => {
         if (
             pagination &&
             !state.busy &&
             page > 0 &&
             page >= pagination.totalPages
         )
-            changePage(Math.max(0, pagination.totalPages - 1));
+            changePage(Math.max(0, pagination.totalPages - 1), true);
     }, [pagination, state.busy, page, changePage]);
     function closeConfirm() {
         if (!confirmBusy) {
@@ -130,16 +266,16 @@ export default function ShelfManager({
     }
     return (
         <>
-            <div className="shelf-toolbar">
+            <div className={id ? 'shelf-return' : 'shelf-toolbar'}>
                 {id ? (
                     <Button
                         variant="outline"
                         type="button"
                         className="library-view-all"
-                        onClick={() => setParams({ view: 'shelves' })}
+                        onClick={returnToShelves}
                     >
-                        <ArrowLeft size={16} />
-                        Voltar às estantes
+                        <ArrowLeft size={16} aria-hidden="true" />
+                        Estantes
                     </Button>
                 ) : (
                     <Button
@@ -150,18 +286,29 @@ export default function ShelfManager({
                         Criar estante
                     </Button>
                 )}
-                {data?.summary && actions(data.summary)}
             </div>
-            {data?.summary && (
+            {id && (
                 <header className="shelf-heading">
-                    <h2>{data.summary.name}</h2>
-                    {data.summary.description && (
-                        <p>{data.summary.description}</p>
+                    <div className="shelf-heading-title">
+                        <h1 ref={heading} tabIndex={-1}>
+                            {data?.summary?.name ?? 'Estante'}
+                        </h1>
+                        {data?.summary && actions(data.summary)}
+                    </div>
+                    {data?.summary && (
+                        <p className="shelf-metadata">
+                            {data.summary.booksCount}{' '}
+                            {data.summary.booksCount === 1 ? 'livro' : 'livros'}{' '}
+                            ·{' '}
+                            {data.summary.isPublicShelf ? 'Pública' : 'Privada'}
+                        </p>
                     )}
-                    <p>
-                        {data.summary.booksCount} livros ·{' '}
-                        {data.summary.isPublicShelf ? 'Pública' : 'Privada'}
-                    </p>
+                    {data?.summary?.description && (
+                        <ShelfDescription
+                            key={`${id}:${data.summary.description}`}
+                            text={data.summary.description}
+                        />
+                    )}
                 </header>
             )}
 
@@ -193,18 +340,17 @@ export default function ShelfManager({
             )}
             <div className="library-shelves-grid">
                 {data?.list?.content.map((shelf) => (
-                    <div className="shelf-tile" key={shelf.id}>
+                    <div
+                        className="shelf-tile"
+                        id={`shelf-${shelf.id}`}
+                        key={shelf.id}
+                    >
                         <LibraryShelfPreview
                             label={shelf.name}
                             books={shelf.previewBooks}
                             total={shelf.booksCount}
                             busy={false}
-                            onOpen={() =>
-                                setParams({
-                                    view: 'shelves',
-                                    shelfId: String(shelf.id),
-                                })
-                            }
+                            onOpen={() => openShelf(shelf.id)}
                             onRetry={refresh}
                         />
                         {actions(shelf)}
@@ -348,7 +494,7 @@ export default function ShelfManager({
                                         await service.deleteShelf(
                                             target.shelf.id
                                         );
-                                        if (id) setParams({ view: 'shelves' });
+                                        if (id) returnToShelves();
                                     } else if (target.detach)
                                         await service.removeShelfBook(
                                             id!,

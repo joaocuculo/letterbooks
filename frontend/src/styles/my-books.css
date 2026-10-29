@@ -45,27 +45,73 @@
     position: relative;
     min-width: 0;
 }
-.shelf-tile .library-shelf-menu { position: absolute; top: var(--space-3); right: var(--space-3); z-index: 1; }
+.shelf-tile .library-shelf-menu {
+    position: absolute;
+    top: var(--space-3);
+    right: var(--space-3);
+    z-index: 1;
+}
 .shelf-toolbar {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    margin-bottom: 24px;
+    justify-content: flex-end;
+    gap: var(--space-4);
+    margin-bottom: var(--space-4);
 }
 .shelf-heading {
-    margin-bottom: 28px;
+    display: grid;
+    gap: var(--space-2);
+    margin-bottom: var(--space-6);
 }
-.shelf-heading h2 {
-    font-size: 24px;
+.shelf-heading h1 {
+    min-width: 0;
+    margin: 0;
+    font-size: 32px;
+    line-height: 1.2;
+    font-weight: 800;
+    letter-spacing: -0.03em;
     overflow-wrap: anywhere;
 }
+.shelf-heading h1:focus {
+    outline: none;
+}
 .shelf-heading p {
+    margin: 0;
     max-width: 65ch;
     color: var(--text-secondary);
     line-height: 1.7;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
+}
+.shelf-heading-title {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-4);
+}
+.shelf-heading-title > button {
+    flex-shrink: 0;
+}
+.shelf-return {
+    margin-bottom: var(--space-3);
+}
+.shelf-return .library-view-all {
+    padding-inline: 0;
+}
+.shelf-metadata {
+    font-size: 12px;
+}
+.shelf-description {
+    min-width: 0;
+}
+.shelf-description-clamped {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+}
+.shelf-description > button {
+    padding-inline: 0;
 }
 .shelf-primary {
     background: var(--text-primary);
@@ -93,7 +139,6 @@
 .shelf-dialog form {
     gap: var(--space-4);
 }
-
 
 .shelf-dialog .shelf-checkbox {
     display: flex;
@@ -155,7 +200,7 @@
     .library-consolidated .library-shelf-caption svg {
         display: none;
     }
-.library-consolidated .library-shelf-placeholder {
+    .library-consolidated .library-shelf-placeholder {
         inset: 8px;
         font-size: 11px;
         gap: 8px;
@@ -179,7 +224,7 @@
     align-items: center;
     justify-content: space-between;
     gap: 24px;
-    margin-bottom: 36px;
+    margin-bottom: var(--space-6);
 }
 .library-shelves-grid {
     display: grid;
@@ -300,7 +345,7 @@
 .library-layout {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    gap: 32px;
+    gap: var(--space-4);
     align-items: start;
 }
 .library-navigation {
@@ -310,7 +355,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 4px 10px;
-    padding-bottom: 12px;
+    padding-bottom: 0;
     border-bottom: 1px solid var(--border-subtle);
 }
 .library-category-buttons button {
@@ -334,6 +379,54 @@
 }
 .library-category-select {
     display: none;
+}
+.library-results-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3) var(--space-4);
+    min-height: var(--control-height-default);
+    margin-bottom: var(--space-4);
+}
+.library-status-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+}
+.library-status-buttons > button {
+    color: var(--text-secondary);
+    font-size: 13px;
+    padding-inline: var(--space-3);
+}
+.library-status-buttons > button[aria-pressed='true'] {
+    background: var(--surface-hover);
+    color: var(--text-primary);
+}
+.library-status-select {
+    display: none;
+}
+.library-status-select-visible {
+    display: flex;
+}
+.library-status-select {
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    min-width: 0;
+}
+.library-status-select label {
+    color: var(--text-secondary);
+    font-size: 13px;
+}
+.library-status-select > button {
+    width: 160px;
+    max-width: 100%;
+}
+.library-result-count {
+    color: var(--text-secondary);
+    font-size: 12px;
+    white-space: nowrap;
 }
 .library-results {
     min-width: 0;
@@ -594,6 +687,9 @@
     .library-page-heading h1 {
         font-size: 28px;
     }
+    .shelf-heading h1 {
+        font-size: 28px;
+    }
     .library-models {
         width: 100%;
     }
@@ -625,6 +721,28 @@
         order: -1;
         width: 100%;
         text-align: center;
+    }
+}
+@media (max-width: 760px) {
+    .library-status-buttons {
+        display: none;
+    }
+    .library-status-select {
+        display: flex;
+    }
+    .library-consolidated .library-category-buttons {
+        flex-wrap: nowrap;
+        gap: var(--space-5);
+    }
+    .library-status-select > button,
+    .library-consolidated .library-status-buttons > button,
+    .shelf-description > button,
+    .shelf-heading-title > button,
+    .shelf-return .library-view-all {
+        min-height: var(--control-height-default);
+    }
+    .shelf-heading-title > button {
+        min-width: var(--control-height-default);
     }
 }
 @media (max-width: 379px) {

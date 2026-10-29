@@ -11,7 +11,7 @@ import {
 } from '../components/ui/select';
 import { Button } from '../components/ui/button';
 import { useCallback, useMemo, useRef, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import {
     Dialog,
     DialogContent,
@@ -32,49 +32,17 @@ import type { UserBookFilters, UserBookResponse } from '../types/userBook';
 import '../styles/home.css';
 import '../styles/my-books.css';
 
-const categories = [
-    {
-        key: 'READING',
-        label: 'Lendo',
-        title: 'Continuar lendo',
-        filters: { status: 'READING' },
-    },
-    {
-        key: 'WANT_TO_READ',
-        label: 'Quero ler',
-        title: 'Quero ler',
-        filters: { status: 'WANT_TO_READ' },
-    },
-    {
-        key: 'COMPLETED',
-        label: 'Lidos',
-        title: 'Lidos',
-        filters: { status: 'COMPLETED' },
-    },
-    {
-        key: 'ABANDONED',
-        label: 'Abandonados',
-        title: 'Abandonados',
-        filters: { status: 'ABANDONED' },
-    },
-    {
-        key: 'FAVORITES',
-        label: 'Favoritos',
-        title: 'Favoritos',
-        filters: { favorite: true },
-    },
-] satisfies {
-    key: string;
-    label: string;
-    title: string;
-    filters: UserBookFilters;
-}[];
 const navigation = [
-    { key: 'ALL', label: 'Todos' },
-    categories[1],
-    categories[0],
-    ...categories.slice(2),
+    { key: 'READINGS', label: 'Leituras' },
+    { key: 'FAVORITES', label: 'Favoritos' },
     { key: 'SHELVES', label: 'Estantes' },
+];
+const statuses = [
+    { key: 'ALL', label: 'Todos' },
+    { key: 'WANT_TO_READ', label: 'Quero ler' },
+    { key: 'READING', label: 'Lendo' },
+    { key: 'COMPLETED', label: 'Lidos' },
+    { key: 'ABANDONED', label: 'Abandonados' },
 ];
 function LibraryEmpty({ summary = false }: { summary?: boolean }) {
     return (
@@ -93,6 +61,7 @@ function LibraryEmpty({ summary = false }: { summary?: boolean }) {
 }
 function LibraryContent() {
     const [params, setParams] = useSearchParams();
+    const location = useLocation();
     const [adding, setAdding] = useState<BookSummary | null>(null);
 
     const [removeTarget, setRemoveTarget] = useState<UserBookResponse | null>(
@@ -107,17 +76,10 @@ function LibraryContent() {
     const page =
         Number.isInteger(parsedPage) && parsedPage >= 0 ? parsedPage : 0;
     const summary = params.get('view') === 'shelves';
-    const selected = summary
-        ? 'SHELVES'
-        : favorite && !status
-          ? 'FAVORITES'
-          : (status ?? 'ALL');
-    const title = summary
-        ? 'Suas estantes'
-        : status && favorite
-          ? `${categories.find((category) => category.key === status)?.label} · Favoritos`
-          : (navigation.find((item) => item.key === selected)?.label ??
-            'Todos');
+    const rawShelfId = Number(params.get('shelfId'));
+    const shelfDetail =
+        summary && Number.isSafeInteger(rawShelfId) && rawShelfId > 0;
+    const selected = summary ? 'SHELVES' : favorite ? 'FAVORITES' : 'READINGS';
     const queries = useMemo<LibraryQuery[]>(
         () =>
             summary
@@ -137,14 +99,22 @@ function LibraryContent() {
         [summary, status, favorite, page]
     );
     const changePage = useCallback(
-        (next: number) =>
-            setParams((previous) => {
-                const nextParams = new URLSearchParams(previous);
-                if (next === 0) nextParams.delete('page');
-                else nextParams.set('page', String(next));
-                return nextParams;
-            }),
-        [setParams]
+        (next: number, preserveNavigationState = false) =>
+            setParams(
+                (previous) => {
+                    const nextParams = new URLSearchParams(previous);
+                    if (next === 0) nextParams.delete('page');
+                    else nextParams.set('page', String(next));
+                    return nextParams;
+                },
+                {
+                    state:
+                        shelfDetail || preserveNavigationState
+                            ? location.state
+                            : null,
+                }
+            ),
+        [setParams, location.state, shelfDetail]
     );
     const { states, pending, errors, reload, mutate } = useMyBooks(
         queries,
@@ -152,11 +122,19 @@ function LibraryContent() {
     );
     function choose(key: string) {
         const next = new URLSearchParams();
-        if (key === 'ALL') next.set('view', 'all');
+        if (key === 'READINGS') next.set('view', 'all');
         else if (key === 'SHELVES') next.set('view', 'shelves');
         else if (key === 'FAVORITES') next.set('favorite', 'true');
-        else if (key !== 'SUMMARY') next.set('status', key);
         setParams(next);
+    }
+    function chooseStatus(key: string) {
+        setParams((previous) => {
+            const next = new URLSearchParams(previous);
+            next.delete('page');
+            if (key === 'ALL') next.delete('status');
+            else if (isUserBookStatus(key)) next.set('status', key);
+            return next;
+        });
     }
     function renderBooks(books: UserBookResponse[]) {
         return (
@@ -227,91 +205,114 @@ function LibraryContent() {
         <div className="landing catalog-density library-page library-consolidated">
             <SiteHeader />
             <main className="library-content">
-                <header className="library-page-heading">
-                    <div>
-                        <h1 ref={heading} tabIndex={-1}>
-                            Minha Biblioteca
-                        </h1>
-                        <p>Seus livros, suas leituras e suas estantes.</p>
-                    </div>
-                </header>
-                <div className="library-layout">
-                    <nav
-                        className="library-navigation"
-                        aria-label="Agrupamentos da biblioteca"
-                    >
-                        <div className="library-category-buttons">
-                            {navigation.map((item) => (
-                                <Button
-                                    variant="outline"
-                                    type="button"
-                                    key={item.key}
-                                    aria-current={
-                                        item.key === selected
-                                            ? 'page'
-                                            : undefined
-                                    }
-                                    onClick={() => choose(item.key)}
-                                >
-                                    {item.label}
-                                </Button>
-                            ))}
+                {!shelfDetail && (
+                    <header className="library-page-heading">
+                        <div>
+                            <h1 ref={heading} tabIndex={-1}>
+                                Minha Biblioteca
+                            </h1>
                         </div>
-                        <div className="library-category-select">
-                            <label htmlFor="library-category">
-                                Agrupamento
-                            </label>
-                            <Select
-                                items={navigation.map((item) => ({
-                                    value: item.key,
-                                    label: item.label,
-                                }))}
-                                value={selected}
-                                onValueChange={(value) => {
-                                    if (value !== null) choose(value);
-                                }}
-                            >
-                                <SelectTrigger id="library-category">
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent alignItemWithTrigger={false}>
-                                    <SelectGroup>
-                                        {navigation.map((item) => (
-                                            <SelectItem
-                                                value={item.key}
+                    </header>
+                )}
+                <div className="library-layout">
+                    {!shelfDetail && (
+                        <nav
+                            className="library-navigation"
+                            aria-label="Áreas da biblioteca"
+                        >
+                            <div className="library-category-buttons">
+                                {navigation.map((item) => (
+                                    <Button
+                                        variant="outline"
+                                        type="button"
+                                        key={item.key}
+                                        aria-current={
+                                            item.key === selected
+                                                ? 'page'
+                                                : undefined
+                                        }
+                                        onClick={() => choose(item.key)}
+                                    >
+                                        {item.label}
+                                    </Button>
+                                ))}
+                            </div>
+                        </nav>
+                    )}
+                    <div className="library-results">
+                        {!summary && (
+                            <div className="library-results-controls">
+                                {!favorite && (
+                                    <div
+                                        className="library-status-buttons"
+                                        role="group"
+                                        aria-label="Status de leitura"
+                                    >
+                                        {statuses.map((item) => (
+                                            <Button
                                                 key={item.key}
+                                                variant="ghost"
+                                                type="button"
+                                                aria-pressed={
+                                                    item.key ===
+                                                    (status ?? 'ALL')
+                                                }
+                                                onClick={() =>
+                                                    chooseStatus(item.key)
+                                                }
                                             >
                                                 {item.label}
-                                            </SelectItem>
+                                            </Button>
                                         ))}
-                                    </SelectGroup>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                    </nav>
-                    <div className="library-results">
-                        <div className="library-results-heading">
-                            <h2>{title}</h2>
-                            {!summary && activeData && !active?.error && (
-                                <span>
-                                    {activeData.page.totalElements}{' '}
-                                    {activeData.page.totalElements === 1
-                                        ? 'livro'
-                                        : 'livros'}
-                                </span>
-                            )}
-                        </div>
-
-                        {status && favorite && (
-                            <div className="library-filter-tags">
-                                <span>
-                                    {
-                                        categories.find(
-                                            (item) => item.key === status
-                                        )?.label
-                                    }
-                                </span>
-                                <span>Favoritos</span>
+                                    </div>
+                                )}
+                                <div
+                                    className={`library-status-select${favorite ? ' library-status-select-visible' : ''}`}
+                                >
+                                    <label htmlFor="library-category">
+                                        Status de leitura
+                                    </label>
+                                    <Select
+                                        items={statuses.map((item) => ({
+                                            value: item.key,
+                                            label: item.label,
+                                        }))}
+                                        value={status ?? 'ALL'}
+                                        onValueChange={(value) => {
+                                            if (value !== null)
+                                                chooseStatus(value);
+                                        }}
+                                    >
+                                        <SelectTrigger id="library-category">
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent
+                                            alignItemWithTrigger={false}
+                                        >
+                                            <SelectGroup>
+                                                {statuses.map((item) => (
+                                                    <SelectItem
+                                                        value={item.key}
+                                                        key={item.key}
+                                                    >
+                                                        {item.label}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                {activeData && !active?.error && (
+                                    <span
+                                        className="library-result-count"
+                                        role="status"
+                                    >
+                                        {activeData.page.totalElements}{' '}
+                                        {activeData.page.totalElements === 1
+                                            ? 'livro'
+                                            : 'livros'}
+                                    </span>
+                                )}
                             </div>
                         )}
                         {summary ? (
