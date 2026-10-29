@@ -494,13 +494,22 @@
     flex-wrap: wrap;
     gap: 8px;
 }
-.book-shelf-names span {
+.book-shelf-names span,
+.book-shelf-names a {
     background: var(--surface-background);
     border-radius: 7px;
     padding: 6px 10px;
     font-size: 12px;
     overflow-wrap: anywhere;
     max-width: 100%;
+}
+.book-shelf-names a:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+.book-shelf-names a:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 3px;
 }
 .book-lightbox-overlay,
 .book-dialog-overlay {

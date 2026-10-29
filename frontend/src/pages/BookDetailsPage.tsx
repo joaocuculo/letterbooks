@@ -613,13 +613,14 @@ function BookDetails({ googleBooksId }: { googleBooksId: string | undefined }) {
                                                     <div className="book-shelf-names">
                                                         {shelves.map(
                                                             (shelf) => (
-                                                                <span
+                                                                <Link
                                                                     key={
                                                                         shelf.id
                                                                     }
+                                                                    to={`/my-books?view=shelves&shelfId=${shelf.id}`}
                                                                 >
                                                                     {shelf.name}
-                                                                </span>
+                                                                </Link>
                                                             )
                                                         )}
                                                     </div>
