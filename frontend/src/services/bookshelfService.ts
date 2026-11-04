@@ -92,3 +92,41 @@ export async function addBookToShelves(
 ) {
     await api.post('/bookshelves/book/batch', { googleBooksId, bookshelfIds });
 }
+
+export interface BulkShelfSummary {
+    booksCount: number;
+    shelves: { bookshelfId: number; existingCount: number }[];
+}
+export interface BulkShelfResult {
+    booksCount: number;
+    shelves: {
+        bookshelfId: number;
+        addedCount: number;
+        alreadyPresentCount: number;
+    }[];
+}
+export async function bulkMembershipSummary(
+    googleBooksIds: string[],
+    bookshelfIds: number[],
+    signal?: AbortSignal
+) {
+    return (
+        await api.post<BulkShelfSummary>(
+            '/bookshelves/books/membership-summary',
+            { googleBooksIds, bookshelfIds },
+            { signal }
+        )
+    ).data;
+}
+export async function addBooksToShelves(
+    googleBooksIds: string[],
+    bookshelfIds: number[]
+) {
+    return (
+        await api.post<BulkShelfResult>(
+            '/bookshelves/books/batch',
+            { googleBooksIds, bookshelfIds },
+            { timeout: 90_000 }
+        )
+    ).data;
+}

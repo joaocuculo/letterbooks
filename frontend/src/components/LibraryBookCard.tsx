@@ -1,5 +1,6 @@
 import { Check, Trash2, LibraryBig, BookMinus } from 'lucide-react';
 import type { UserBookResponse, UserBookUpdate } from '../types/userBook';
+import type { CardSelection } from './BookSelection';
 import {
     userBookStatusLabels,
     userBookStatusOptions,
@@ -23,6 +24,7 @@ export default function LibraryBookCard({
     onRemove,
     onAdd,
     onDetach,
+    selection,
 }: {
     book: UserBookResponse;
     busy: boolean;
@@ -31,9 +33,11 @@ export default function LibraryBookCard({
     onRemove: () => void;
     onAdd?: () => void;
     onDetach?: () => void;
+    selection?: CardSelection;
 }) {
     return (
         <BookCardFrame
+            selection={selection}
             title={book.book.title}
             googleBooksId={book.book.googleBooksId}
             thumbnailUrl={book.book.thumbnailUrl}

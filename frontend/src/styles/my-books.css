@@ -424,10 +424,18 @@
     max-width: 100%;
 }
 .library-result-count {
+    margin-inline-start: auto;
     color: var(--text-secondary);
     font-size: 12px;
     white-space: nowrap;
 }
+.library-result-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    margin-inline-start: auto;
+}
+.library-result-actions-selecting { display: contents; }
 .library-results {
     min-width: 0;
 }

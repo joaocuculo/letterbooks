@@ -3,7 +3,8 @@ import { getApiErrorMessage } from '../utils/getApiErrorMessage.';
 
 export function useLibraryResource<T>(
     key: string,
-    load: (signal: AbortSignal) => Promise<T>
+    load: (signal: AbortSignal) => Promise<T>,
+    revision = 0
 ) {
     const [state, setState] = useState<{
         key: string;
@@ -37,7 +38,7 @@ export function useLibraryResource<T>(
             }
         })();
         return () => controller.abort();
-    }, [key, load]);
+    }, [key, load, revision]);
     return state.key === key
         ? state
         : { key, data: null, busy: true, error: '' };

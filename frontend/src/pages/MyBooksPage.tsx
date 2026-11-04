@@ -23,6 +23,10 @@ import { ArrowRight, BookOpen, RefreshCw } from 'lucide-react';
 import SiteHeader from '../components/SiteHeader';
 import LibraryBookCard from '../components/LibraryBookCard';
 import ShelfManager from '../components/ShelfManager';
+import {
+    BookSelectionControls,
+    useBookSelection,
+} from '../components/BookSelection';
 import AddToShelfDialog from '../components/AddToShelfDialog';
 import type { BookSummary } from '../types/book';
 import { useMyBooks, type LibraryQuery } from '../hooks/useMyBooks';
@@ -60,6 +64,7 @@ function LibraryEmpty({ summary = false }: { summary?: boolean }) {
     );
 }
 function LibraryContent() {
+    const selection = useBookSelection();
     const [params, setParams] = useSearchParams();
     const location = useLocation();
     const [adding, setAdding] = useState<BookSummary | null>(null);
@@ -80,6 +85,7 @@ function LibraryContent() {
     const shelfDetail =
         summary && Number.isSafeInteger(rawShelfId) && rawShelfId > 0;
     const selected = summary ? 'SHELVES' : favorite ? 'FAVORITES' : 'READINGS';
+    const selectionKey = `library:${favorite ?? false}:${status ?? 'ALL'}:${page}`;
     const queries = useMemo<LibraryQuery[]>(
         () =>
             summary
@@ -141,6 +147,10 @@ function LibraryContent() {
             <div className="library-books">
                 {books.map((book) => (
                     <LibraryBookCard
+                        selection={selection.cardSelection(
+                            selectionKey,
+                            book.book.googleBooksId
+                        )}
                         key={`${book.id}:${book.book.thumbnailUrl ?? ''}`}
                         book={book}
                         busy={Boolean(pending[book.id])}
@@ -302,17 +312,39 @@ function LibraryContent() {
                                         </SelectContent>
                                     </Select>
                                 </div>
-                                {activeData && !active?.error && (
-                                    <span
-                                        className="library-result-count"
-                                        role="status"
-                                    >
-                                        {activeData.page.totalElements}{' '}
-                                        {activeData.page.totalElements === 1
-                                            ? 'livro'
-                                            : 'livros'}
-                                    </span>
-                                )}
+                                <div
+                                    className={`library-result-actions${selection.session?.key === selectionKey ? ' library-result-actions-selecting' : ''}`}
+                                >
+                                    {activeData && !active?.error && (
+                                        <span
+                                            className="library-result-count"
+                                            role="status"
+                                        >
+                                            {activeData.page.totalElements}{' '}
+                                            {activeData.page.totalElements === 1
+                                                ? 'livro'
+                                                : 'livros'}
+                                        </span>
+                                    )}
+                                    {activeData && !active?.error && (
+                                        <BookSelectionControls
+                                            contextKey={selectionKey}
+                                            ids={activeData.content.map(
+                                                (book) =>
+                                                    book.book.googleBooksId
+                                            )}
+                                            disabled={
+                                                active.busy ||
+                                                Object.values(pending).some(
+                                                    Boolean
+                                                )
+                                            }
+                                            onAdded={() =>
+                                                void reload('active')
+                                            }
+                                        />
+                                    )}
+                                </div>
                             </div>
                         )}
                         {summary ? (

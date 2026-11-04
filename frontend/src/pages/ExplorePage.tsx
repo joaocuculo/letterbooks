@@ -24,6 +24,10 @@ import {
     DrawerDescription,
 } from '../components/Drawer';
 import ExploreBookCard from '../components/ExploreBookCard';
+import {
+    BookSelectionControls,
+    useBookSelection,
+} from '../components/BookSelection';
 import { useAuth } from '../hooks/useAuth';
 import { discover, searchBooks } from '../services/bookService';
 import { createOrUpdate } from '../services/userBookService';
@@ -228,6 +232,7 @@ function SearchControls({
 }
 
 export default function ExplorePage() {
+    const selection = useBookSelection();
     const [params, setParams] = useSearchParams();
     const location = useLocation();
     const navigate = useNavigate();
@@ -260,6 +265,10 @@ export default function ExplorePage() {
         );
     }
     const [retry, setRetry] = useState(0);
+    const [loadedKey, setLoadedKey] = useState<string | null>(null);
+    const dataKey = `${requestKey}:${isAuthenticated}:${user?.id ?? ''}`;
+    const selectionKey = `explore:${requestKey}:search`;
+    const reloadSelectionSource = () => setRetry((value) => value + 1);
 
     useEffect(() => {
         const controller = new AbortController();
@@ -268,8 +277,6 @@ export default function ExplorePage() {
         async function load() {
             setBusy(true);
             setError('');
-            setResult(null);
-            setSections([]);
             try {
                 if (Object.values(currentFilters).some(Boolean)) {
                     const response = await searchBooks(
@@ -277,11 +284,18 @@ export default function ExplorePage() {
                         readPage(current),
                         controller.signal
                     );
-                    if (!controller.signal.aborted) setResult(response);
+                    if (!controller.signal.aborted) {
+                        setResult(response);
+                        setSections([]);
+                        setLoadedKey(dataKey);
+                    }
                 } else {
                     const response = await discover(controller.signal);
-                    if (!controller.signal.aborted)
+                    if (!controller.signal.aborted) {
                         setSections(response.sections);
+                        setResult(null);
+                        setLoadedKey(dataKey);
+                    }
                 }
             } catch (failure) {
                 if (!controller.signal.aborted && !axios.isCancel(failure))
@@ -297,7 +311,7 @@ export default function ExplorePage() {
         }
         void load();
         return () => controller.abort();
-    }, [requestKey, retry, isAuthenticated, user?.id]);
+    }, [requestKey, retry, isAuthenticated, user?.id, dataKey]);
 
     function search(next: BookSearchFilters) {
         const updated = new URLSearchParams();
@@ -306,7 +320,11 @@ export default function ExplorePage() {
             if (next[key]?.trim())
                 updated.set(key === 'freeText' ? 'q' : key, next[key]!.trim());
         });
-        if (updated.toString() === searchKey) setRetry((value) => value + 1);
+        if (updated.toString() === searchKey)
+            selection.confirmChange(() => {
+                selection.cancel();
+                setRetry((value) => value + 1);
+            });
         else setParams(updated);
     }
     function changePage(page: number) {
@@ -370,13 +388,18 @@ export default function ExplorePage() {
             setLoadingBooks((previous) => ({ ...previous, [book.id]: false }));
         }
     }
-    function books(items: BookCardResponse[], showDetails = false) {
+    function books(
+        items: BookCardResponse[],
+        showDetails = false,
+        contextKey = selectionKey
+    ) {
         return (
             <div
                 className={`explore-grid${showDetails ? ' explore-grid-detailed' : ''}`}
             >
                 {items.map((book) => (
                     <ExploreBookCard
+                        selection={selection.cardSelection(contextKey, book.id)}
                         key={book.id}
                         book={book}
                         detailed={showDetails}
@@ -417,35 +440,57 @@ export default function ExplorePage() {
                     }
                 >
                     {active && (
-                        <div className="explore-results-heading">
+                        <div
+                            className={`explore-results-heading${selection.session?.key === selectionKey ? ' explore-results-heading-selecting' : ''}`}
+                        >
                             <h1>Resultados da pesquisa</h1>
-                            <div
-                                className="explore-view"
-                                role="group"
-                                aria-label="Visualização dos livros"
-                            >
-                                <Button
-                                    variant="outline"
-                                    type="button"
-                                    aria-label="Visualização compacta"
-                                    aria-pressed={!detailed}
-                                    onClick={() => setDetailed(false)}
+                            <div className="explore-results-actions">
+                                {loadedKey === dataKey && !error && result && (
+                                    <BookSelectionControls
+                                        contextKey={selectionKey}
+                                        ids={result.content.map(
+                                            (book) => book.id
+                                        )}
+                                        disabled={
+                                            busy ||
+                                            Object.values(loadingBooks).some(
+                                                Boolean
+                                            )
+                                        }
+                                        onAdded={reloadSelectionSource}
+                                    />
+                                )}
+                                <div
+                                    className="explore-view"
+                                    role="group"
+                                    aria-label="Visualização dos livros"
                                 >
-                                    <LayoutGrid size={20} aria-hidden="true" />
-                                </Button>
-                                <Button
-                                    variant="outline"
-                                    type="button"
-                                    aria-label="Visualização detalhada"
-                                    aria-pressed={detailed}
-                                    onClick={() => setDetailed(true)}
-                                >
-                                    <Grid2X2 size={20} aria-hidden="true" />
-                                </Button>
+                                    <Button
+                                        variant="outline"
+                                        type="button"
+                                        aria-label="Visualização compacta"
+                                        aria-pressed={!detailed}
+                                        onClick={() => setDetailed(false)}
+                                    >
+                                        <LayoutGrid
+                                            size={20}
+                                            aria-hidden="true"
+                                        />
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        type="button"
+                                        aria-label="Visualização detalhada"
+                                        aria-pressed={detailed}
+                                        onClick={() => setDetailed(true)}
+                                    >
+                                        <Grid2X2 size={20} aria-hidden="true" />
+                                    </Button>
+                                </div>
                             </div>
                         </div>
                     )}
-                    {busy ? (
+                    {busy && loadedKey !== dataKey ? (
                         <Feedback
                             kind="loading"
                             title={
@@ -500,8 +545,30 @@ export default function ExplorePage() {
                                 className="explore-section"
                                 key={section.key}
                             >
-                                <h2>{section.title}</h2>
-                                {books(section.books)}
+                                <div className="book-selection-source-heading">
+                                    <h2>{section.title}</h2>
+                                    {loadedKey === dataKey && (
+                                        <BookSelectionControls
+                                            contextKey={`explore:${requestKey}:${section.key}`}
+                                            ids={section.books.map(
+                                                (book) => book.id
+                                            )}
+                                            section
+                                            disabled={
+                                                busy ||
+                                                Object.values(
+                                                    loadingBooks
+                                                ).some(Boolean)
+                                            }
+                                            onAdded={reloadSelectionSource}
+                                        />
+                                    )}
+                                </div>
+                                {books(
+                                    section.books,
+                                    false,
+                                    `explore:${requestKey}:${section.key}`
+                                )}
                             </section>
                         ))
                     ) : (

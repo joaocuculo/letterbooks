@@ -2,6 +2,7 @@ import { Route, Routes } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
 import { AuthProvider } from './contexts/AuthProvider';
 import AppLayout from './layouts/AppLayout';
+import { BookSelectionProvider } from './components/BookSelection';
 import HomePage from './pages/HomePage';
 import ExplorePage from './pages/ExplorePage';
 import BookDetailsPage from './pages/BookDetailsPage';
@@ -35,7 +36,7 @@ function App() {
                     <StyleGuidePage />
                 </Suspense>
             } />}
-            <Route element={<AuthProvider><AppLayout /></AuthProvider>}>
+            <Route element={<AuthProvider><BookSelectionProvider><AppLayout /></BookSelectionProvider></AuthProvider>}>
                 <Route index element={<HomePage />} />
                 <Route path="login" element={<LoginPage />} />
                 <Route path="register" element={<RegisterPage />} />

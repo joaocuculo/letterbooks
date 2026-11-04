@@ -148,6 +148,11 @@ public class BookService {
 
     private Book createFromGoogleBooks(String googleBooksId) {
         GoogleBooksResponseDTO googleBook = googleBooksService.findByGoogleBooksId(googleBooksId);
+        return createFromPreparedGoogleBook(googleBook);
+    }
+
+    // Called inside the bulk write transaction; external data was fetched before it started.
+    Book createFromPreparedGoogleBook(GoogleBooksResponseDTO googleBook) {
         
         Set<Author> authors = authorService.resolveAuthors(googleBook.volumeInfo().authors());
         Set<Category> categories = categoryService.resolveCategories(googleBook.volumeInfo().categories());

@@ -1,4 +1,5 @@
 import { toast } from './ui/toast-manager';
+import type { CardSelection } from './BookSelection';
 import AddToShelfDialog from './AddToShelfDialog';
 import { LibraryBig } from 'lucide-react';
 import { useState } from 'react';
@@ -14,6 +15,7 @@ import {
 import { DropdownMenuItem } from './ui/dropdown-menu';
 
 interface Props {
+    selection?: CardSelection;
     book: BookCardResponse;
     detailed?: boolean;
     busy: boolean;
@@ -25,6 +27,7 @@ export default function ExploreBookCard({
     detailed = false,
     busy,
     onFavorite,
+    selection,
 }: Props) {
     const [adding, setAdding] = useState(false);
     const { isAuthenticated } = useAuth();
@@ -42,6 +45,7 @@ export default function ExploreBookCard({
     return (
         <>
             <BookCardFrame
+                selection={selection}
                 title={book.title}
                 googleBooksId={book.id}
                 thumbnailUrl={book.thumbnailUrl}

@@ -8,7 +8,8 @@
     gap: var(--catalog-layout-gap);
     max-width: var(--catalog-max-width);
     margin: auto;
-    padding: var(--catalog-page-inset) var(--catalog-page-inset) var(--catalog-page-bottom);
+    padding: var(--catalog-page-inset) var(--catalog-page-inset)
+        var(--catalog-page-bottom);
 }
 .explore-intro {
     min-width: 0;
@@ -48,7 +49,9 @@
     border: 1px solid var(--border-default);
     border-radius: var(--radius-pill);
     min-height: var(--catalog-search-height);
-    padding: calc((var(--catalog-search-height) - var(--catalog-control-height) - 2px) / 2);
+    padding: calc(
+        (var(--catalog-search-height) - var(--catalog-control-height) - 2px) / 2
+    );
     padding-left: 14px;
     gap: 8px;
 }
@@ -154,7 +157,10 @@
 }
 .explore-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--catalog-book-min-width)), 1fr));
+    grid-template-columns: repeat(
+        auto-fill,
+        minmax(min(100%, var(--catalog-book-min-width)), 1fr)
+    );
     gap: var(--catalog-grid-gap);
 }
 .explore-page button:disabled {
@@ -182,17 +188,38 @@
 }
 .explore-results-heading {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
     gap: 16px;
     margin-bottom: 16px;
 }
 .explore-results-heading h1 {
+    flex: 1 1 240px;
     margin: 0;
     font-size: var(--catalog-title-size);
     line-height: 1.3;
     letter-spacing: -0.025em;
     font-weight: 750;
+}
+.explore-results-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-inline-start: auto;
+    min-width: 0;
+}
+.explore-results-heading-selecting > h1 {
+    flex-basis: 100%;
+}
+.explore-results-heading-selecting .explore-results-actions {
+    width: 100%;
+}
+.explore-results-actions .book-selection-toolbar {
+    flex: 1;
+    width: auto;
+    min-width: 0;
+    margin: 0;
 }
 .explore-view {
     display: flex;
@@ -246,7 +273,10 @@
     white-space: nowrap;
 }
 .explore-grid-detailed {
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--catalog-detail-min-width)), 1fr));
+    grid-template-columns: repeat(
+        auto-fill,
+        minmax(min(100%, var(--catalog-detail-min-width)), 1fr)
+    );
 }
 @media (max-width: 1023px) {
     .explore-content {

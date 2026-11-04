@@ -1,6 +1,10 @@
 package com.joaocuculo.letterbooks.controllers;
 
 import com.joaocuculo.letterbooks.dto.response.BookshelfBookDTO;
+import com.joaocuculo.letterbooks.dto.request.BookshelfBulkRequestDTO;
+import com.joaocuculo.letterbooks.dto.response.BookshelfBulkSummaryDTO;
+import com.joaocuculo.letterbooks.dto.response.BookshelfBulkResultDTO;
+import com.joaocuculo.letterbooks.services.BookshelfBulkService;
 import com.joaocuculo.letterbooks.config.JWTUserData;
 import com.joaocuculo.letterbooks.dto.request.BookshelfItemRequestDTO;
 import com.joaocuculo.letterbooks.dto.request.BookshelfRequestDTO;
@@ -27,11 +31,14 @@ import com.joaocuculo.letterbooks.dto.response.BookshelfMembershipDTO;
 @RestController
 @RequestMapping(value = "/bookshelves")
 public class BookshelfController {
+    private final BookshelfBulkService bulkService;
 
     private final BookshelfService bookshelfService;
     private final BookshelfItemService bookshelfItemService;
 
-    public BookshelfController(BookshelfService bookshelfService, BookshelfItemService bookshelfItemService) {
+    public BookshelfController(BookshelfService bookshelfService, BookshelfItemService bookshelfItemService,
+            BookshelfBulkService bulkService) {
+        this.bulkService = bulkService;
         this.bookshelfService = bookshelfService;
         this.bookshelfItemService = bookshelfItemService;
     }
@@ -101,6 +108,20 @@ public class BookshelfController {
     }
 
     // itens da estante
+    @PostMapping("/books/membership-summary")
+    public ResponseEntity<BookshelfBulkSummaryDTO> bulkSummary(
+            @RequestBody @Valid BookshelfBulkRequestDTO request,
+            @AuthenticationPrincipal JWTUserData user) {
+        return ResponseEntity.ok(bulkService.summary(request, user.userId()));
+    }
+
+    @PostMapping("/books/batch")
+    public ResponseEntity<BookshelfBulkResultDTO> bulkAdd(
+            @RequestBody @Valid BookshelfBulkRequestDTO request,
+            @AuthenticationPrincipal JWTUserData user) {
+        return ResponseEntity.ok(bulkService.add(request, user.userId()));
+    }
+
     @PostMapping(value = "/{bookshelfId}/book")
     public ResponseEntity<Void> add(
             @PathVariable Long bookshelfId, @RequestBody @Valid BookshelfItemRequestDTO request, @AuthenticationPrincipal JWTUserData user) {

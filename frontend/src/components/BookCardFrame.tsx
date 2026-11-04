@@ -3,6 +3,8 @@ import { Link, useLocation } from 'react-router-dom';
 import { BookOpen, Ellipsis, Heart, Star } from 'lucide-react';
 import { Card, CardContent, CardFooter, CardTitle } from './ui/card';
 import { Button } from './ui/button';
+import { Checkbox } from './ui/checkbox';
+import type { CardSelection } from './BookSelection';
 import {
     Tooltip,
     TooltipContent,
@@ -26,6 +28,7 @@ interface BookCardFrameProps {
     children: ReactNode;
     actions: ReactNode;
     feedback?: ReactNode;
+    selection?: CardSelection;
 }
 
 export function BookCardFrame({
@@ -37,6 +40,7 @@ export function BookCardFrame({
     children,
     actions,
     feedback,
+    selection,
 }: BookCardFrameProps) {
     const location = useLocation();
     const linkState = {
@@ -45,6 +49,23 @@ export function BookCardFrame({
     const [failedSource, setFailedSource] = useState<string | null>(null);
     const source = thumbnailUrl?.replace(/^http:/, 'https:');
     const href = `/books/${encodeURIComponent(googleBooksId)}`;
+    const coverContent =
+        source && failedSource !== source ? (
+            <img
+                src={source}
+                alt={`Capa de ${title}`}
+                width={200}
+                height={300}
+                loading="lazy"
+                referrerPolicy="no-referrer"
+                onError={() => setFailedSource(source)}
+            />
+        ) : (
+            <span className="book-item-cover-missing">
+                <BookOpen size={32} aria-hidden="true" />
+                <span>Capa indisponível</span>
+            </span>
+        );
 
     return (
         <Card
@@ -53,34 +74,25 @@ export function BookCardFrame({
             aria-busy={busy || undefined}
             className={cn(
                 'book-item-card',
-                detailed && 'book-item-card-detailed'
+                detailed && 'book-item-card-detailed',
+                selection && 'book-item-selectable',
+                selection?.checked && 'book-item-selected'
             )}
         >
             <div className="book-item-media">
-                <Link
-                    className="book-item-cover"
-                    to={href}
-                    state={linkState}
-                    aria-label={`Ver detalhes de ${title}`}
-                >
-                    {source && failedSource !== source ? (
-                        <img
-                            src={source}
-                            alt={`Capa de ${title}`}
-                            width={200}
-                            height={300}
-                            loading="lazy"
-                            referrerPolicy="no-referrer"
-                            onError={() => setFailedSource(source)}
-                        />
-                    ) : (
-                        <span className="book-item-cover-missing">
-                            <BookOpen size={32} aria-hidden="true" />
-                            <span>Capa indisponível</span>
-                        </span>
-                    )}
-                </Link>
-                {!detailed && (
+                {selection ? (
+                    <div className="book-item-cover">{coverContent}</div>
+                ) : (
+                    <Link
+                        className="book-item-cover"
+                        to={href}
+                        state={linkState}
+                        aria-label={`Ver detalhes de ${title}`}
+                    >
+                        {coverContent}
+                    </Link>
+                )}
+                {!detailed && !selection && (
                     <div
                         className="book-item-actions"
                         role="group"
@@ -90,7 +102,7 @@ export function BookCardFrame({
                     </div>
                 )}
             </div>
-            {detailed && (
+            {detailed && !selection && (
                 <div
                     className="book-item-actions book-item-actions-detailed"
                     role="group"
@@ -102,26 +114,50 @@ export function BookCardFrame({
             <CardContent className="book-item-content">
                 <CardTitle className="book-item-title">
                     <h3>
-                        <TooltipProvider delay={300}>
-                            <Tooltip>
-                                <TooltipTrigger
-                                    render={
-                                        <Link
-                                            to={href}
-                                            state={linkState}
-                                            className="book-item-title-link"
-                                        />
-                                    }
-                                >
-                                    {title}
-                                </TooltipTrigger>
-                                <TooltipContent>{title}</TooltipContent>
-                            </Tooltip>
-                        </TooltipProvider>
+                        {selection ? (
+                            <span className="book-item-title-link">
+                                {title}
+                            </span>
+                        ) : (
+                            <TooltipProvider delay={300}>
+                                <Tooltip>
+                                    <TooltipTrigger
+                                        render={
+                                            <Link
+                                                to={href}
+                                                state={linkState}
+                                                className="book-item-title-link"
+                                            />
+                                        }
+                                    >
+                                        {title}
+                                    </TooltipTrigger>
+                                    <TooltipContent>{title}</TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
+                        )}
                     </h3>
                 </CardTitle>
                 <div className="book-item-description">{children}</div>
             </CardContent>
+            {selection && (
+                <>
+                    <div
+                        className="book-selection-hit"
+                        aria-hidden="true"
+                        onClick={() => {
+                            if (!selection.disabled) selection.onChange();
+                        }}
+                    />
+                    <Checkbox
+                        className="book-selection-checkbox"
+                        checked={selection.checked}
+                        disabled={selection.disabled}
+                        aria-label={`Selecionar ${title}`}
+                        onCheckedChange={selection.onChange}
+                    />
+                </>
+            )}
             {feedback && (
                 <CardFooter className="book-item-footer">
                     <div className="book-item-feedback">{feedback}</div>

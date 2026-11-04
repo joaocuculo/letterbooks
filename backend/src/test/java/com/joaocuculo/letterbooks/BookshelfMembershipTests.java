@@ -16,7 +16,7 @@ class BookshelfMembershipTests {
     void usesAuthenticatedUserAndDoesNotRequestOtherRepositoryOperations() {
         var expected = List.of(new BookshelfMembershipDTO(7L, "Clássicos"));
         var repository = repositoryReturning(expected, 42L, "duna");
-        var controller = new BookshelfController(new BookshelfService(repository, null, null, null), null);
+        var controller = new BookshelfController(new BookshelfService(repository, null, null, null), null, null);
         var result = controller.findMineByGoogleBooksId("duna",
                 new JWTUserData(42L, "test@example.com", UserRole.USER, 0));
         assertEquals(expected, result.getBody());

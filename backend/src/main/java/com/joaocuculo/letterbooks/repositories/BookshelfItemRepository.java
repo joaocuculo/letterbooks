@@ -16,6 +16,22 @@ import java.util.Optional;
 
 @Repository
 public interface BookshelfItemRepository extends JpaRepository<BookshelfItem, BookshelfItemPK> {
+    interface SelectedShelfCount { Long getBookshelfId(); Long getExistingCount(); }
+
+    @Query("""
+        select i.id.bookshelf.id as bookshelfId, count(i) as existingCount
+        from BookshelfItem i where i.id.bookshelf.id in :shelfIds
+        and i.id.book.googleBooksId in :googleIds group by i.id.bookshelf.id
+        """)
+    List<SelectedShelfCount> countSelectedBooks(@Param("shelfIds") Collection<Long> shelfIds,
+            @Param("googleIds") Collection<String> googleIds);
+
+    @Query("""
+        select i from BookshelfItem i join fetch i.id.book
+        where i.id.bookshelf.id in :shelfIds and i.id.book.googleBooksId in :googleIds
+        """)
+    List<BookshelfItem> findSelectedItems(@Param("shelfIds") Collection<Long> shelfIds,
+            @Param("googleIds") Collection<String> googleIds);
     @Modifying
     @Query("delete from BookshelfItem i where i.id.bookshelf.id in (select s.id from Bookshelf s where s.user.id = :userId)")
     int deleteAllByUserId(@Param("userId") Long userId);

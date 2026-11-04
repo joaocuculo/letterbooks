@@ -11,6 +11,7 @@ import org.springframework.web.util.HtmlUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.Year;
 
 @Service
 public class EmailService {
@@ -37,12 +38,33 @@ public class EmailService {
             helper.setSubject("Recuperação de Senha - LetterBooks");
 
             String resetLink = frontendUrl + "/reset-password?token=" + token;
+            int currentYear = Year.now().getValue();
             String template = loadTemplate("email-password-reset.html");
             String html = template
-                    .replace("{{userName}}", HtmlUtils.htmlEscape(userName))
-                    .replace("{{resetLink}}", HtmlUtils.htmlEscape(resetLink));
+                    .replace("{{resetLink}}", HtmlUtils.htmlEscape(resetLink))
+                    .replace("{{currentYear}}", String.valueOf(currentYear))
+                    .replace("{{userName}}", HtmlUtils.htmlEscape(userName));
 
-            helper.setText(html, true);
+            String plainText = """
+                    LetterBooks
+
+                    Redefina sua senha
+
+                    Olá, %s!
+
+                    Recebemos uma solicitação para redefinir a senha da sua conta. Use o link abaixo para criar uma nova senha:
+
+                    %s
+
+                    Este link expira em 1 hora.
+
+                    Se você não solicitou esta redefinição, ignore este e-mail. Sua senha permanecerá a mesma.
+
+                    © %s LetterBooks
+                    """.formatted(userName, resetLink, currentYear);
+
+            helper.setText(plainText, html);
+            helper.addInline("letterbooks-logo", new ClassPathResource("email/letterbooks-logo.png"), "image/png");
 
             mailSender.send(message);
 
@@ -53,6 +75,8 @@ public class EmailService {
 
     private String loadTemplate(String fileName) throws IOException {
         ClassPathResource resource = new ClassPathResource("templates/" + fileName);
-        return new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+        try (var stream = resource.getInputStream()) {
+            return new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+        }
     }
 }

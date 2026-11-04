@@ -9,9 +9,12 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.Collection;
+import java.util.List;
 
 @Repository
 public interface BookRepository extends JpaRepository<Book, Long>, JpaSpecificationExecutor<Book> {
+    List<Book> findByGoogleBooksIdIn(Collection<String> googleBooksIds);
     Optional<Book> findByGoogleBooksId(String googleBooksId);
 
     @Modifying

@@ -28,6 +28,7 @@ import LibraryBookCard from './LibraryBookCard';
 import LibraryBareBookCard from './LibraryBareBookCard';
 import ShelfEditor from './ShelfEditor';
 import AddToShelfDialog from './AddToShelfDialog';
+import { BookSelectionControls, useBookSelection } from './BookSelection';
 
 type Target =
     | { shelf: service.BookshelfSummary }
@@ -90,6 +91,7 @@ export default function ShelfManager({
     page: number;
     changePage: (page: number, preserveNavigationState?: boolean) => void;
 }) {
+    const selection = useBookSelection();
     const [params] = useSearchParams();
     const location = useLocation();
     const navigate = useNavigate();
@@ -99,6 +101,7 @@ export default function ShelfManager({
     const restoredLocation = useRef<string | null>(null);
     const rawId = Number(params.get('shelfId'));
     const id = Number.isSafeInteger(rawId) && rawId > 0 ? rawId : null;
+    const selectionKey = `shelf:${id}:${page}`;
     const { user } = useAuth();
     const [revision, setRevision] = useState(0);
     const [editor, setEditor] = useState<
@@ -131,7 +134,7 @@ export default function ShelfManager({
         },
         [id, page, user]
     );
-    const state = useLibraryResource(`${id}:${page}:${revision}`, load);
+    const state = useLibraryResource(`${id}:${page}`, load, revision);
     const data = state.data;
     const pagination = data?.books?.page ?? data?.list?.page;
     useEffect(() => {
@@ -364,10 +367,28 @@ export default function ShelfManager({
                     ou do <Link to="/explore">Explorar</Link>.
                 </p>
             )}
+            {data?.books && !state.error && (
+                <div className="book-selection-source-heading">
+                    <BookSelectionControls
+                        contextKey={selectionKey}
+                        ids={data.books.content.map(
+                            (record) => record.book.googleBooksId
+                        )}
+                        disabled={
+                            state.busy || Object.values(pending).some(Boolean)
+                        }
+                        onAdded={refresh}
+                    />
+                </div>
+            )}
             <div className="library-books">
                 {data?.books?.content.map((record) =>
                     record.userBook ? (
                         <LibraryBookCard
+                            selection={selection.cardSelection(
+                                selectionKey,
+                                record.book.googleBooksId
+                            )}
                             key={record.book.id}
                             book={record.userBook}
                             busy={Boolean(pending[record.book.id])}
@@ -381,6 +402,10 @@ export default function ShelfManager({
                         />
                     ) : (
                         <LibraryBareBookCard
+                            selection={selection.cardSelection(
+                                selectionKey,
+                                record.book.googleBooksId
+                            )}
                             key={record.book.id}
                             book={record.book}
                             onAdd={() => setAdding(record.book)}

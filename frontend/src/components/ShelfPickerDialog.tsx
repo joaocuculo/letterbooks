@@ -16,6 +16,8 @@ export interface ShelfChoice {
     id: number;
     name: string;
     containsBook: boolean;
+    description?: string;
+    disabled?: boolean;
 }
 export default function ShelfPickerDialog({
     title,
@@ -33,6 +35,10 @@ export default function ShelfPickerDialog({
     onCreate,
     onRetry,
     onSignIn,
+    heading = 'Adicionar às estantes',
+    actionLabel = 'Adicionar livro',
+    createDisabled = false,
+    limitMessage,
 }: {
     title: string;
     children?: ReactNode;
@@ -49,6 +55,10 @@ export default function ShelfPickerDialog({
     onCreate: () => void;
     onRetry: () => void;
     onSignIn?: () => void;
+    heading?: string;
+    actionLabel?: string;
+    createDisabled?: boolean;
+    limitMessage?: string;
 }) {
     const labelId = useId();
     return (
@@ -63,7 +73,7 @@ export default function ShelfPickerDialog({
                 className="domain-dialog shelf-picker-dialog"
             >
                 <div className="shelf-picker-heading">
-                    <DialogTitle>Adicionar às estantes</DialogTitle>
+                    <DialogTitle>{heading}</DialogTitle>
                     <DialogDescription title={title}>{title}</DialogDescription>
                 </div>
                 <div className="shelf-picker-toolbar">
@@ -71,7 +81,7 @@ export default function ShelfPickerDialog({
                     <Button
                         variant="outline"
                         size="sm"
-                        disabled={busy || Boolean(onSignIn)}
+                        disabled={busy || createDisabled || Boolean(onSignIn)}
                         onClick={onCreate}
                     >
                         <Plus aria-hidden="true" />
@@ -123,7 +133,10 @@ export default function ShelfPickerDialog({
                                         selected.has(choice.id)
                                     }
                                     disabled={
-                                        busy || loading || choice.containsBook
+                                        busy ||
+                                        loading ||
+                                        choice.containsBook ||
+                                        choice.disabled
                                     }
                                     onCheckedChange={(checked) =>
                                         onToggle(choice.id, checked)
@@ -132,14 +145,26 @@ export default function ShelfPickerDialog({
                                 <span>
                                     {choice.name}
                                     {choice.containsBook && (
-                                        <small>Já contém este livro</small>
+                                        <small>
+                                            {choice.description ??
+                                                'Já contém este livro'}
+                                        </small>
                                     )}
+                                    {!choice.containsBook &&
+                                        choice.description && (
+                                            <small>{choice.description}</small>
+                                        )}
                                 </span>
                             </label>
                         ))}
                     </fieldset>
                 </ScrollArea>
                 {pagination}
+                {limitMessage && (
+                    <p className="shelf-picker-limit" role="status">
+                        {limitMessage}
+                    </p>
+                )}
                 <div className="shelf-picker-links">
                     <Link
                         to="/my-books?view=shelves"
@@ -174,7 +199,7 @@ export default function ShelfPickerDialog({
                         loading={busy}
                         onClick={onAdd}
                     >
-                        {busy ? 'Adicionando...' : 'Adicionar livro'}
+                        {busy ? 'Adicionando...' : actionLabel}
                     </Button>
                 </div>
             </DialogContent>
