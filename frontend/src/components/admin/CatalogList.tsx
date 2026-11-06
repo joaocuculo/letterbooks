@@ -1,5 +1,13 @@
+import {
+    Table,
+    TableHeader,
+    TableBody,
+    TableRow,
+    TableHead,
+    TableCell,
+    TableState,
+} from '../ui/table';
 import { useToastMessage } from '../../hooks/useToastMessage';
-import { Feedback } from '../ui/feedback';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { useCallback, useEffect, useId, useState } from 'react';
@@ -86,40 +94,63 @@ export default function CatalogList({ kind }: { kind: CatalogKind }) {
                 </h2>
                 {result && <span>{result.page.totalElements} registros</span>}
             </div>
-            {resource.busy ? (
-                <Feedback kind="loading" title={`Carregando ${c.plural}...`} />
-            ) : resource.error ? (
-                <AdminFailure
-                    message={resource.error}
-                    retry={() => setRevision((v) => v + 1)}
-                />
-            ) : result?.content.length === 0 ? (
-                <p className="admin-empty">
-                    Nenhum registro cadastrado. Use “{c.createLabel}” para
-                    começar.
-                </p>
-            ) : (
-                <ul className="admin-records">
-                    {result?.content.map((item) => (
-                        <li key={item.id}>
-                            <div>
-                                <strong>{item.name}</strong>
-                                <span>ID: {item.id}</span>
-                            </div>
-                            <Link
-                                to={`${c.base}/${item.id}`}
-                                state={{
-                                    returnTo:
-                                        location.pathname + location.search,
-                                }}
-                            >
-                                Gerenciar
-                                <ArrowRight size={16} aria-hidden="true" />
-                            </Link>
-                        </li>
-                    ))}
-                </ul>
-            )}
+            <Table aria-label={c.title}>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead>
+                            {kind === 'authors' ? 'Autor' : 'Categoria'}
+                        </TableHead>
+                        <TableHead>Identificador</TableHead>
+                        <TableHead className="table-actions">Ações</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {resource.busy ? (
+                        <TableState columns={3} loading>
+                            Carregando {c.plural}...
+                        </TableState>
+                    ) : resource.error ? (
+                        <TableState columns={3}>
+                            <AdminFailure
+                                message={resource.error}
+                                retry={() => setRevision((v) => v + 1)}
+                            />
+                        </TableState>
+                    ) : result?.content.length === 0 ? (
+                        <TableState columns={3}>
+                            Nenhum registro cadastrado. Use “{c.createLabel}”
+                            para começar.
+                        </TableState>
+                    ) : (
+                        result?.content.map((item) => (
+                            <TableRow key={item.id}>
+                                <TableCell className="table-identity">
+                                    {item.name}
+                                </TableCell>
+                                <TableCell>{item.id}</TableCell>
+                                <TableCell className="table-actions">
+                                    <Link
+                                        className="table-action-link"
+                                        aria-label={'Gerenciar ' + item.name}
+                                        to={c.base + '/' + item.id}
+                                        state={{
+                                            returnTo:
+                                                location.pathname +
+                                                location.search,
+                                        }}
+                                    >
+                                        Gerenciar
+                                        <ArrowRight
+                                            size={14}
+                                            aria-hidden="true"
+                                        />
+                                    </Link>
+                                </TableCell>
+                            </TableRow>
+                        ))
+                    )}
+                </TableBody>
+            </Table>
             {result && (
                 <AdminPager
                     page={result.page.number}

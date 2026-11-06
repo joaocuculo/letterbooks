@@ -15,10 +15,11 @@ export async function deleteAccount(
 
 export async function findUsers(
     page = 0,
-    signal?: AbortSignal
+    signal?: AbortSignal,
+    sort = 'createdAt,desc'
 ): Promise<PageResponse<UserResponse>> {
     const response = await api.get<PageResponse<UserResponse>>('/users', {
-        params: { page, size: 20, sort: 'createdAt,desc' },
+        params: { page, size: 20, sort },
         signal,
     });
     return response.data;

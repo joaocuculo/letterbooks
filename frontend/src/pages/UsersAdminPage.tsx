@@ -1,3 +1,15 @@
+import { Pencil } from 'lucide-react';
+import { TableSortHead } from '../components/ui/table-sort-head';
+import {
+    Table,
+    TableHeader,
+    TableBody,
+    TableRow,
+    TableHead,
+    TableCell,
+    TableState,
+} from '../components/ui/table';
+import { Badge } from '../components/ui/badge';
 import { toast } from '../components/ui/toast-manager';
 import {
     Select,
@@ -43,6 +55,25 @@ export default function UsersAdminPage() {
     const editButton = useRef<HTMLElement | null>(null);
     const titleRef = useRef<HTMLHeadingElement | null>(null);
     const [params, setParams] = useSearchParams();
+    const requestedSort = params.get('sort') ?? 'createdAt,desc';
+    const sort = /^(name|email|createdAt),(asc|desc)$/.test(requestedSort)
+        ? requestedSort
+        : 'createdAt,desc';
+    const [sortField, sortDirection] = sort.split(',');
+    const changeSort = (field: string) =>
+        setParams((previous) => {
+            const next = new URLSearchParams(previous);
+            next.set(
+                'sort',
+                field +
+                    ',' +
+                    (sortField === field && sortDirection === 'asc'
+                        ? 'desc'
+                        : 'asc')
+            );
+            next.delete('page');
+            return next;
+        });
     const parsedPage = Number(params.get('page'));
     const page =
         Number.isSafeInteger(parsedPage) && parsedPage >= 0 ? parsedPage : 0;
@@ -50,13 +81,16 @@ export default function UsersAdminPage() {
     const [pagination, setPagination] = useState<PageMetadata | null>(null);
     const load = useCallback(
         async (signal: AbortSignal) => {
-            const result = await findUsers(page, signal);
+            const result = await findUsers(page, signal, sort);
             if (!signal.aborted) setPagination(result.page);
             return result;
         },
-        [page]
+        [page, sort]
     );
-    const resource = useLibraryResource(`users:${page}:${revision}`, load);
+    const resource = useLibraryResource(
+        `users:${page}:${sort}:${revision}`,
+        load
+    );
     const result = resource.data;
     const changePage = useCallback(
         (nextPage: number) =>
@@ -93,77 +127,127 @@ export default function UsersAdminPage() {
                 <h2>Usuários cadastrados</h2>
                 {result && <span>{result.page.totalElements} registros</span>}
             </div>
-            {resource.busy ? (
-                <p role="status">Carregando usuários...</p>
-            ) : resource.error ? (
-                <AdminFailure
-                    message={resource.error}
-                    retry={() => setRevision((value) => value + 1)}
-                />
-            ) : result?.content.length === 0 ? (
-                <p className="admin-empty">Nenhum usuário cadastrado.</p>
-            ) : (
-                <ul className="admin-records admin-users">
-                    {result?.content.map((user) => (
-                        <li key={user.id}>
-                            <div className="admin-user-identity">
-                                <strong>{user.name}</strong>
-                                <span>{user.email}</span>
-                                <span>ID: {user.id}</span>
-                            </div>
-                            <dl className="admin-user-metadata">
-                                <div>
-                                    <dt>Papel</dt>
-                                    <dd>{roleLabels[user.role]}</dd>
-                                </div>
-                                <div>
-                                    <dt>Situação da conta</dt>
-                                    <dd>{statusLabels[user.status]}</dd>
-                                </div>
-                                <div>
-                                    <dt>Cadastro</dt>
-                                    <dd>
-                                        <time dateTime={user.createdAt}>
-                                            {formatRegistrationDate(
-                                                user.createdAt
-                                            )}
-                                        </time>
-                                    </dd>
-                                </div>
-                            </dl>
-                            <div className="admin-user-actions">
-                                <Button
-                                    variant="outline"
-                                    type="button"
-                                    disabled={user.id === authenticatedUser?.id}
-                                    aria-describedby={
-                                        user.id === authenticatedUser?.id
-                                            ? `own-account-${user.id}`
-                                            : undefined
-                                    }
-                                    aria-label={`Alterar papel e situação de ${user.name}`}
-                                    onClick={(event) => {
-                                        editButton.current =
-                                            event.currentTarget;
-                                        setEditingUser(user);
-                                        setRole(user.role);
-                                        setStatus(user.status);
-                                        setSaveError('');
-                                    }}
-                                >
-                                    Alterar papel e situação
-                                </Button>
-                                {user.id === authenticatedUser?.id && (
-                                    <p id={`own-account-${user.id}`}>
-                                        Você não pode alterar suas próprias
-                                        permissões.
-                                    </p>
-                                )}
-                            </div>
-                        </li>
-                    ))}
-                </ul>
-            )}
+            <Table className="ui-table-users" aria-label="Usuários cadastrados">
+                <TableHeader>
+                    <TableRow>
+                        {(
+                            [
+                                ['name', 'Usuário'],
+                                ['email', 'E-mail'],
+                            ] as const
+                        ).map(([field, label]) => (
+                            <TableSortHead
+                                key={field}
+                                direction={
+                                    sortField === field
+                                        ? (sortDirection as 'asc' | 'desc')
+                                        : undefined
+                                }
+                                onSort={() => changeSort(field)}
+                            >
+                                {label}
+                            </TableSortHead>
+                        ))}
+                        <TableHead>Papel</TableHead>
+                        <TableHead>Situação</TableHead>
+                        <TableSortHead
+                            direction={
+                                sortField === 'createdAt'
+                                    ? (sortDirection as 'asc' | 'desc')
+                                    : undefined
+                            }
+                            onSort={() => changeSort('createdAt')}
+                        >
+                            Cadastro
+                        </TableSortHead>
+                        <TableHead className="table-actions">Ações</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {resource.busy ? (
+                        <TableState columns={6} loading>
+                            Carregando usuários...
+                        </TableState>
+                    ) : resource.error ? (
+                        <TableState columns={6}>
+                            <AdminFailure
+                                message={resource.error}
+                                retry={() => setRevision((v) => v + 1)}
+                            />
+                        </TableState>
+                    ) : result?.content.length === 0 ? (
+                        <TableState columns={6}>
+                            Nenhum usuário cadastrado.
+                        </TableState>
+                    ) : (
+                        result?.content.map((user) => (
+                            <TableRow key={user.id}>
+                                <TableCell className="table-identity">
+                                    {user.name}
+                                    <span className="table-secondary">
+                                        ID: {user.id}
+                                    </span>
+                                </TableCell>
+                                <TableCell>{user.email}</TableCell>
+                                <TableCell className="table-nowrap">
+                                    {roleLabels[user.role]}
+                                </TableCell>
+                                <TableCell>
+                                    <Badge
+                                        variant={
+                                            user.status === 'ACTIVE'
+                                                ? 'secondary'
+                                                : 'outline'
+                                        }
+                                    >
+                                        {statusLabels[user.status]}
+                                    </Badge>
+                                </TableCell>
+                                <TableCell className="table-nowrap">
+                                    <time dateTime={user.createdAt}>
+                                        {formatRegistrationDate(user.createdAt)}
+                                    </time>
+                                </TableCell>
+                                <TableCell className="table-actions">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        type="button"
+                                        disabled={
+                                            user.id === authenticatedUser?.id
+                                        }
+                                        aria-describedby={
+                                            user.id === authenticatedUser?.id
+                                                ? `own-account-${user.id}`
+                                                : undefined
+                                        }
+                                        aria-label={`Editar papel e situação de ${user.name}`}
+                                        onClick={(event) => {
+                                            editButton.current =
+                                                event.currentTarget;
+                                            setEditingUser(user);
+                                            setRole(user.role);
+                                            setStatus(user.status);
+                                            setSaveError('');
+                                        }}
+                                    >
+                                        <Pencil aria-hidden="true" /> Editar
+                                    </Button>
+                                    {user.id === authenticatedUser?.id && (
+                                        <span
+                                            className="sr-only"
+                                            id={'own-account-' + user.id}
+                                        >
+                                            Você não pode alterar suas próprias
+                                            permissões.
+                                        </span>
+                                    )}
+                                </TableCell>
+                            </TableRow>
+                        ))
+                    )}
+                </TableBody>
+            </Table>
             {editingUser && (
                 <Dialog
                     open

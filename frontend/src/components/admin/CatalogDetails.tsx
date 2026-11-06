@@ -1,3 +1,11 @@
+import {
+    Table,
+    TableHeader,
+    TableBody,
+    TableRow,
+    TableHead,
+    TableCell,
+} from '../ui/table';
 import { toast } from '../ui/toast-manager';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
@@ -128,51 +136,71 @@ export default function CatalogDetails({ kind }: { kind: CatalogKind }) {
                 aria-labelledby="admin-names-title"
             >
                 <h2 id="admin-names-title">Nomes cadastrados</h2>
-                <ul className="admin-records">
-                    {data.names.map((item) => (
-                        <li key={item.id}>
-                            <strong>{item.name}</strong>
-                            {item.primary ? (
-                                <span className="admin-badge">
-                                    Nome principal
-                                </span>
-                            ) : (
-                                <div className="admin-row-actions">
-                                    <Button
-                                        variant="outline"
-                                        type="button"
-                                        disabled={operating}
-                                        onClick={() =>
-                                            void mutate(
-                                                'primary',
-                                                () => c.primary(id, item.id),
-                                                'Nome principal alterado com sucesso.'
-                                            )
-                                        }
-                                    >
-                                        {busy === 'primary'
-                                            ? 'Alterando...'
-                                            : 'Tornar principal'}
-                                    </Button>
-                                    <Button
-                                        variant="destructive"
-                                        type="button"
-                                        disabled={operating}
-                                        onClick={() => {
-                                            setConfirmError('');
-                                            setConfirm({
-                                                type: 'remove',
-                                                name: item,
-                                            });
-                                        }}
-                                    >
-                                        Remover
-                                    </Button>
-                                </div>
-                            )}
-                        </li>
-                    ))}
-                </ul>
+                <Table aria-label="Nomes cadastrados">
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Nome</TableHead>
+                            <TableHead className="table-actions">
+                                Ações
+                            </TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {data.names.map((item) => (
+                            <TableRow key={item.id}>
+                                <TableCell className="table-identity">
+                                    {item.name}
+                                </TableCell>
+                                <TableCell className="table-actions">
+                                    {item.primary ? (
+                                        <span className="admin-badge">
+                                            Nome principal
+                                        </span>
+                                    ) : (
+                                        <div className="admin-row-actions">
+                                            <Button
+                                                size="sm"
+                                                variant="outline"
+                                                type="button"
+                                                disabled={operating}
+                                                onClick={() =>
+                                                    void mutate(
+                                                        'primary',
+                                                        () =>
+                                                            c.primary(
+                                                                id,
+                                                                item.id
+                                                            ),
+                                                        'Nome principal alterado com sucesso.'
+                                                    )
+                                                }
+                                            >
+                                                {busy === 'primary'
+                                                    ? 'Alterando...'
+                                                    : 'Tornar principal'}
+                                            </Button>
+                                            <Button
+                                                size="sm"
+                                                variant="destructive"
+                                                type="button"
+                                                disabled={operating}
+                                                onClick={() => {
+                                                    setConfirmError('');
+                                                    setConfirm({
+                                                        type: 'remove',
+                                                        name: item,
+                                                    });
+                                                }}
+                                            >
+                                                Remover
+                                            </Button>
+                                        </div>
+                                    )}
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
                 <form
                     className="admin-name-form"
                     aria-busy={operating}
@@ -370,21 +398,52 @@ function MergeSection({
                                 {kind === 'authors' ? 'o autor' : 'a categoria'}{' '}
                                 de origem
                             </legend>
-                            {candidates.map((item) => (
-                                <label key={item.id}>
-                                    <input
-                                        type="radio"
-                                        name="merge-source"
-                                        checked={selected?.id === item.id}
-                                        disabled={disabled}
-                                        onChange={() => setSelected(item)}
-                                    />
-                                    <span>
-                                        {item.name}
-                                        <small>ID: {item.id}</small>
-                                    </span>
-                                </label>
-                            ))}
+                            <Table aria-label="Origens disponíveis">
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Selecionar</TableHead>
+                                        <TableHead>
+                                            {kind === 'authors'
+                                                ? 'Autor'
+                                                : 'Categoria'}
+                                        </TableHead>
+                                        <TableHead>Identificador</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {candidates.map((item) => (
+                                        <TableRow
+                                            key={item.id}
+                                            aria-selected={
+                                                selected?.id === item.id
+                                            }
+                                        >
+                                            <TableCell>
+                                                <input
+                                                    id={`merge-source-${item.id}`}
+                                                    type="radio"
+                                                    name="merge-source"
+                                                    aria-label={
+                                                        'Selecionar ' +
+                                                        item.name +
+                                                        ', ID ' +
+                                                        item.id
+                                                    }
+                                                    checked={
+                                                        selected?.id === item.id
+                                                    }
+                                                    disabled={disabled}
+                                                    onChange={() =>
+                                                        setSelected(item)
+                                                    }
+                                                />
+                                            </TableCell>
+                                            <TableCell className="table-identity"><label className="table-radio-label" htmlFor={`merge-source-${item.id}`}>{item.name}</label></TableCell>
+                                            <TableCell>{item.id}</TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
                         </fieldset>
                     )}
                     {result && (

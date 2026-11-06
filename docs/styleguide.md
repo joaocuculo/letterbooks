@@ -44,3 +44,11 @@ O Toaster global usa Base UI, com gerenciador separado em `components/ui/toast-m
 O Switch da estante mantém o texto à esquerda e o controle à direita. Os botões das áreas de ação dos diálogos se alinham à direita em desktop e mobile. Biblioteca e Explorar compartilham a escala de grade do catálogo. A pesquisa principal usa Enter e não apresenta botão de envio visível.
 
 Verificações desta atualização: build, lint e ambos os scripts de isolamento passaram; Switch real conferido em modal sem salvar; pesquisa real por Enter; cards de biblioteca e Explorar medidos com a mesma largura e altura; toasts Promise de sucesso e erro testados com dados locais; guia sem overflow nas cinco larguras de referência; modal e toast conferidos em 320 px. Nenhuma gravação real foi necessária para essas verificações.
+
+## Layout de documentação
+
+StyleGuideLayout.tsx centraliza grupos, rótulos, descrições e navegação. Section e PreviewPanel são componentes locais ao laboratório. Sidebar sticky de 232 px em desktop; abaixo de 960 px, barra fixa durante a rolagem e Drawer Base UI com navegação por âncoras. O item ativo acompanha a rolagem via listener passivo limitado por requestAnimationFrame; aria-current indica a localização. Durante a abertura do Drawer o rastreamento fica suspenso. Há atalho para pular ao conteúdo e scroll-margin para os títulos.
+
+Botões possuem painéis de variantes e tamanhos/estados. Formulários usam grade responsiva; menus, diálogos e outros exemplos básicos possuem superfícies delimitadas. BookCards mantêm suas proporções; tabelas mantêm rolagem interna. Nenhum componente global foi modificado para o layout.
+
+Validação: desktop e 390 px, sidebar sticky, atualização ativa na rolagem livre de Botões para Campos, âncoras, formulário sem overflow horizontal, Drawer fechando ao selecionar uma seção e por Escape, exemplos de botão interativos e tabela com rolagem interna. Build, lint e os dois checks de isolamento passaram; o aviso de chunk acima de 500 kB permanece.

@@ -1,3 +1,8 @@
+import StyleGuideLayout, {
+    Section,
+    PreviewPanel,
+} from './styleguide/StyleGuideLayout';
+import TableExamples from './styleguide/TableExamples';
 import { RatingHistoryExamples } from './styleguide/DomainExamples';
 import ShelfPickerExample from './styleguide/ShelfPickerExample';
 import { Switch } from '../components/ui/switch';
@@ -10,7 +15,7 @@ import {
     SelectGroup,
     SelectItem,
 } from '../components/ui/select';
-import { useId, useState, type ReactNode } from 'react';
+import { useId, useState } from 'react';
 import { ArrowRight, BookOpen, LibraryBig, Plus, Trash2 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -60,39 +65,6 @@ import {
     AdminExamples,
 } from './styleguide/DomainExamples';
 import '../styles/styleguide.css';
-
-const sections = [
-    ['tokens', 'Cores e tokens'],
-    ['type', 'Tipografia'],
-    ['buttons', 'Botões'],
-    ['fields', 'Campos'],
-    ['menus', 'Menu e tooltip'],
-    ['panels', 'Dialog e drawer'],
-    ['feedback', 'Estados'],
-    ['notifications', 'Switch e toasts'],
-    ['books', 'BookCard'],
-    ['library', 'Biblioteca e estantes'],
-    ['ratings', 'Avaliações'],
-    ['navigation', 'Navegação'],
-    ['admin', 'Administração'],
-] as const;
-
-function Section({
-    id,
-    title,
-    children,
-}: {
-    id: string;
-    title: string;
-    children: ReactNode;
-}) {
-    return (
-        <section id={id} className="sg-section" aria-labelledby={`${id}-title`}>
-            <h2 id={`${id}-title`}>{title}</h2>
-            {children}
-        </section>
-    );
-}
 
 function BookSpecimen({
     title,
@@ -195,28 +167,7 @@ export default function StyleGuidePage() {
     const [retry, setRetry] = useState(false);
     const [publicShelf, setPublicShelf] = useState(false);
     return (
-        <main
-            className="styleguide"
-            data-development-page="LETTERBOOKS_STYLEGUIDE_DEV_ONLY"
-        >
-            <header className="sg-header">
-                <span className="sg-eyebrow">
-                    LetterBooks · Desenvolvimento
-                </span>
-                <h1>Laboratório visual</h1>
-                <p>
-                    Componentes reais, dados fictícios e interações locais.
-                    Nenhuma alteração é salva.
-                </p>
-            </header>
-            <nav className="sg-nav" aria-label="Seções do Style Guide">
-                {sections.map(([key, label]) => (
-                    <a key={key} href={`#${key}`}>
-                        {label}
-                    </a>
-                ))}
-            </nav>
-
+        <StyleGuideLayout>
             <Section id="tokens" title="Cores, superfícies e tokens">
                 <div className="sg-swatches">
                     {[
@@ -268,52 +219,58 @@ export default function StyleGuidePage() {
                 </div>
             </Section>
             <Section id="buttons" title="Botões e variantes">
-                <div className="sg-row">
-                    {(
-                        [
-                            'default',
-                            'outline',
-                            'secondary',
-                            'ghost',
-                            'link',
-                            'destructive',
-                        ] as const
-                    ).map((variant) => (
+                <PreviewPanel title="Variantes">
+                    <div className="sg-row">
+                        {(
+                            [
+                                'default',
+                                'outline',
+                                'secondary',
+                                'ghost',
+                                'link',
+                                'destructive',
+                            ] as const
+                        ).map((variant) => (
+                            <Button
+                                key={variant}
+                                variant={variant}
+                                onClick={() =>
+                                    setNotice(`Variante ${variant} acionada.`)
+                                }
+                            >
+                                {variant}
+                            </Button>
+                        ))}
+                    </div>
+                </PreviewPanel>
+                <PreviewPanel title="Tamanhos e estados">
+                    <div className="sg-row">
+                        {(['xs', 'sm', 'default', 'lg'] as const).map(
+                            (size) => (
+                                <Button
+                                    key={size}
+                                    variant="outline"
+                                    size={size}
+                                    onClick={() =>
+                                        setNotice(`Tamanho ${size} acionado.`)
+                                    }
+                                >
+                                    {size}
+                                </Button>
+                            )
+                        )}
                         <Button
-                            key={variant}
-                            variant={variant}
-                            onClick={() =>
-                                setNotice(`Variante ${variant} acionada.`)
-                            }
-                        >
-                            {variant}
-                        </Button>
-                    ))}
-                </div>
-                <div className="sg-row sg-spaced">
-                    {(['xs', 'sm', 'default', 'lg'] as const).map((size) => (
-                        <Button
-                            key={size}
+                            size="icon"
                             variant="outline"
-                            size={size}
-                            onClick={() =>
-                                setNotice(`Tamanho ${size} acionado.`)
-                            }
+                            aria-label="Adicionar exemplo"
+                            onClick={() => setNotice('Adicionar acionado.')}
                         >
-                            {size}
+                            <Plus />
                         </Button>
-                    ))}
-                    <Button
-                        size="icon"
-                        variant="outline"
-                        aria-label="Adicionar exemplo"
-                        onClick={() => setNotice('Adicionar acionado.')}
-                    >
-                        <Plus />
-                    </Button>
-                    <Button disabled>Desabilitado</Button>
-                    <Button loading>Salvando...</Button>
-                </div>
+                        <Button disabled>Desabilitado</Button>
+                        <Button loading>Salvando...</Button>
+                    </div>
+                </PreviewPanel>
                 <p className="sg-caption" role="status">
                     {notice}
                 </p>
@@ -571,35 +528,6 @@ export default function StyleGuidePage() {
                     </Drawer>
                 </div>
             </Section>
-            <Section id="feedback" title="Loading, erro, vazio e disabled">
-                <div className="sg-feedback-grid">
-                    <Feedback kind="loading" title="Carregando livros">
-                        Aguarde um instante.
-                    </Feedback>
-                    <Feedback
-                        kind={retry ? 'info' : 'error'}
-                        title={
-                            retry
-                                ? 'Exemplo recuperado'
-                                : 'Não foi possível carregar'
-                        }
-                        action={
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => setRetry((v) => !v)}
-                            >
-                                {retry ? 'Simular erro' : 'Tentar novamente'}
-                            </Button>
-                        }
-                    >
-                        Estado simulado, sem requisição de rede.
-                    </Feedback>
-                    <Feedback kind="empty" title="Sua estante está vazia">
-                        Os próximos livros aparecerão aqui.
-                    </Feedback>
-                </div>
-            </Section>
             <Section id="notifications" title="Switch e toasts">
                 <div className="sg-fields">
                     <div className="sg-switch-row">
@@ -688,6 +616,35 @@ export default function StyleGuidePage() {
                     </Button>
                 </div>
             </Section>
+            <Section id="feedback" title="Loading, erro, vazio e disabled">
+                <div className="sg-feedback-grid">
+                    <Feedback kind="loading" title="Carregando livros">
+                        Aguarde um instante.
+                    </Feedback>
+                    <Feedback
+                        kind={retry ? 'info' : 'error'}
+                        title={
+                            retry
+                                ? 'Exemplo recuperado'
+                                : 'Não foi possível carregar'
+                        }
+                        action={
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setRetry((v) => !v)}
+                            >
+                                {retry ? 'Simular erro' : 'Tentar novamente'}
+                            </Button>
+                        }
+                    >
+                        Estado simulado, sem requisição de rede.
+                    </Feedback>
+                    <Feedback kind="empty" title="Sua estante está vazia">
+                        Os próximos livros aparecerão aqui.
+                    </Feedback>
+                </div>
+            </Section>
             <Section id="books" title="BookCard — referência do LetterBooks">
                 <p className="sg-caption">
                     Favoritos, menu e links são tratados localmente. Notas e
@@ -720,9 +677,12 @@ export default function StyleGuidePage() {
             <Section id="navigation" title="Navegação">
                 <NavigationExamples />
             </Section>
+            <Section id="tables" title="Tabelas e dados estruturados">
+                <TableExamples />
+            </Section>
             <Section id="admin" title="Administração">
                 <AdminExamples />
             </Section>
-        </main>
+        </StyleGuideLayout>
     );
 }
